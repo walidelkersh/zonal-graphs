@@ -1,0 +1,6 @@
+/.lake/
+/build/
+*.oleans
+*.ileans
+*.c
+.DS_Store
