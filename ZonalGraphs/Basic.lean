@@ -6,13 +6,14 @@ namespace ZonalGraphs
 # Basic concepts for plane graphs
 
 Mathlib does not currently provide a combinatorial type for a fixed plane embedding and its
-faces.  The structure below records exactly the data about an embedding needed for zonal
-labelings: its underlying connected graph, its finite collection of regions, the vertices on the
-boundary of each region, and the distinguished exterior region.
+faces.  The structure below records the data about an embedding needed here: its underlying
+connected graph, its finite collection of regions, the vertices and edges on each region boundary,
+and the distinguished exterior region.
 
 `boundary R` is a `Finset` because the definition in Bowling's dissertation sums over the *set of
 vertices* on a region boundary.  Thus a vertex is counted once even if a boundary walk encounters
-it more than once.
+it more than once.  `boundaryEdges` is recorded separately because a set of boundary vertices does
+not by itself determine which graph edges border a face; it is used to define face adjacency.
 -/
 
 universe u v
@@ -28,6 +29,7 @@ structure PlaneGraph (Vertex : Type u) (Face : Type v)
   graph : SimpleGraph Vertex
   connected : graph.Connected
   boundary : Face → Finset Vertex
+  boundaryEdges : Face → Finset (Sym2 Vertex)
   exterior : Face
 
 namespace PlaneGraph
