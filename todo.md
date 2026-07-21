@@ -151,9 +151,7 @@
 - [ ] **Corollary 2.5.13**: , we have the following.
 - [ ] **Theorem 4.4.7**: The following seven statements are equivalent. 1. The Four Color Theorem: The regions of every plane graph can be colored with four or fewer colors so that every two regions with a common boundary ...
 
-## 01_Bowling_2023_Zonality_in_Graphs_Dissertation_alt.pdf
 
-- [ ] **Definition **: , an international student is someone who was born and grew up in one country, leaves  their home country, is enrolled at a higher education institution in a different country, and holds a  student...
 
 ## 02_Bowling_Zhang_2023_Zonal_Graphs_Small_Cycle_Rank.pdf
 
@@ -197,7 +195,7 @@
 - [ ] **Proposition 3.2.**: Let G be a nearly cubic plane graph. Ifℓ is an inner zonal labeling ofG, then there exists a regionR all of whose boundary vertices have degree3 such that ℓ(R)̸= 0.
 - [ ] **Lemma 4.1.**: Let G be a plane graph. If there exist distinct regions R0, R1, . . . , Rk of G where the boundary Ri is Bi for 0≤ i≤ k such that{V (B1), V (B2), . . ., V (Bk)} form a partition ofV (B0)−{ v} for s...
 - [ ] **Theorem 4.1.**: For each pairn, m of integers withn≥ 4 and n < m < 3n/2, there is a2-connected plane graph G of order n and size m with ∆(G) = 3 such that G is not zonal.
-- [ ] **Conjecture 4.1.**: Every 2-connected plane graph with maximum degree3 is inner zonal. Acknowledgments We are grateful to Professor Gary Chartrand for suggesting the concept of inner zonal labelings to us and kindly p...
+- [ ] **Conjecture 4.1.**: Every 2-connected plane graph with maximum degree3 is inner zonal.
 
 ## 04_Bowling_Zhang_2022_Absolutely_Conditionally_Zonal_Graphs.pdf
 

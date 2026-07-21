@@ -1,4 +1,4 @@
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib
 
 namespace ZonalGraphs
 
