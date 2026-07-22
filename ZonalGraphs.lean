@@ -3,3 +3,7 @@
 import ZonalGraphs.Basic
 import ZonalGraphs.Definitions
 import ZonalGraphs.LabelingSums
+import ZonalGraphs.RegionBoundary
+import ZonalGraphs.TreesAndCycles
+import ZonalGraphs.FourColor
+import ZonalGraphs.Subdivisions
