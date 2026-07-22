@@ -11,7 +11,7 @@ structure plays no role in the result, so the vertex set is represented by an
 arbitrary finite type.
 -/
 
-universe u
+universe u v
 
 open scoped Classical
 
@@ -38,9 +38,9 @@ lemma labelingSum_changeLabel {X : Type u} [Fintype X] [DecidableEq X]
     (labeling : VertexLabeling X) (x : X) (newLabel : ZonalLabel) :
     labelingSum (changeLabel labeling x newLabel) =
       labelingSum labeling - (labeling x : ZMod 3) + (newLabel : ZMod 3) := by
-  unfold labelingSum changeLabel; simp;
+  unfold labelingSum changeLabel; simp +decide;
   rw [ Finset.sum_eq_add_sum_diff_singleton ( Finset.mem_univ x ) ];
-  rw [ Finset.sum_congr rfl fun y hy => by rw [ Function.update_of_ne ( by aesop ) ] ] ; simp [ add_comm ]
+  rw [ Finset.sum_congr rfl fun y hy => by rw [ Function.update_of_ne ( by aesop ) ] ] ; simp +decide [ add_comm ]
 
 /-
 In particular, changing a label from `1` to `2` shifts the total by `1`
@@ -59,7 +59,7 @@ the total.  This is the structural induction step used below.
 lemma labelingSum_fin_cons {n : ℕ} (head : ZonalLabel)
     (tail : VertexLabeling (Fin n)) :
     labelingSum (Fin.cons head tail) = (head : ZMod 3) + labelingSum tail := by
-  unfold labelingSum; simp [ Fin.sum_univ_succ ] ;
+  unfold labelingSum; simp +decide [ Fin.sum_univ_succ ] ;
 
 /-
 On every `Fin n` with `n ≥ 2`, every residue in `ZMod 3` is the sum of a
@@ -68,15 +68,15 @@ permitted labeling.
 lemma exists_fin_labelingSum_eq (n : ℕ) (hn : 2 ≤ n) (target : ZMod 3) :
     ∃ labeling : VertexLabeling (Fin n), labelingSum labeling = target := by
   induction' hn with n hn ih generalizing target;
-  · fin_cases target <;> decide;
+  · fin_cases target <;> simp +decide;
   · obtain ⟨ labeling, h ⟩ := ih ( target - 1 );
     use Fin.cons labelOne labeling;
-    erw [ labelingSum_fin_cons, h ] ; simp [ labelOne ]
+    erw [ labelingSum_fin_cons, h ] ; simp +decide [ labelOne ]
 
 /-
 Transporting a labeling along an equivalence preserves its total sum.
 -/
-lemma labelingSum_comp_equiv {X Y : Type u} [Fintype X] [Fintype Y]
+lemma labelingSum_comp_equiv {X : Type u} {Y : Type v} [Fintype X] [Fintype Y]
     (e : X ≃ Y) (labeling : VertexLabeling Y) :
     labelingSum (fun x => labeling (e x)) = labelingSum labeling := by
   unfold labelingSum; exact Equiv.sum_comp e fun x => ( labeling x : ZMod 3 ) ;
@@ -88,19 +88,19 @@ Lemma 2.0.4(1): a nonempty finite vertex set can be labeled with total
 theorem exists_labelingSum_one_and_two (X : Type u) [Fintype X] [Nonempty X] :
     (∃ labeling : VertexLabeling X, labelingSum labeling = 1) ∧
       ∃ labeling : VertexLabeling X, labelingSum labeling = 2 := by
-  cases' lt_or_ge ( Fintype.card X ) 2 with h h <;> simp_all [ labelingSum ]
+  by_cases hcard : 2 ≤ Fintype.card X
+  · obtain ⟨labeling1, h1⟩ :=
+      exists_fin_labelingSum_eq (Fintype.card X) hcard 1
+    obtain ⟨labeling2, h2⟩ :=
+      exists_fin_labelingSum_eq (Fintype.card X) hcard 2
+    refine ⟨⟨fun x => labeling1 (Fintype.equivFin X x), ?_⟩,
+      ⟨fun x => labeling2 (Fintype.equivFin X x), ?_⟩⟩
+    · exact (labelingSum_comp_equiv (Fintype.equivFin X) labeling1).trans h1
+    · exact (labelingSum_comp_equiv (Fintype.equivFin X) labeling2).trans h2
   · have hpos : 0 < Fintype.card X := Fintype.card_pos
-    have hcard : Fintype.card X = 1 := by omega
-    obtain ⟨ x, hx ⟩ := Fintype.card_eq_one_iff.mp hcard
-    haveI : Unique X := ⟨⟨x⟩, fun y => hx y⟩
-    constructor
-    · use fun _ => labelOne; simp
-    · use fun _ => labelTwo; simp
-  · obtain ⟨labeling1, h1⟩ := exists_fin_labelingSum_eq (Fintype.card X) h 1
-    obtain ⟨labeling2, h2⟩ := exists_fin_labelingSum_eq (Fintype.card X) h 2;
-    refine' ⟨ ⟨ fun x => labeling1 ( Fintype.equivFin X x ), _ ⟩, ⟨ fun x => labeling2 ( Fintype.equivFin X x ), _ ⟩ ⟩ <;> simp_all [ labelingSum ];
-    · rw [ ← h1, ← Equiv.sum_comp ( Fintype.equivFin X ) ];
-    · rw [ ← h2, ← Equiv.sum_comp ( Fintype.equivFin X ) ]
+    have hone : Fintype.card X = 1 := by omega
+    refine ⟨⟨fun _ => labelOne, ?_⟩, ⟨fun _ => labelTwo, ?_⟩⟩ <;>
+      simp [labelingSum, labelOne, labelTwo, hone]
 
 /-
 Lemma 2.0.4(2): a finite vertex set of cardinality at least two can be
