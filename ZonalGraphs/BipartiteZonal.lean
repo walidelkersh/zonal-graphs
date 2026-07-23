@@ -60,21 +60,27 @@ lemma sum_bipartiteLabeling_eq_zero {G : SimpleGraph Vertex}
   rw [hpart, Finset.sum_union hdisj]
   have h0 : (∑ x ∈ s.filter fun x => coloring x = 0, (bipartiteLabeling coloring x : ZMod 3)) =
       ((s.filter fun x => coloring x = 0).card : ZMod 3) := by
-    rw [Finset.sum_congr rfl]
-    · simp
-    · intro x hx
-      have hc : coloring x = 0 := (Finset.mem_filter.mp hx).2
-      simp [bipartiteLabeling, hc]
+    calc ∑ x ∈ s.filter fun x => coloring x = 0, (bipartiteLabeling coloring x : ZMod 3)
+      _ = ∑ x ∈ s.filter fun x => coloring x = 0, (1 : ZMod 3) := by
+          refine Finset.sum_congr rfl (fun x hx => ?_)
+          have hc : coloring x = 0 := (Finset.mem_filter.mp hx).2
+          simp [bipartiteLabeling, hc]
+      _ = ((s.filter fun x => coloring x = 0).card : ZMod 3) := by simp
   have h1 : (∑ x ∈ s.filter fun x => coloring x = 1, (bipartiteLabeling coloring x : ZMod 3)) =
       2 * ((s.filter fun x => coloring x = 1).card : ZMod 3) := by
-    rw [Finset.sum_congr rfl]
-    · simp [nsmul_eq_mul]
-    · intro x hx
-      have hc : coloring x = 1 := (Finset.mem_filter.mp hx).2
-      have hne : coloring x ≠ 0 := by simp [hc]
-      simp [bipartiteLabeling, hne]
+    calc ∑ x ∈ s.filter fun x => coloring x = 1, (bipartiteLabeling coloring x : ZMod 3)
+      _ = ∑ x ∈ s.filter fun x => coloring x = 1, (2 : ZMod 3) := by
+          refine Finset.sum_congr rfl (fun x hx => ?_)
+          have hc : coloring x = 1 := (Finset.mem_filter.mp hx).2
+          have hne : coloring x ≠ 0 := by simp [hc]
+          simp [bipartiteLabeling, hne]
+      _ = 2 * ((s.filter fun x => coloring x = 1).card : ZMod 3) := by simp [mul_comm]
   rw [h0, h1, hbalance]
-  ring
+  have h3 : ((1 + 2 : ZMod 3) * ((s.filter fun x => coloring x = 1).card : ZMod 3)) = 0 := by
+    have h12 : (1 + 2 : ZMod 3) = 0 := rfl
+    rw [h12, zero_mul]
+  linear_combination h3
+
 
 
 /-- A plane graph whose facial boundaries are balanced for bipartite colorings is zonal. -/
