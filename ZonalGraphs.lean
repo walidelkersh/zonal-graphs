@@ -7,3 +7,5 @@ import ZonalGraphs.RegionBoundary
 import ZonalGraphs.TreesAndCycles
 import ZonalGraphs.FourColor
 import ZonalGraphs.Subdivisions
+import ZonalGraphs.BipartiteZonal
+import ZonalGraphs.Wheels
