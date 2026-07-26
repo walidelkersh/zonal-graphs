@@ -510,6 +510,73 @@ theorem isZonal_thetaPendant_of_empty (P : PlaneGraph Vertex Face) {R₁ R₂ R�
       · simpa using val_sub_le_of_ne_zero 2 (by decide) W.card (by omega))
     (by decide) (by decide) (by decide)
 
+/-- **Zonality of a theta graph with one extra block per region.**
+
+Each of the three regions is bounded by the branch pair `T`, two of the path interiors, and its own
+extra block `Wᵢ` holding the branch vertices drawn inside it.  Prescribing a sum per block reduces
+zonality to the three displayed equations.
+
+This is what the direct subcase of Theorem 3.6 needs, where each set of branch vertices is a single
+vertex: the sums `2, 1, 1, 1, 2, 2, 2` make every region read `2 + 1 + 1 + 2 = 0`.  It generalizes
+`isZonal_of_theta_pendant_blocks` from one extra block to three.  The other subcase of that theorem
+deletes vertices and recurses, which no engine here supports. -/
+theorem isZonal_of_theta_threeBlocks (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₁ Q₂ Q₃ W₁ W₂ W₃ : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ Q₁ ∪ Q₂ ∪ W₁)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃ ∪ W₂) (h₃ : P.boundary R₃ = T ∪ Q₁ ∪ Q₃ ∪ W₃)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hdisjoint : ∀ i j : Fin 7, i ≠ j →
+      Disjoint (![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] i) (![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] j))
+    (t : Fin 7 → ZMod 3)
+    (hfit : ∀ i : Fin 7,
+      (t i - ((![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] i).card : ZMod 3)).val
+        ≤ (![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] i).card)
+    (e₁ : t 0 + t 1 + t 2 + t 4 = 0) (e₂ : t 0 + t 2 + t 3 + t 5 = 0)
+    (e₃ : t 0 + t 1 + t 3 + t 6 = 0) : P.IsZonal := by
+  obtain ⟨labeling, hsum⟩ :=
+    exists_labeling_blockSum_eq ![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] hdisjoint t hfit
+  have sT : (∑ v ∈ T, (labeling v : ZMod 3)) = t 0 := by simpa using hsum 0
+  have s1 : (∑ v ∈ Q₁, (labeling v : ZMod 3)) = t 1 := by simpa using hsum 1
+  have s2 : (∑ v ∈ Q₂, (labeling v : ZMod 3)) = t 2 := by simpa using hsum 2
+  have s3 : (∑ v ∈ Q₃, (labeling v : ZMod 3)) = t 3 := by simpa using hsum 3
+  have u1 : (∑ v ∈ W₁, (labeling v : ZMod 3)) = t 4 := by simpa using hsum 4
+  have u2 : (∑ v ∈ W₂, (labeling v : ZMod 3)) = t 5 := by simpa using hsum 5
+  have u3 : (∑ v ∈ W₃, (labeling v : ZMod 3)) = t 6 := by simpa using hsum 6
+  have d01 : Disjoint T Q₁ := hdisjoint 0 1 (by decide)
+  have d02 : Disjoint T Q₂ := hdisjoint 0 2 (by decide)
+  have d03 : Disjoint T Q₃ := hdisjoint 0 3 (by decide)
+  have d04 : Disjoint T W₁ := hdisjoint 0 4 (by decide)
+  have d05 : Disjoint T W₂ := hdisjoint 0 5 (by decide)
+  have d06 : Disjoint T W₃ := hdisjoint 0 6 (by decide)
+  have d12 : Disjoint Q₁ Q₂ := hdisjoint 1 2 (by decide)
+  have d13 : Disjoint Q₁ Q₃ := hdisjoint 1 3 (by decide)
+  have d14 : Disjoint Q₁ W₁ := hdisjoint 1 4 (by decide)
+  have d16 : Disjoint Q₁ W₃ := hdisjoint 1 6 (by decide)
+  have d23 : Disjoint Q₂ Q₃ := hdisjoint 2 3 (by decide)
+  have d24 : Disjoint Q₂ W₁ := hdisjoint 2 4 (by decide)
+  have d25 : Disjoint Q₂ W₂ := hdisjoint 2 5 (by decide)
+  have d35 : Disjoint Q₃ W₂ := hdisjoint 3 5 (by decide)
+  have d36 : Disjoint Q₃ W₃ := hdisjoint 3 6 (by decide)
+  refine ⟨labeling, fun R => ?_⟩
+  rcases hfaces R with rfl | rfl | rfl
+  · rw [zoneValue, h₁,
+      Finset.sum_union (Finset.disjoint_union_left.mpr
+        ⟨Finset.disjoint_union_left.mpr ⟨d04, d14⟩, d24⟩),
+      Finset.sum_union (Finset.disjoint_union_left.mpr ⟨d02, d12⟩),
+      Finset.sum_union d01, sT, s1, s2, u1]
+    exact e₁
+  · rw [zoneValue, h₂,
+      Finset.sum_union (Finset.disjoint_union_left.mpr
+        ⟨Finset.disjoint_union_left.mpr ⟨d05, d25⟩, d35⟩),
+      Finset.sum_union (Finset.disjoint_union_left.mpr ⟨d03, d23⟩),
+      Finset.sum_union d02, sT, s2, s3, u2]
+    exact e₂
+  · rw [zoneValue, h₃,
+      Finset.sum_union (Finset.disjoint_union_left.mpr
+        ⟨Finset.disjoint_union_left.mpr ⟨d06, d16⟩, d36⟩),
+      Finset.sum_union (Finset.disjoint_union_left.mpr ⟨d03, d13⟩),
+      Finset.sum_union d01, sT, s1, s3, u3]
+    exact e₃
+
 end PlaneGraph
 
 end ZonalGraphs
