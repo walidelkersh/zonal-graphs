@@ -49,6 +49,8 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 3.5 (small cycle rank) | `PlaneGraph.isZonal_thetaPendant_of_nonempty` and `isZonal_thetaPendant_of_empty` |
 | Thm 3.6 (small cycle rank) | `PlaneGraph.isZonal_cycleRankTwo_typeThree_proper` |
 | Cor 3.7, Thm 3.8 (small cycle rank) | collections of the six theorems above: 3.2.1 and 3.2.3 for types (1) and (2), Thm 3.3 for minimal type (3), Thms 3.4, 3.5 and 3.6 for the non-minimal cases |
+| Thm 3.2.5, Cor 3.2.6 (dissertation) | the same type (3) characterization as Thms 3.6 and 3.8 above, in the dissertation's numbering: `isZonal_iff_cycleRankTwo_typeThree`, `isZonal_of_contains_minimal_nonZonal`, `isZonal_thetaPendant_of_nonempty`, `isZonal_cycleRankTwo_typeThree_proper` |
+| Lemma 4.3.3 | `PlaneGraph.exists_isZonalLabeling_constant_on_blocks`, on `exists_labeling_constant_on_blocks` |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -157,8 +159,8 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Corollary 3.2.2**: Let G be a graph of cycle rank 2 and type (1). If G is minimal, then G is not zonal. Otherwise, G is absolutely zonal. 53
 - [x] **Theorem 3.2.3**: Let G be a plane graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
 - [x] **Corollary 3.2.4**: Let G be a graph of cycle rank 2 and type (2). If G has exactly one vertex that does not lie on a cycle, then G is not zonal. Otherwise, G is absolutely zonal.
-- [ ] **Theorem 3.2.5**: Let F be a minimal plane graph of cycle rank 2 and type (3), and let G be a plane graph of cycle rank 2 and type (3) containing F as a subgraph. Then, G is zonal if and only if there is no region R...
-- [ ] **Corollary 3.2.6**: Let F be a minimal graph of cycle rank 2 and type (3), and let G be a graph of cycle rank 2 and type (3) containing F as a subgraph. If G is minimal and contains a triangle, then G is not zonal. Ot...
+- [x] **Theorem 3.2.5**: Let F be a minimal plane graph of cycle rank 2 and type (3), and let G be a plane graph of cycle rank 2 and type (3) containing F as a subgraph. Then, G is zonal if and only if there is no region R...
+- [x] **Corollary 3.2.6**: Let F be a minimal graph of cycle rank 2 and type (3), and let G be a graph of cycle rank 2 and type (3) containing F as a subgraph. If G is minimal and contains a triangle, then G is not zonal. Ot...
 - [ ] **Proposition 3.3.1**: There are infinitely many 2-connected zonal graphs of cycle rank 3.
 - [ ] **Lemma 2.0.4.**: Hence, there are infinitely many 2-connected zonal bipartite or non-bipartite graphs of cycle rank 3. Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a numb...
 - [ ] **Proposition 3.3.2**: Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a number of times of the same parity, then the resulting graph is zonal.
@@ -171,7 +173,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 4.3.1**: [5] Let G be a bicubic map where the boundary of the exterior region is a Hamiltonian cycle C with k pairwise nonadjacent chords for some pos- itive integer k. There exists an inner zonal labeling ...
 - [ ] [ARTIFACT: prose noting a corollary is independent of the Four Color Theorem, followed by the definition of a Hamiltonian path; not a statement]
 - [ ] **Theorem 4.3.2**: [5] Every plane graph G with ∆(G) ≤ 3 where the boundary cycle of the exterior zone is a Hamiltonian cycle of G is inner zonal. Let G1 be the set of all bicubic maps having exactly one vertex inter...
-- [ ] **Lemma 4.3.3**: Let C be an n-cycle where n ≥ 2k for some integer k ≥ 2, and let X be a set of k pairwise nonadjacent edges of C. Then there exists a zonal labeling ℓ of C such that ℓ(x) = ℓ(y) for each edge xy ∈ X.
+- [x] **Lemma 4.3.3**: Let C be an n-cycle where n ≥ 2k for some integer k ≥ 2, and let X be a set of k pairwise nonadjacent edges of C. Then there exists a zonal labeling ℓ of C such that ℓ(x) = ℓ(y) for each edge xy ∈ X.
 - [ ] **Theorem 4.3.5**: Every graph G ∈ G1 is inner zonal.
 - [ ] **Theorem 4.3.6**: Let Ck be the collection of all cubic maps that have exactly k vertices interior to their exterior cycle, and further let C∗ k ⊂ Ck be the subset of all such graphs where the graph formed by deleti...
 - [ ] **Theorem 4.3.8**: For 1 ≤ k ≤ 3, every graph G ∈ Gk is inner zonal.
