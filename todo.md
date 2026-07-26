@@ -52,6 +52,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 3.2.5, Cor 3.2.6 (dissertation) | the same type (3) characterization as Thms 3.6 and 3.8 above, in the dissertation's numbering: `isZonal_iff_cycleRankTwo_typeThree`, `isZonal_of_contains_minimal_nonZonal`, `isZonal_thetaPendant_of_nonempty`, `isZonal_cycleRankTwo_typeThree_proper` |
 | Lemma 4.3.3 | `PlaneGraph.exists_isZonalLabeling_constant_on_blocks`, on `exists_labeling_constant_on_blocks` |
 | Prop 3.3.2, Prop 4.3 | `PlaneGraph.isZonal_of_subdivide_all_edges`, on `isZonal_of_uniform_subdivision` |
+| Thm 4.4.5, Cor 4.4.6 | `PlaneGraph.isZonal_of_isInnerZonal_of_three_regionsAt` and `isZonal_iff_isInnerZonal_of_three_regionsAt`, on `sum_zoneValue_eq_sum_regionsAt` |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -180,8 +181,8 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 4.3.8**: For 1 ≤ k ≤ 3, every graph G ∈ Gk is inner zonal.
 - [ ] **Theorem 4.4.3**: If G is a connected cubic plane graph with bridges, then G is not zonal. A connected plane graph G is a nearly cubic plane graph if all vertices of G have degree 3 except for one vertex having degr...
 - [ ] **Lemma 4.4.4**: Let G be a nearly cubic plane graph, and let R be a region having the vertex of degree 2 on its boundary. Then G does not have an inner zonal labeling where every region, with the possible exceptio...
-- [ ] **Theorem 4.4.5**: Every inner zonal cubic map is zonal.
-- [ ] **Corollary 4.4.6**: A cubic map is zonal if and only if it is inner zonal. Combining well-known results on graph colorings, results on zonal graphs, and
+- [x] **Theorem 4.4.5**: Every inner zonal cubic map is zonal.
+- [x] **Corollary 4.4.6**: A cubic map is zonal if and only if it is inner zonal. Combining well-known results on graph colorings, results on zonal graphs, and
 - [ ] [ARTIFACT: the phrase "we have the following"; the actual result is Theorem 2.5.13, already listed in this section]
 - [ ] **Theorem 4.4.7**: The following seven statements are equivalent. 1. The Four Color Theorem: The regions of every plane graph can be colored with four or fewer colors so that every two regions with a common boundary ...
 
