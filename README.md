@@ -2,96 +2,126 @@
 
 [![Build Project](https://github.com/walidelkersh/zonal-graphs/actions/workflows/build.yml/badge.svg)](https://github.com/walidelkersh/zonal-graphs/actions/workflows/build.yml)
 
-A formalization of zonal labelings, inner zonal labelings, and zonal graphs in
-[Lean 4](https://lean-lang.org/), built on [mathlib4](https://github.com/leanprover-community/mathlib4).
+Lean 4 formalization of zonal labelings and zonal graphs, built on mathlib4.
 
-## Mathematical background
+## Definitions
 
-A **zonal labeling** of a connected plane graph `G` assigns to each vertex one of the two nonzero
-elements of `ZMod 3`, so that the labels on the boundary of every region sum to zero. A graph admitting
-such a labeling is **zonal**. A graph is **absolutely zonal** when every planar embedding of it is zonal,
-and **conditionally zonal** when some embedding is and some is not.
+Fix a connected plane graph `G`. A *zonal labeling* assigns to every vertex one of the two nonzero
+elements of `ZMod 3` so that the labels bounding each region sum to zero. `G` is *zonal* if such a
+labeling exists. Since a graph admits many planar embeddings, two refinements matter: `G` is *absolutely
+zonal* when every embedding is zonal, and *conditionally zonal* when some embedding is zonal and some is
+not. An *inner* zonal labeling relaxes the condition at one region, typically the exterior.
 
-An **inner zonal labeling** asks the same of every region except one. The existence of zonal and inner
-zonal labelings is tied closely to the Four Color Theorem: a cubic map is zonal exactly when its regions
-are 4-colorable, so a proof that every cubic map is zonal *without* invoking the Four Color Theorem would
-constitute a new proof of it.
+The subject earns its attention from a coincidence with map coloring. A cubic map is zonal precisely when
+its regions admit a proper 4-coloring, so proving every cubic map zonal without appealing to the Four
+Color Theorem would yield a new proof of that theorem. None of the arguments here attempt that.
 
-## Progress
+## The planarity problem
 
-Tracked in the [master to-do list](todo.md), which carries an index from each completed statement to the
-Lean declaration proving it, so every checkmark is auditable. A statement is checked off only once the
-GitHub build is green.
+Mathlib has no planar graphs. No combinatorial embeddings, no faces, no Euler formula. `SimpleGraph.Embedding`
+is a graph monomorphism and unrelated. Everything about embeddings in this repository is therefore built
+here, and the choice of foundation constrains what can be stated at all.
 
-Formalized so far: Theorems 2.0.1, 2.0.2, 2.1.3, 2.1.4, 2.1.5, 2.2.2, 2.3.2, 3.1.1, 3.1.3, 3.2.1, 3.2.3;
-Lemmas 2.0.3, 2.0.4; Propositions 2.0.5, 2.1.1, 2.2.1; Corollaries 3.2.2, 3.2.4; and the label-complement
-normalization used throughout the literature. The library has no `sorry` and depends only on the three
-standard axioms `propext`, `Quot.sound` and `Classical.choice`.
+Two layers coexist, deliberately.
 
-Three results are deliberately **carried as explicit hypotheses** rather than proved, each recorded as a
-named proposition so that the dependency is visible in the statement of every theorem using it:
+`PlaneGraph` records the face data of a chosen embedding as an interface: the underlying connected graph,
+an index type for regions, the boundary vertices and edges of each, and a distinguished exterior region.
+Geometric validity of that data is a precondition on values of the structure, not something the structure
+enforces. This buys a great deal of progress cheaply. It also means certain facts cannot be derived, only
+assumed, since arbitrary boundary data satisfies the signature.
 
-* **Theorem 1.3.2** — a connected cubic plane graph is zonal iff bridgeless. A theorem in the literature,
-  but its proof invokes the Four Color Theorem, which mathlib does not have.
-* **Theorem 2.1.2** (Whitney) — unique embeddability of 3-connected planar graphs. Not out of reach
-  mathematically, but not expressible until the embedding layer below is developed further.
-* **Lemma 2.3.1** — a count of set partitions into four equal blocks, for which mathlib has no
-  supporting theory. Deferred rather than blocking, since Theorem 2.3.2 was proved without it.
+`RotationSystem` is the honest model: darts, a reversal involution `dartRev`, a rotation `rotate` at each
+vertex, faces as orbits of `rotate ∘ dartRev`. Its purpose became clear only after the interface layer
+started assuming things it should have proved. Facial colour balance for bipartite graphs was carried as a
+hypothesis field on plane realizations; on a rotation system it is a theorem, and the proof needs no
+planarity whatsoever. `dartRev` crosses an edge, so it flips colour; `rotate` fixes the vertex, so it
+preserves colour. Their composite exchanges the two colour classes, and a permutation exchanging two
+classes of a finite invariant set forces them equinumerous. The bijection is the permutation itself.
 
-## Structure
+Migrating the remaining interface-level results onto rotation systems is unfinished.
 
-Mathlib provides no notion of a planar graph, a combinatorial embedding, or the faces of an embedding, so
-this development supplies its own.
+## What is proved
 
-**Foundations**
+Progress lives in [`todo.md`](todo.md), which indexes each completed statement against the Lean
+declaration establishing it. Nothing is checked off before the GitHub build is green.
 
-* `Basic.lean` — `PlaneGraph`, an interface recording the face data of a chosen embedding: the underlying
-  connected graph, the regions, their boundary vertices and edges, and the exterior region.
-* `Definitions.lean` — `zoneValue`, `IsZonalLabeling`, `IsZonal`, `IsInnerZonal`.
-* `Embedding.lean` — `RotationSystem`, the standard combinatorial model of an embedding by darts, a
-  reversal involution and a rotation at each vertex, whose faces are the orbits of `rotate ∘ dartRev`.
-* `FacialBalance.lean` — facial colour balance proved from a rotation system rather than assumed.
+Complete: Theorems 2.0.1, 2.0.2, 2.1.3, 2.1.4, 2.1.5, 2.2.2, 2.3.2, 3.1.1, 3.1.3, 3.2.1, 3.2.3; Lemmas
+2.0.3, 2.0.4; Propositions 2.0.5, 2.1.1, 2.2.1; Corollaries 3.2.2, 3.2.4. Also the label-complement
+observation that the published proofs invoke constantly to normalize a chosen vertex to the label `1`.
 
-**Labeling machinery**
+No `sorry` appears in the library. Axiom dependencies reduce to `propext`, `Quot.sound` and
+`Classical.choice`.
 
-* `LabelingSums.lean` — prescribed labeling sums over a finite vertex set (Lemma 2.0.4).
-* `LabelComplement.lean` — exchanging the two labels preserves zonality, giving the normalization that
-  fixes a chosen vertex to the label `1`.
-* `RegionBoundary.lean` — the label-count congruence on a region boundary (Lemma 2.0.3).
-* `DivisibleBoundary.lean` — a plane graph is zonal when every region boundary has size divisible by
-  three, which covers triangulations.
+Two formalizations diverge from the published arguments, in both cases shortening them. Bowling and Zhang
+prove Theorem 2.2.2 through three constructions: the standard windmill embedding, a fully nested chain for
+odd blade count, and a hybrid of four side-by-side blades with a chain for even count at least six.
+Nesting `m` blades inside one fixed blade covers all three, and zonality of the resulting embedding
+reduces to a single congruence, `m = 2k + 1` in `ZMod 3` with `k` blades. The parity split disappears. For
+Theorem 2.3.2 the published proof bounds a sum of the largest blade lengths; choosing odd blade lengths
+instead kills the unwanted case by parity, with no estimate required.
 
-**Results**
+## What is assumed
 
-* `TreesAndCycles.lean` — trees and cycles are zonal.
-* `Subdivisions.lean` — subdividing edges preserves zonality.
-* `BipartiteZonal.lean` — 2-connected bipartite planar graphs are absolutely zonal.
-* `ThreeConnected.lean` — `PlaneGraph.Iso` and its invariants; 3-connected planar zonal graphs are
-  absolutely zonal.
-* `CubicPlanar.lean` — bridgeless cubic planar graphs are absolutely zonal.
-* `Wheels.lean` — the wheel `Wₙ` is zonal iff `n ≡ 0 (mod 3)`.
-* `DutchWindmill.lean` — windmill face data, the blade-count congruence, and prescribed label sums over
-  pairwise disjoint blocks.
-* `WindmillGraph.lean`, `StandardWindmill.lean`, `NestedWindmill.lean` — the Dutch windmill graph with its
-  connectivity, its standard embedding, and the nested family that settles Theorems 2.2.2 and 2.3.2.
-* `Unicyclic.lean` — unicyclic graphs are zonal unless they are a cycle with one pendant edge, and zonal
-  unicyclic graphs are absolutely zonal.
-* `CycleRankTwo.lean` — graphs of cycle rank two, types (1) and (2).
-* `FourColor.lean` — the equivalence connecting zonal labelings of cubic maps to the Four Color Theorem.
+Three statements are passed in as hypotheses rather than proved. Each is a named proposition, so any
+theorem depending on one says so in its own signature.
+
+* Theorem 1.3.2, that a connected cubic plane graph is zonal exactly when bridgeless, holds in the
+  literature. Its proof invokes the Four Color Theorem, which mathlib lacks. A 4CT-free proof would
+  itself constitute a new proof of 4CT, so this is not a gap that closing is cheap.
+* Whitney's unique-embedding theorem (2.1.2) is not hard mathematics. On `PlaneGraph` as an interface of
+  supplied face data it is not expressible, because nothing constrains one realization against another.
+  `Embedding.lean` starts the layer that would make it sayable.
+* Lemma 2.3.1 counts partitions of a `4k`-set into four unordered `k`-blocks. Mathlib offers
+  `Nat.multinomial` and nothing about unordered equal-size set partitions, so a faithful proof means
+  building that theory. It was scaffolding: Theorem 2.3.2 went through without it.
+
+## Modules
+
+Foundations:
+
+* `Basic.lean`, `Definitions.lean` hold `PlaneGraph`, `zoneValue`, `IsZonal`, `IsInnerZonal`.
+* Rotation systems and the facial balance theorem sit in `Embedding.lean` and `FacialBalance.lean`.
+
+Labeling machinery, which most later proofs route through:
+
+* `LabelingSums.lean` realizes prescribed sums over a finite vertex set (Lemma 2.0.4).
+* Complementing a labeling negates every region value, hence preserves zonality: `LabelComplement.lean`.
+* `RegionBoundary.lean` proves the label-count congruence on a boundary.
+* Where every region boundary has size divisible by three, the constant labeling `1` already works.
+  `DivisibleBoundary.lean` records this, which covers triangulations.
+* One observation recurs across the non-zonality proofs and is isolated in `BoundaryDifference.lean`: two
+  regions whose boundaries differ by a single vertex cannot both have value zero.
+* The general prescription lemma, in `DutchWindmill.lean`, fixes label sums on any family of pairwise
+  disjoint blocks. Label everything `1`, then flip `(target − |block|).val` vertices per block. A block
+  must hold as many vertices as the flips it absorbs, and that count never exceeds two, so the single
+  obstruction is a block of size exactly one. Theorems 3.1.1, 3.1.3, 3.2.1 and 3.2.3 all bottom out here.
+
+Results:
+
+* Trees and cycles: `TreesAndCycles.lean`. Subdivisions: `Subdivisions.lean`.
+* `BipartiteZonal.lean`, `ThreeConnected.lean`, `CubicPlanar.lean` handle the 2-connected bipartite,
+  3-connected, and bridgeless cubic cases. `ThreeConnected.lean` also carries `PlaneGraph.Iso` and the
+  invariants used to separate embeddings.
+* `Wheels.lean` settles `Wₙ`.
+* Windmills occupy four files: face data and the blade-count congruence in `DutchWindmill.lean`, the graph
+  with its connectivity proof in `WindmillGraph.lean`, then `StandardWindmill.lean` and
+  `NestedWindmill.lean`.
+* `Unicyclic.lean` and `CycleRankTwo.lean` cover cycle rank one and two.
+* `FourColor.lean` states the cubic-map equivalence without claiming it.
 
 ## Building
 
 ```bash
-lake exe cache get   # prebuilt mathlib oleans
+lake exe cache get
 lake build
 ```
 
 ## References
 
-* Bowling, A. (2023). *Zonality in Graphs* (Dissertation). Western Michigan University.
-* Bowling, A., & Zhang, P. (2022). *Absolutely and Conditionally Zonal Graphs*. Electron. J. Math. 4.
+* Bowling, A. (2023). *Zonality in Graphs*. Dissertation, Western Michigan University.
+* Bowling, A., & Zhang, P. (2022). *Absolutely and Conditionally Zonal Graphs*. Electron. J. Math. 4, 1–11.
 * Bowling, A., & Zhang, P. (2023). *Zonal Graphs of Small Cycle Rank*. Electron. J. Graph Theory Appl.
-* Bowling, A., & Zhang, P. (2023). *Zonal and Inner Zonal Graphs of Maximum Degree 3*. Discrete Math. Lett. 12.
-* Bowling, A. (2025). *Zonal and Cozonal Labelings over Abelian Groups*.
+* Bowling, A., & Zhang, P. (2023). *Zonal and Inner Zonal Graphs of Maximum Degree 3*. Discrete Math. Lett. 12, 130–137.
+* Bowling, A. (2025). *Zonal and Cozonal Labelings over Abelian Groups*. [VERIFY: journal and volume not confirmed from the source PDF]
 * Barrientos, C., & Minion, S. (2024). *Zonal Labeling of Graphs*. Indones. J. Combin.
-* Chartrand, G., Egan, C., & Zhang, P. (2023). *Zonal Graphs Revisited*.
+* Chartrand, G., Egan, C., & Zhang, P. *Zonal Graphs Revisited*. [VERIFY: year given variously as 2019 and 2023 in project files]
