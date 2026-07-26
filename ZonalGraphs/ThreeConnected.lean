@@ -41,6 +41,14 @@ structure Iso (P : PlaneGraph V₁ F₁) (Q : PlaneGraph V₂ F₂) where
   boundary_map : ∀ R : F₁,
     (P.boundary R).map graphIso.toEquiv.toEmbedding = Q.boundary (faceEquiv R)
 
+/-- Corresponding regions of isomorphic plane graphs have boundaries of equal size.
+
+Consequently the multiset of boundary cardinalities is an invariant of an embedding, which is how
+distinct embeddings of one graph are told apart. -/
+theorem Iso.card_boundary {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} (e : P.Iso Q) (R : F₁) :
+    (P.boundary R).card = (Q.boundary (e.faceEquiv R)).card := by
+  rw [← e.boundary_map R, Finset.card_map]
+
 /-- Zonality is invariant under an isomorphism of plane graphs: transport a zonal labeling along
 the vertex relabeling. -/
 theorem IsZonal.of_iso {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} (hP : P.IsZonal)
