@@ -432,6 +432,29 @@ theorem nestingSet_eq_of_iso {k : ℕ} (hk : Even k) (outer : Fin k)
       Finset.add_sum_erase _ _ (Finset.mem_univ outer)
     omega
 
+/-- The singleton nesting sets avoiding `outer` are exactly the admissible ones when `k ≡ 0 (mod 3)`,
+and there are `k - 1` of them. -/
+theorem card_singleton_nestingSets {k : ℕ} (outer : Fin k) :
+    ((Finset.univ.erase outer).image fun b => ({b} : Finset (Fin k))).card = k - 1 := by
+  rw [Finset.card_image_of_injective _ fun b c hbc => by simpa using hbc,
+    Finset.card_erase_of_mem (Finset.mem_univ outer), Finset.card_univ, Fintype.card_fin]
+
+/-- The supply of admissible nesting sets is unbounded: for any target `t` there is an even `k` with at
+least `t` singleton nesting sets available.
+
+This is the counting half of Theorem 2.3.2, not the theorem itself — it speaks only about nesting sets.
+Turning it into the statement about embeddings means transporting the count along
+`isZonal_nestedWindmill`, which makes each set zonal, and `nestingSet_eq_of_iso`, which makes distinct
+sets non-isomorphic. Choosing `k` a multiple of six keeps `k` even, as the parity step needs, and puts
+`k ≡ 0 (mod 3)`, which is what makes the admissible nesting sets the singletons. -/
+theorem exists_many_singleton_nestingSets (t : ℕ) :
+    ∃ k : ℕ, Even k ∧ t ≤ k - 1 ∧
+      ((Finset.univ.erase (Fin.last k : Fin (k + 1))).image
+        fun b => ({b} : Finset (Fin (k + 1)))).card = k := by
+  refine ⟨6 * (t + 1), ⟨3 * (t + 1), by ring⟩, by omega, ?_⟩
+  rw [card_singleton_nestingSets]
+  omega
+
 end PlaneGraph
 
 end ZonalGraphs
