@@ -329,6 +329,28 @@ theorem not_sum_add_sum_eq_of_even {k : ℕ} (hk : Even k) (outer : Fin k)
     omega
   exact hright (hcontra ▸ hleft)
 
+/-- **The sum-of-squares invariant factors into exactly two cases.**
+
+For two nested embeddings, the varying region boundary sizes are `a + x` and `y + 1`, where `x` is the
+total length over the nesting set, `y` the total off it, `x + y = T` the total over all blades, and
+`a = len outer + 1`.  Equality of the sums of squares expands and factors as
+`(x₁ - x₂) * (x₁ + x₂ + a - T - 1) = 0`, so either the two nesting sets have the same total or their
+totals sum to `T + 1 - a`, which is the total over all blades but `outer`.
+
+The first case identifies the nesting sets, the second is the swap case excluded by parity. -/
+theorem eq_or_add_eq_of_sq_add_sq {a T x₁ y₁ x₂ y₂ : ℤ} (h₁ : x₁ + y₁ = T) (h₂ : x₂ + y₂ = T)
+    (hsq : (a + x₁) ^ 2 + (y₁ + 1) ^ 2 = (a + x₂) ^ 2 + (y₂ + 1) ^ 2) :
+    x₁ = x₂ ∨ x₁ + x₂ = T + 1 - a := by
+  have hy₁ : y₁ = T - x₁ := by linarith
+  have hy₂ : y₂ = T - x₂ := by linarith
+  subst hy₁
+  subst hy₂
+  have hfac2 : (2 : ℤ) * ((x₁ - x₂) * (x₁ + x₂ + a - T - 1)) = 0 := by linear_combination hsq
+  have hfac : (x₁ - x₂) * (x₁ + x₂ + a - T - 1) = 0 := by linarith
+  rcases mul_eq_zero.mp hfac with hzero | hzero
+  · left; linarith
+  · right; linarith
+
 end PlaneGraph
 
 end ZonalGraphs
