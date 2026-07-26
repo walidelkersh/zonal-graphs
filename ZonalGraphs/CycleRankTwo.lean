@@ -400,6 +400,23 @@ theorem isZonal_of_contains_minimal_nonZonal (P : PlaneGraph Vertex Face) {R₁ 
     decide
   · rw [zoneValue, h₃, Finset.sum_union hdTQ, hT, hQ]; decide
 
+/-- **Proposition 3.2 of Barrientos and Minion (2024).** The edge amalgamation of two cycles, neither of
+them a triangle, is zonal.
+
+Gluing two cycles along an edge `uv` produces three internally disjoint `u`–`v` paths: the shared edge,
+whose interior is empty, and each cycle with that edge removed.  A cycle other than a triangle leaves at
+least two interior vertices, so this is the case of Theorem 3.3 where the shortest path has no interior
+and the constant assignment `0` works. -/
+theorem isZonal_edgeAmalgamation (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₂ Q₃ : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ ∅ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ ∅ ∪ Q₃)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃) (hTcard : T.card = 2)
+    (hdT₂ : Disjoint T Q₂) (hdT₃ : Disjoint T Q₃) (hd₂₃ : Disjoint Q₂ Q₃)
+    (h₂card : 2 ≤ Q₂.card) (h₃card : 2 ≤ Q₃.card) : P.IsZonal :=
+  isZonal_of_theta_blocks P h₁ h₂ h₃ hfaces (by simp) hdT₂ hdT₃ (by simp) (by simp) hd₂₃ 0
+    (by decide) (val_neg_le_of_ne_one (by omega)) (val_neg_le_of_ne_one (by simp))
+    (val_neg_le_of_ne_one (by omega)) (val_neg_le_of_ne_one (by omega))
+
 end PlaneGraph
 
 end ZonalGraphs
