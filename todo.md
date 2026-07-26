@@ -81,6 +81,16 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+* **Theorem 3.5** — the labellings are worked out, the formalization is not. `F ⋆ K₂` attaches a pendant
+  `w` to a vertex of the third path, so with `T` the branch pair and `Qᵢ` the path interiors the three
+  regions are bounded by `T ∪ Q₁ ∪ Q₂`, `T ∪ Q₂ ∪ Q₃` and `T ∪ Q₁ ∪ Q₃ ∪ {w}`. Five blocks, and two cases.
+  When `n₁ ≥ 3` take the sums `T = 0`, `Q₁ = 1`, `Q₂ = 2`, `Q₃ = 1`, `w = 1`; the regions read `0+1+2`,
+  `0+2+1` and `0+1+1+1`, all zero. When `n₁ = 2` the interior `Q₁` is empty and Theorem 3.3 forces
+  `n₂ ≥ 4`, so take `T = 1`, `Q₂ = 2`, `Q₃ = 0`, `w = 2`; the regions read `1+2`, `1+2+0` and `1+0+2`.
+  Every fit condition holds: the pendant block has one vertex and a nonzero target, and `Q₃` has at least
+  two so it can carry `0`. What remains is only the encoding, most cheaply through
+  `isZonal_of_blockDecomposition`.
+
 * **Corollary 3.7 and Theorem 3.8** — blocked on Theorems 3.5 and 3.6 specifically, and worth stating
   precisely because both look closer than they are. Theorem 3.8 collects the cycle-rank-two
   characterization in three parts: parts (1) and (2) are `isZonal_iff_not_minimal_cycleRankTwo_typeOne`
