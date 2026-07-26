@@ -89,8 +89,12 @@ needed, so the logical dependency is visible in the statement of every result th
   carrying target `0` on the boundary of a single region. Both subcases are instantiations of engines that
   exist: `isZonal_of_theta_outsideBlock` with sums `1, 1, 1, 1, 0` for the deletion subcase, and
   `isZonal_of_theta_threeBlocks` with sums `2, 1, 1, 1, 2, 2, 2` for the one-vertex-per-region subcase.
-  What remains is the bookkeeping that the two subcases exhaust the hypotheses, which is a case split on
-  whether some `U₀ ∪ Uᵢ` has at least two vertices.
+  What remains is *not* bookkeeping, correcting a second claim of mine. The two subcases use two different
+  embeddings, chosen according to the case, so at this interface they are theorems about two different
+  `PlaneGraph` values rather than two branches of one proof. Combining them into the paper's statement, that
+  the *graph* is zonal, needs the abstract-graph layer and a construction of both embeddings for a general
+  type (3) supergraph. That is a construction task of the same kind as `windmillGraph`, not a case split.
+  The labellings are done; the embeddings are not.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
