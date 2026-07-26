@@ -177,17 +177,23 @@ needed, so the logical dependency is visible in the statement of every result th
   path has to be built there. Nine vertex families and the two irregular ends give a wide case split. This
   is the largest single remaining proof in the Gn group.
 
-  **A failed attempt, recorded because the failure mode is new.** The gap-redundancy lemma was written and
-  it elaborates clean under `lean-lsp`, reporting no errors and no warnings, but `lake build` on that one
-  module exceeded 570 seconds twice and was killed, against about 25 seconds for the module without it. So
-  a clean LSP diagnostic is not evidence a file is buildable; only the build establishes that. The attempt
-  is parked at `GnGraph_deletion_attempt.lean` in the session scratchpad rather than committed.
+  **A failed attempt, and a correction to how it was first recorded.** The gap-redundancy lemma was
+  written and did not build. The first note here claimed it elaborated clean under `lean-lsp` while
+  exceeding 570 seconds under `lake build`, and offered that as a discrepancy between the two tools. That
+  reading was wrong. Bisecting the file down to a single helper lemma produced a real type error: a
+  misapplied `Sum.noConfusion`, whose expected type is a `noConfusionType` rather than `False`. The long
+  builds were failing elaboration retrying against unsolved metavariables, not honest proof cost. This is
+  the same mistake as the earlier false performance claim in this project, drawn from timing a failure.
 
-  The cause is not established. Candidates, in the order worth testing: the `first` combinator backtracking
-  across sixteen membership subgoals, the deeply nested `Or.inr` witnesses forcing repeated unfolding of
-  `gnAdj`'s match, and the subtype coercions that `induce` introduces into every `Adj` term. The next step
-  is `lean_profile_proof` on the lemma to find the hotspot rather than guessing again; two rounds of
-  guessing, first blaming `simp` and then replacing it with cheap discrimination lemmas, changed nothing.
+  What is established: the module builds in about ten seconds without the attempt, the attempt does not
+  build, and `lean-lsp` reported the file clean when it contained a type error, so a clean LSP diagnostic
+  did not reflect the file's real state here. What is *not* established is any claim about proof cost. After
+  the type error was corrected the module still did not build inside the time allowed, but given the
+  measurement history that number should not be trusted until the file compiles at all.
+
+  The attempt is parked at `GnGraph_deletion_attempt.lean` in the session scratchpad, and it contains the
+  bad `Sum.noConfusion` proofs. Anyone resuming should get it compiling first, by ordinary means and checked
+  with a build rather than with LSP diagnostics, before drawing any conclusion about performance.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
