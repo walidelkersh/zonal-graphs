@@ -256,6 +256,17 @@ theorem gnGraph_induce_reachable_hubs (g : Fin (n - 1)) (i i' : Fin n) (hi : i.v
   exact gnGraph_route_rw g i i' hi hi' hc hc' (by simpa using h₁) (by simpa using h₂)
     (by simpa using h₃) (by simpa using h₄)
 
+/-- Any surviving core vertex of a block reaches that block's hub, provided the hub itself survives. -/
+theorem gnGraph_induce_reachable_hub (j : Fin 5) (i : Fin n)
+    (hx : core j i ∈ ({c}ᶜ : Set (GnVertex n)))
+    (hv : core 4 i ∈ ({c}ᶜ : Set (GnVertex n))) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨core j i, hx⟩ ⟨core 4 i, hv⟩ := by
+  by_cases hj : j = 4
+  · subst hj
+    exact SimpleGraph.Reachable.refl _
+  · exact (gnGraph_induce_adj hx hv ⟨rfl, Or.inr (Or.inl ⟨rfl, hj⟩)⟩).reachable
+
+
 end Deletion
 
 end ZonalGraphs
