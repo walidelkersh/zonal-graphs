@@ -270,8 +270,6 @@ theorem isZonal_of_theta_blocks (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : F
       Disjoint (![T, Q₁, Q₂, Q₃] i) (![T, Q₁, Q₂, Q₃] j) := by
     intro i j hij
     fin_cases i <;> fin_cases j <;>
-      simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-        Matrix.cons_val_two, Matrix.tail_cons] <;>
       first
         | exact absurd rfl hij
         | exact hdT₁ | exact hdT₂ | exact hdT₃
@@ -282,8 +280,6 @@ theorem isZonal_of_theta_blocks (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : F
     exists_labeling_blockSum_eq ![T, Q₁, Q₂, Q₃] hdisjoint (fun _ => t) (by
       intro i
       fin_cases i <;>
-        simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-          Matrix.cons_val_two, Matrix.tail_cons] <;>
         first
           | exact hfitT | exact hfit₁ | exact hfit₂ | exact hfit₃)
   have hT : (∑ v ∈ T, (labeling v : ZMod 3)) = t := by simpa using hsum 0
@@ -302,6 +298,58 @@ theorem isZonal_of_theta_blocks (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : F
   · rw [zoneValue, h₁, hsplit Q₁ Q₂ hdT₁ hdT₂ hd₁₂, hT, hv₁, hv₂]; exact hthree
   · rw [zoneValue, h₂, hsplit Q₂ Q₃ hdT₂ hdT₃ hd₂₃, hT, hv₂, hv₃]; exact hthree
   · rw [zoneValue, h₃, hsplit Q₁ Q₃ hdT₁ hdT₃ hd₁₃, hT, hv₁, hv₃]; exact hthree
+
+/-- **Theorem 3.3 (Bowling–Zhang, 2023).** A minimal plane graph of cycle rank two and type (3) is zonal
+if and only if `(n₁, n₂) ≠ (2, 3)`, that is, unless the shortest of the three paths is a single edge while
+the middle one has exactly one interior vertex.
+
+With `T` the two branch vertices and `Qᵢ` the path interiors, the condition reads: not both `Q₁` empty and
+`Q₂` a single vertex.  Failing it, two of the three regions differ by that lone vertex.  Otherwise a
+constant block assignment works, `1` when every interior is nonempty and `0` when `Q₁` is empty, in which
+case the hypothesis forces the other two interiors to have at least two vertices each. -/
+theorem isZonal_iff_cycleRankTwo_typeThree (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₁ Q₂ Q₃ : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ Q₁ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ Q₁ ∪ Q₃)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃) (hTcard : T.card = 2)
+    (hdT₁ : Disjoint T Q₁) (hdT₂ : Disjoint T Q₂) (hdT₃ : Disjoint T Q₃)
+    (hd₁₂ : Disjoint Q₁ Q₂) (hd₁₃ : Disjoint Q₁ Q₃) (hd₂₃ : Disjoint Q₂ Q₃)
+    (hmono : Q₂.card ≤ Q₃.card) (hQ₂ : Q₂.Nonempty) :
+    P.IsZonal ↔ ¬(Q₁ = ∅ ∧ Q₂.card = 1) := by
+  constructor
+  · -- The excluded configuration makes two regions differ by one vertex.
+    rintro hzonal ⟨hQ₁empty, hone⟩
+    obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hone
+    have hxQ₂ : x ∈ Q₂ := hx ▸ Finset.mem_singleton_self x
+    refine not_isZonal_of_cycleRankTwo_typeThree_minimal P (R₂ := R₂) (R₃ := R₃) (T := T)
+      (Q₃ := Q₃) (w := x) ?_ ?_ ?_ hzonal
+    · rw [h₂, hx, Finset.union_singleton, Finset.insert_union]
+    · rw [h₃, hQ₁empty, Finset.union_empty]
+    · simp only [Finset.mem_union, not_or]
+      exact ⟨Finset.disjoint_right.mp hdT₂ hxQ₂, Finset.disjoint_left.mp hd₂₃ hxQ₂⟩
+  · intro hne
+    by_cases hQ₁ : Q₁ = ∅
+    · -- `Q₁` empty forces the other two interiors to have at least two vertices.
+      have h₂card : 2 ≤ Q₂.card := by
+        rcases Nat.lt_or_ge Q₂.card 2 with hsmall | hlarge
+        · exact absurd ⟨hQ₁, by
+            have := Finset.card_pos.mpr hQ₂
+            omega⟩ hne
+        · exact hlarge
+      refine isZonal_of_theta_blocks P h₁ h₂ h₃ hfaces hdT₁ hdT₂ hdT₃ hd₁₂ hd₁₃ hd₂₃ 0
+        (by decide) ?_ ?_ ?_ ?_
+      · exact val_neg_le_of_ne_one (by omega)
+      · exact val_neg_le_of_ne_one (by simp [hQ₁])
+      · exact val_neg_le_of_ne_one (by omega)
+      · exact val_neg_le_of_ne_one (by omega)
+    · -- Every interior nonempty: the constant assignment `1` works.
+      have h₁pos : 1 ≤ Q₁.card := Finset.card_pos.mpr (Finset.nonempty_iff_ne_empty.mpr hQ₁)
+      have h₂pos : 1 ≤ Q₂.card := Finset.card_pos.mpr hQ₂
+      refine isZonal_of_theta_blocks P h₁ h₂ h₃ hfaces hdT₁ hdT₂ hdT₃ hd₁₂ hd₁₃ hd₂₃ 1
+        (by decide) ?_ ?_ ?_ ?_
+      · exact val_sub_le_of_ne_zero 1 (by decide) _ (by omega)
+      · exact val_sub_le_of_ne_zero 1 (by decide) _ h₁pos
+      · exact val_sub_le_of_ne_zero 1 (by decide) _ h₂pos
+      · exact val_sub_le_of_ne_zero 1 (by decide) _ (by omega)
 
 end PlaneGraph
 
