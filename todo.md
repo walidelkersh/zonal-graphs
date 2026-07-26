@@ -49,6 +49,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
 | Prop 2.3 (zonal labeling) | `PlaneGraph.isZonal_of_card_boundary_eq_three` and `isInnerZonal_of_card_boundary_interior_eq_three` |
 | Thm 3.3 (max degree 3) | `PlaneGraph.zonal_of_isSubdivision` and `innerZonal_of_isSubdivision` |
+| Prop 3.2 (zonal labeling) | `PlaneGraph.isZonal_edgeAmalgamation` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -225,7 +226,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Proposition 2.4.**: If any edge of a zonal graph G is subdivided an even number of times, then the resulting graph is zonal.
 - [ ] **Theorem 3.1.**: Every plane graphG with ∆(G)≤ 3 where the boundary cycle of the exterior zone is a Hamiltonian cycle of G is inner zonal. Thus, we need to study the existence of a zonal labeling for all outerplana...
 - [ ] **Proposition 3.1.**: Let G be an outerplanar graph of order n and size m = n + 1. If G has an interior zone with boundary C3, thenG is not zonal.
-- [ ] **Proposition 3.2.**: IfG1 andG2 are cycles other than C3, then the edge amalgamation of G1 and G2 is zonal.
+- [x] **Proposition 3.2.**: IfG1 andG2 are cycles other than C3, then the edge amalgamation of G1 and G2 is zonal.
 - [ ] **Proposition 3.3.**: F ori∈{ 1, 2}, let Gi be a zonal graph. If there exists a zonal labeling of each Gi, that assigns the labels 1 and 2 on the vertices that form the boundary of the exterior zone, then there is an ed...
 - [ ] **Proposition 3.4.**: Let G be an outerplanar graph of order n with χ− 2 chords such that the subgraph induced by v1,v 2,...,v χ is a near-triangulation. The graph G is zonal if and only if χ≡ 2(mod 3).
 - [ ] **Proposition 3.5.**: F or eachi∈{ 1, 2}, letGi be an outerplanar graph of order ni and size 2ni− 3, and ei = uivi be any edge on the boundary of the exterior zone of Gi. The outerplanar graph G, obtained from G1 and G2...
