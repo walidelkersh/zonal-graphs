@@ -123,6 +123,36 @@ theorem isZonal_of_cycleRankTwo_typeOne (P : PlaneGraph Vertex Face) {R₁ R₂ 
   · rw [zoneValue, h₂]; exact hcyc₂
   · rw [zoneValue, h₃]; exact hall
 
+/-- **The minimal case of Theorem 3.2.1.** A minimal plane graph of cycle rank two and type (1) is not
+zonal.
+
+Minimality says the two cycles exhaust the vertices, so the exterior boundary is their union while they
+meet exactly in `w`.  That is the two-bladed windmill of Proposition 2.2.1: the two cycle regions force
+the exterior to have value `-ℓ(w)`, which is nonzero. -/
+theorem not_isZonal_of_cycleRankTwo_typeOne_minimal (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {S₁ S₂ : Finset Vertex} {w : Vertex} (h₁ : P.boundary R₁ = S₁) (h₂ : P.boundary R₂ = S₂)
+    (h₃ : P.boundary R₃ = Finset.univ) (hmeet : S₁ ∩ S₂ = {w})
+    (hminimal : S₁ ∪ S₂ = Finset.univ) : ¬P.IsZonal :=
+  not_isZonal_of_isTwoBladedWindmill
+    (P := P) (blade₁ := R₁) (blade₂ := R₂) (exterior := R₃) (hub := w)
+    { boundary_union := by rw [h₃, h₁, h₂, hminimal]
+      boundary_inter := by rw [h₁, h₂]; exact hmeet }
+
+/-- **Theorem 3.2.1 (Bowling–Zhang, 2023).** A plane graph of cycle rank two and type (1) is zonal if
+and only if it is not minimal, that is, if and only if some vertex lies outside the two cycles. -/
+theorem isZonal_iff_not_minimal_cycleRankTwo_typeOne (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {S₁ S₂ : Finset Vertex} {w : Vertex} (h₁ : P.boundary R₁ = S₁) (h₂ : P.boundary R₂ = S₂)
+    (h₃ : P.boundary R₃ = Finset.univ) (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hmeet : S₁ ∩ S₂ = {w}) (hS₁ : 3 ≤ S₁.card) (hS₂ : 3 ≤ S₂.card) :
+    P.IsZonal ↔ S₁ ∪ S₂ ≠ Finset.univ := by
+  refine ⟨fun hzonal hmin =>
+      not_isZonal_of_cycleRankTwo_typeOne_minimal P h₁ h₂ h₃ hmeet hmin hzonal, fun hne => ?_⟩
+  refine isZonal_of_cycleRankTwo_typeOne P h₁ h₂ h₃ hfaces hmeet hS₁ hS₂ ?_
+  by_contra hempty
+  rw [Finset.not_nonempty_iff_eq_empty, Finset.sdiff_eq_empty_iff_subset,
+    Finset.univ_subset_iff] at hempty
+  exact hne hempty
+
 end PlaneGraph
 
 end ZonalGraphs
