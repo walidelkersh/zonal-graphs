@@ -8,6 +8,8 @@ import ZonalGraphs.TreesAndCycles
 import ZonalGraphs.FourColor
 import ZonalGraphs.Subdivisions
 import ZonalGraphs.BipartiteZonal
+import ZonalGraphs.Embedding
+import ZonalGraphs.FacialBalance
 import ZonalGraphs.ThreeConnected
 import ZonalGraphs.CubicPlanar
 import ZonalGraphs.DutchWindmill
