@@ -38,6 +38,15 @@ value `0`. -/
 def IsGroupZonal (P : PlaneGraph Vertex Face) (Γ : Type*) [AddCommGroup Γ] : Prop :=
   ∃ labeling : GroupLabeling Vertex Γ, ∀ R : Face, P.groupZoneValue labeling R = 0
 
+/-- **The generalization is faithful.** At `Γ = ZMod 3` the group-valued notion *is* the original one, on
+the nose rather than up to translation.
+
+`ZonalLabel` unfolds to the nonzero elements of `ZMod 3`, so `GroupLabeling Vertex (ZMod 3)` and
+`VertexLabeling Vertex` are the same type and the two region values are the same sum.  Anything proved
+about `IsGroupZonal` therefore specializes to `IsZonal` with no translation step. -/
+theorem isGroupZonal_zmod_three_iff (P : PlaneGraph Vertex Face) :
+    P.IsGroupZonal (ZMod 3) ↔ P.IsZonal := Iff.rfl
+
 /-- A plane graph all of whose regions are bounded by every vertex is `Γ`-zonal as soon as the vertices
 number at least two and `Γ` has two distinct nonzero elements.
 
