@@ -45,9 +45,36 @@ Migrating the remaining interface-level results onto rotation systems is unfinis
 Progress lives in [`todo.md`](todo.md), which indexes each completed statement against the Lean
 declaration establishing it. Nothing is checked off before the GitHub build is green.
 
-Complete: Theorems 2.0.1, 2.0.2, 2.1.3, 2.1.4, 2.1.5, 2.2.2, 2.3.2, 3.1.1, 3.1.3, 3.2.1, 3.2.3; Lemmas
-2.0.3, 2.0.4; Propositions 2.0.5, 2.1.1, 2.2.1; Corollaries 3.2.2, 3.2.4. Also the label-complement
-observation that the published proofs invoke constantly to normalize a chosen vertex to the label `1`.
+Numbering below follows Bowling's dissertation. The same results appear in the journal papers under other
+numbers, listed in the third column, and one Lean proof discharges every alias.
+
+| Dissertation | Content | Also numbered |
+| --- | --- | --- |
+| Thm 2.0.1 | every nontrivial tree is zonal | Thm 1.4 (small cycle rank), Prop 2.1 (abs./cond.), both stating 2.0.1 and 2.0.2 together |
+| Thm 2.0.2 | every cycle is zonal | as above |
+| Lem 2.0.3 | on a region boundary the two label counts agree mod 3 | Obs. 2.3 (revisited) |
+| Lem 2.0.4 | a vertex set admits prescribed label sums | Lem 2.2 (small cycle rank), Lem 3.1 (abs./cond.) |
+| Prop 2.0.5 | subdividing edges twice or more preserves zonality | |
+| Prop 2.1.1 | 2-connected bipartite planar graphs are absolutely zonal | Prop 4.1 (small cycle rank), Prop 2.2 (abs./cond.) |
+| Thm 2.1.3 | 3-connected planar zonal graphs are absolutely zonal | |
+| Thm 2.1.4 | bridgeless cubic planar graphs are absolutely zonal | |
+| Thm 2.1.5 | the wheel `Wₙ` is zonal iff `n ≡ 0 (mod 3)` | Thm 2.2 (abs./cond.) |
+| Prop 2.2.1 | a Dutch windmill on two cycles is never zonal | Prop 3.1 (abs./cond.) |
+| Thm 2.2.2 | on three or more cycles it is conditionally zonal | Thm 3.1 (abs./cond.) |
+| Thm 2.3.2 | some irregular Dutch windmill has arbitrarily many zonal embeddings | Thm 4.1 (abs./cond.) |
+| Thm 3.1.1 | a unicyclic graph is zonal unless it is a cycle with one pendant edge | Thm 2.3 (small cycle rank) |
+| Thm 3.1.3 | zonal unicyclic graphs are absolutely zonal | Prop 2.4 (small cycle rank) |
+| Thm 3.2.1 | cycle rank 2, type (1): zonal iff not minimal | Thm 3.1 (small cycle rank) |
+| Cor 3.2.2 | the graph-level restatement of 3.2.1 | |
+| Thm 3.2.3 | cycle rank 2, type (2): zonal iff no lone vertex off the cycles | Thm 3.2 (small cycle rank) |
+| Cor 3.2.4 | the graph-level restatement of 3.2.3 | |
+| Obs. 1.4.2 | complementing a zonal labeling stays zonal | Obs. 2.1 (abs./cond.) |
+
+Short titles above: *abs./cond.* is Bowling and Zhang (2022), *small cycle rank* is Bowling and Zhang
+(2023), *revisited* is Chartrand, Egan and Zhang (2023). Watch the collisions: `Thm 3.1` names the
+cycle-rank-two result in one paper and the windmill result in another, so a bare number identifies nothing.
+Declaration names live in `todo.md` rather than here, so that renaming a lemma does not silently falsify
+this file.
 
 No `sorry` appears in the library. Axiom dependencies reduce to `propext`, `Quot.sound` and
 `Classical.choice`.
@@ -124,4 +151,4 @@ lake build
 * Bowling, A., & Zhang, P. (2023). *Zonal and Inner Zonal Graphs of Maximum Degree 3*. Discrete Math. Lett. 12, 130–137.
 * Bowling, A. (2025). *Zonal and Cozonal Labelings over Abelian Groups*. [VERIFY: journal and volume not confirmed from the source PDF]
 * Barrientos, C., & Minion, S. (2024). *Zonal Labeling of Graphs*. Indones. J. Combin.
-* Chartrand, G., Egan, C., & Zhang, P. *Zonal Graphs Revisited*. [VERIFY: year given variously as 2019 and 2023 in project files]
+* Chartrand, G., Egan, C., & Zhang, P. (2023). *Zonal Graphs Revisited*. Bull. Inst. Combin. Appl. 99.
