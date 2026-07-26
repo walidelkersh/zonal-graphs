@@ -220,7 +220,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Lemma 2.1.**: IfG is a unicyclic graph of order n and girthn− 1, thenG is not zonal.
 - [x] **Proposition 2.2.**: A unicyclic graph of order n and girthg is zonal if and only if n−g̸= 1.
 - [ ] **Proposition 1.1.**: Thus, the sum of the labels of all these vertices is 0 in Z3; consequently, the label of the exterior zone is 0 in Z3, which implies that the labeling ofG is zonal. In Figure 2 we show an example o...
-- [ ] **Proposition 2.3.**: Every triangulation is zonal. Every near-triangulation is inner zonal.
+- [x] **Proposition 2.3.**: Every triangulation is zonal. Every near-triangulation is inner zonal.
 - [x] **Proposition 2.4.**: If any edge of a zonal graph G is subdivided an even number of times, then the resulting graph is zonal.
 - [ ] **Theorem 3.1.**: Every plane graphG with ∆(G)≤ 3 where the boundary cycle of the exterior zone is a Hamiltonian cycle of G is inner zonal. Thus, we need to study the existence of a zonal labeling for all outerplana...
 - [ ] **Proposition 3.1.**: Let G be an outerplanar graph of order n and size m = n + 1. If G has an interior zone with boundary C3, thenG is not zonal.
