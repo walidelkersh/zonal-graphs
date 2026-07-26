@@ -20,6 +20,12 @@ duplicate of the dissertation section, has been removed: the former section `00`
   turned out to be a definitions paragraph rather than a theorem. Anything tagged `ARTIFACT` should be
   dropped from the denominator; it is not work.
 
+  Re-verified against the sources with `pdftotext`. The tags are correct and none of the ten hides a
+  statement. The one worth naming is the entry sitting between Theorems 4.3.1 and 4.3.2, which reads as
+  though a corollary were being stated. It is not: the source says "This establishes the following
+  corollary, the truth of which is independent of the Four Color Theorem", and the corollary it announces
+  is Theorem 4.3.2, already listed. So the honest denominator is 181 provable entries, not 191.
+
 The count of genuinely distinct statements is therefore well below the number of lines here.
 
 ## Proved in Lean
