@@ -95,6 +95,25 @@ theorem exists_labeling_sum_eq_zero_on_and_off (S : Finset Vertex) (hS : S.card 
           (not_not.mpr (hF₁sub (Finset.mem_inter.mp hx).2)),
         Finset.empty_union]
 
+/-- **Theorem 3.1.1 (Bowling–Zhang, 2023).** A unicyclic graph is zonal if and only if it is not
+`C ⋆ K₂`, a cycle with a single pendant edge.
+
+A unicyclic plane graph has two regions, one bounded by the cycle's vertex set `S` and one by every
+vertex.  Both region values vanish for some labeling exactly when neither `S` nor its complement is a
+single vertex; as `S` is a cycle it has at least three vertices, so the condition reduces to the
+complement — the vertices off the cycle — not being a single vertex, which is exactly `G ≠ C ⋆ K₂`. -/
+theorem isZonal_iff_card_sdiff_boundary_ne_one (P : PlaneGraph Vertex Face) {R₁ R₂ : Face}
+    {S : Finset Vertex} (h₁ : P.boundary R₁ = S) (h₂ : P.boundary R₂ = Finset.univ)
+    (hS : S.card ≠ 1) (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂) :
+    P.IsZonal ↔ (Finset.univ \ S).card ≠ 1 := by
+  refine ⟨fun hzonal hone => P.not_isZonal_of_card_sdiff_boundary_eq_one h₁ h₂ hone hzonal,
+    fun hne => ?_⟩
+  obtain ⟨labeling, hon, hoff⟩ := exists_labeling_sum_eq_zero_on_and_off S hS hne
+  refine ⟨labeling, fun R => ?_⟩
+  rcases hfaces R with rfl | rfl
+  · rw [zoneValue, h₁]; exact hon
+  · rw [zoneValue, h₂, ← Finset.sum_sdiff (Finset.subset_univ S), hon, hoff, add_zero]
+
 end PlaneGraph
 
 end ZonalGraphs
