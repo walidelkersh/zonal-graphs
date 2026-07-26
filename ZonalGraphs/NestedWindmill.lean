@@ -181,6 +181,43 @@ theorem isZonal_nestedWindmill_iff (hlen : ∀ b, 2 ≤ len b) (houter : outer �
   ⟨card_eq_of_isZonal_nestedWindmill len outer N faceEdges houter,
     isZonal_nestedWindmill len outer N faceEdges hlen houter⟩
 
+/-- Blades other than `outer` are plentiful enough to nest any of `0`, `1` or `2` of them, once
+there are at least three blades in all. -/
+theorem exists_nested_card_eq (hk : 3 ≤ Fintype.card Blade) (outer : Blade) {m : ℕ} (hm : m ≤ 2) :
+    ∃ N : Finset Blade, outer ∉ N ∧ N.card = m := by
+  have hcard : (Finset.univ.erase outer).card = Fintype.card Blade - 1 := by
+    rw [Finset.card_erase_of_mem (Finset.mem_univ outer), Finset.card_univ]
+  obtain ⟨N, hsubset, hNcard⟩ :=
+    Finset.exists_subset_card_eq (s := Finset.univ.erase outer) (n := m) (by omega)
+  exact ⟨N, fun hmem => Finset.ne_of_mem_erase (hsubset hmem) rfl, hNcard⟩
+
+/-- **Theorem 2.2.2 (Bowling–Zhang, 2022).** For every multiset `S` of three or more cycles the
+Dutch windmill graph `D(S)` is conditionally zonal: it has both a zonal and a non-zonal planar
+embedding.
+
+Both witnesses come from the single nested family.  Nesting `m` blades inside a fixed blade is zonal
+exactly when `m = 2k + 1` in `ZMod 3`, and with at least three blades each of `m = 0, 1, 2` is
+available.  Those three values are distinct in `ZMod 3`, so exactly one of them meets the congruence
+and the other two fail it.  This replaces the published case split on the parity of `k`. -/
+theorem conditionallyZonal_windmill (hk : 3 ≤ Fintype.card Blade) (hlen : ∀ b, 2 ≤ len b)
+    (outer : Blade) :
+    (∃ N : Finset Blade, outer ∉ N ∧ (nestedWindmill len outer N faceEdges).IsZonal) ∧
+      ∃ N : Finset Blade, outer ∉ N ∧ ¬(nestedWindmill len outer N faceEdges).IsZonal := by
+  obtain ⟨N₁, hout₁, hcard₁⟩ := exists_nested_card_eq hk outer
+    (m := (2 * (Fintype.card Blade : ZMod 3) + 1).val)
+    (by have := ZMod.val_lt (2 * (Fintype.card Blade : ZMod 3) + 1); omega)
+  obtain ⟨N₂, hout₂, hcard₂⟩ := exists_nested_card_eq hk outer
+    (m := (2 * (Fintype.card Blade : ZMod 3) + 2).val)
+    (by have := ZMod.val_lt (2 * (Fintype.card Blade : ZMod 3) + 2); omega)
+  refine ⟨⟨N₁, hout₁, ?_⟩, ⟨N₂, hout₂, ?_⟩⟩
+  · refine (isZonal_nestedWindmill_iff len outer N₁ faceEdges hlen hout₁).mpr ?_
+    rw [hcard₁, ZMod.natCast_zmod_val]
+  · rw [isZonal_nestedWindmill_iff len outer N₂ faceEdges hlen hout₂, hcard₂,
+      ZMod.natCast_zmod_val]
+    intro hcontra
+    have hone : (1 : ZMod 3) = 0 := by linear_combination hcontra
+    exact absurd hone (by decide)
+
 end PlaneGraph
 
 end ZonalGraphs
