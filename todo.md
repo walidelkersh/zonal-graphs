@@ -44,6 +44,9 @@ The count of genuinely distinct statements is therefore well below the number of
 | Corollary 3.2.4 | the theorem above, per embedding |
 | Thm 3.3 (small cycle rank) | `PlaneGraph.isZonal_iff_cycleRankTwo_typeThree` |
 | Thm 3.4 (small cycle rank) | `PlaneGraph.isZonal_of_contains_minimal_nonZonal` |
+| Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
+| Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
+| Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -208,16 +211,16 @@ needed, so the logical dependency is visible in the statement of every result th
 
 ## 05_Barrientos_Minion_2024_Zonal_Labeling_of_Graphs.pdf
 
-- [ ] **Proposition 1.1.**: IfT is a nontrivial tree, then T is zonal. The proof of this result, given in [1], is very informative, that is the reason why we sketch it here. Suppose that T is a tree of order n. A plane repres...
-- [ ] **Proposition 1.2.**: IfC is a cycle, then C is zonal. As we did before, we do not prove this result, but provide a sketch of a procedure used to obtain a zonal labeling of Cn+1 if a zonal labeling of Cn is known. The f...
+- [x] **Proposition 1.1.**: IfT is a nontrivial tree, then T is zonal. The proof of this result, given in [1], is very informative, that is the reason why we sketch it here. Suppose that T is a tree of order n. A plane repres...
+- [x] **Proposition 1.2.**: IfC is a cycle, then C is zonal. As we did before, we do not prove this result, but provide a sketch of a procedure used to obtain a zonal labeling of Cn+1 if a zonal labeling of Cn is known. The f...
 - [ ] **Proposition 1.3.**: The prismDn =Cn×P2 is zonal. After this result, Chartrand et al. [1] characterized the family of connected zonal cubic graphs.
 - [ ] **Theorem 1.1.**: A connected cubic plane graph G is zonal if and only if G is bridgeless. Motivated by these results, Chartrand et al. [1] posed the following question: 95 www.ijc.or.id Zonal labeling of graphs | C...
 - [ ] **Proposition 2.1.**: IfG is a 2-connected bipartite graph with both stable sets of cardinality n, then G is zonal.
-- [ ] **Lemma 2.1.**: IfG is a unicyclic graph of order n and girthn− 1, thenG is not zonal.
-- [ ] **Proposition 2.2.**: A unicyclic graph of order n and girthg is zonal if and only if n−g̸= 1.
+- [x] **Lemma 2.1.**: IfG is a unicyclic graph of order n and girthn− 1, thenG is not zonal.
+- [x] **Proposition 2.2.**: A unicyclic graph of order n and girthg is zonal if and only if n−g̸= 1.
 - [ ] **Proposition 1.1.**: Thus, the sum of the labels of all these vertices is 0 in Z3; consequently, the label of the exterior zone is 0 in Z3, which implies that the labeling ofG is zonal. In Figure 2 we show an example o...
 - [ ] **Proposition 2.3.**: Every triangulation is zonal. Every near-triangulation is inner zonal.
-- [ ] **Proposition 2.4.**: If any edge of a zonal graph G is subdivided an even number of times, then the resulting graph is zonal.
+- [x] **Proposition 2.4.**: If any edge of a zonal graph G is subdivided an even number of times, then the resulting graph is zonal.
 - [ ] **Theorem 3.1.**: Every plane graphG with ∆(G)≤ 3 where the boundary cycle of the exterior zone is a Hamiltonian cycle of G is inner zonal. Thus, we need to study the existence of a zonal labeling for all outerplana...
 - [ ] **Proposition 3.1.**: Let G be an outerplanar graph of order n and size m = n + 1. If G has an interior zone with boundary C3, thenG is not zonal.
 - [ ] **Proposition 3.2.**: IfG1 andG2 are cycles other than C3, then the edge amalgamation of G1 and G2 is zonal.
