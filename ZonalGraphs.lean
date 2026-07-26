@@ -25,6 +25,7 @@ import ZonalGraphs.ThetaGraph
 import ZonalGraphs.GnFamily
 import ZonalGraphs.HamiltonianChords
 import ZonalGraphs.InnerZonal
+import ZonalGraphs.RotationToPlane
 import ZonalGraphs.TriangleForcing
 import ZonalGraphs.UniformSubdivision
 import ZonalGraphs.DutchWindmill
