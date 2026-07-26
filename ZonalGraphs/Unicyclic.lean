@@ -1,5 +1,4 @@
-import ZonalGraphs.Definitions
-import Mathlib.Tactic
+import ZonalGraphs.DutchWindmill
 
 namespace ZonalGraphs
 
@@ -53,6 +52,48 @@ theorem not_isZonal_of_unicyclicLike (P : PlaneGraph Vertex Face) (R₁ R₂ : F
     (hpendant : (Finset.univ \ P.boundary R₁).card = 1)
     (hall : P.boundary R₂ = Finset.univ) : ¬P.IsZonal :=
   P.not_isZonal_of_card_sdiff_boundary_eq_one rfl hall hpendant
+
+/-- **Prescribing the label sums on a set and on its complement.**
+
+Both sums can be made to vanish exactly when neither block is a single vertex: label everything `1`, then
+flip `(-|B|).val ≤ 2` vertices inside each block `B` from `1` to `2`, each flip raising that block's sum
+by one.  A block needs at least as many vertices as the flips it must absorb, and `(-|B|).val ≤ 2` fails
+to fit only when `|B| = 1`, since then one flip too many is required.  An empty block already sums to
+zero and needs none.
+
+This is the construction behind the zonal direction of Theorem 3.1.1. -/
+theorem exists_labeling_sum_eq_zero_on_and_off (S : Finset Vertex) (hS : S.card ≠ 1)
+    (hcompl : (Finset.univ \ S).card ≠ 1) :
+    ∃ labeling : VertexLabeling Vertex,
+      (∑ v ∈ S, (labeling v : ZMod 3)) = 0 ∧
+        (∑ v ∈ Finset.univ \ S, (labeling v : ZMod 3)) = 0 := by
+  -- The number of flips each block must absorb fits inside it.
+  have hfit : ∀ B : Finset Vertex, B.card ≠ 1 → (-(B.card : ZMod 3)).val ≤ B.card := by
+    intro B hB
+    have hlt := ZMod.val_lt (-(B.card : ZMod 3))
+    rcases Nat.lt_or_ge B.card 2 with hsmall | hlarge
+    · interval_cases h : B.card
+      · simp
+      · omega
+    · omega
+  obtain ⟨F₁, hF₁sub, hF₁card⟩ := Finset.exists_subset_card_eq (hfit S hS)
+  obtain ⟨F₂, hF₂sub, hF₂card⟩ := Finset.exists_subset_card_eq (hfit _ hcompl)
+  refine ⟨flipLabeling (F₁ ∪ F₂), ?_, ?_⟩
+  · rw [sum_flipLabeling, show S ∩ (F₁ ∪ F₂) = F₁ from ?_, hF₁card, ZMod.natCast_zmod_val]
+    · ring
+    · rw [Finset.inter_union_distrib_left, Finset.inter_eq_right.mpr hF₁sub,
+        Finset.eq_empty_of_forall_notMem fun x hx => absurd
+          (Finset.mem_sdiff.mp (hF₂sub (Finset.mem_inter.mp hx).2)).2
+          (not_not.mpr (Finset.mem_inter.mp hx).1),
+        Finset.union_empty]
+  · rw [sum_flipLabeling, show Finset.univ \ S ∩ (F₁ ∪ F₂) = F₂ from ?_, hF₂card,
+      ZMod.natCast_zmod_val]
+    · ring
+    · rw [Finset.inter_union_distrib_left, Finset.inter_eq_right.mpr hF₂sub,
+        Finset.eq_empty_of_forall_notMem fun x hx => absurd
+          (Finset.mem_sdiff.mp (Finset.mem_inter.mp hx).1).2
+          (not_not.mpr (hF₁sub (Finset.mem_inter.mp hx).2)),
+        Finset.empty_union]
 
 end PlaneGraph
 
