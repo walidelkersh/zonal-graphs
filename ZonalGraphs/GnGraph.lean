@@ -165,4 +165,97 @@ theorem three_le_card_gnVertex (hn : 1 ≤ n) : 3 ≤ Fintype.card (GnVertex n) 
   omega
 
 
+theorem core_ne_gap {j : Fin 5} {i : Fin n} {k : Fin 4} {g : Fin (n - 1)} : core j i ≠ gap k g := by
+  simp [core, gap]
+
+/-- Core vertices with different roles differ, whatever their blocks. -/
+theorem core_ne_core {j₁ j₂ : Fin 5} {i₁ i₂ : Fin n} (h : j₁ ≠ j₂) : core j₁ i₁ ≠ core j₂ i₂ := by
+  simp [core, h]
+
+/-- A connector is never a core vertex. -/
+theorem gap_ne_core {j : Fin 5} {i : Fin n} {k : Fin 4} {g : Fin (n - 1)} : gap k g ≠ core j i := by
+  simp [core, gap]
+
+/-- Connectors with different roles differ, whatever their gaps. -/
+theorem gap_ne_gap {k₁ k₂ : Fin 4} {g₁ g₂ : Fin (n - 1)} (h : k₁ ≠ k₂) : gap k₁ g₁ ≠ gap k₂ g₂ := by
+  simp [gap, h]
+
+section Deletion
+
+variable {c : GnVertex n}
+
+/-- Adjacency survives into the graph with `c` removed, provided neither end is `c`. -/
+theorem gnGraph_induce_adj {a b : GnVertex n} (ha : a ∈ ({c}ᶜ : Set (GnVertex n)))
+    (hb : b ∈ ({c}ᶜ : Set (GnVertex n))) (hadj : (gnGraph n).Adj a b) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Adj ⟨a, ha⟩ ⟨b, hb⟩ := hadj
+
+/-- The route `v - r - y - w - s - v` between the hubs of consecutive blocks, usable when none of its four
+interior vertices is the deleted vertex. -/
+theorem gnGraph_route_rw (g : Fin (n - 1)) (i i' : Fin n) (hi : i.val = g.val + 1)
+    (hi' : i'.val = g.val) (hc : (core 4 i) ∈ ({c}ᶜ : Set (GnVertex n)))
+    (hc' : (core 4 i') ∈ ({c}ᶜ : Set (GnVertex n)))
+    (h₁ : (core 0 i) ∈ ({c}ᶜ : Set (GnVertex n))) (h₂ : (gap 2 g) ∈ ({c}ᶜ : Set (GnVertex n)))
+    (h₃ : (gap 0 g) ∈ ({c}ᶜ : Set (GnVertex n))) (h₄ : (core 1 i') ∈ ({c}ᶜ : Set (GnVertex n))) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨core 4 i, hc⟩ ⟨core 4 i', hc'⟩ :=
+  (gnGraph_induce_adj hc h₁ ⟨rfl, Or.inl ⟨rfl, by decide⟩⟩).reachable.trans
+    ((gnGraph_induce_adj h₁ h₂ (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, hi.symm⟩)))).reachable.trans
+      ((gnGraph_induce_adj h₂ h₃
+          ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))))⟩).reachable.trans
+        ((gnGraph_induce_adj h₃ h₄ (Or.inl ⟨rfl, rfl, hi'.symm⟩)).reachable.trans
+          (gnGraph_induce_adj h₄ hc' ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩).reachable)))
+
+/-- The route `v - u - z - x - t - v`, vertex-disjoint from `gnGraph_route_rw`. -/
+theorem gnGraph_route_ux (g : Fin (n - 1)) (i i' : Fin n) (hi : i.val = g.val + 1)
+    (hi' : i'.val = g.val) (hc : (core 4 i) ∈ ({c}ᶜ : Set (GnVertex n)))
+    (hc' : (core 4 i') ∈ ({c}ᶜ : Set (GnVertex n)))
+    (h₁ : (core 3 i) ∈ ({c}ᶜ : Set (GnVertex n))) (h₂ : (gap 3 g) ∈ ({c}ᶜ : Set (GnVertex n)))
+    (h₃ : (gap 1 g) ∈ ({c}ᶜ : Set (GnVertex n))) (h₄ : (core 2 i') ∈ ({c}ᶜ : Set (GnVertex n))) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨core 4 i, hc⟩ ⟨core 4 i', hc'⟩ :=
+  (gnGraph_induce_adj hc h₁ ⟨rfl, Or.inl ⟨rfl, by decide⟩⟩).reachable.trans
+    ((gnGraph_induce_adj h₁ h₂ (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, hi.symm⟩)))).reachable.trans
+      ((gnGraph_induce_adj h₂ h₃
+          ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨rfl, rfl⟩))))))⟩).reachable.trans
+        ((gnGraph_induce_adj h₃ h₄ (Or.inr (Or.inl ⟨rfl, rfl, hi'.symm⟩))).reachable.trans
+          (gnGraph_induce_adj h₄ hc' ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩).reachable)))
+
+/-- **The redundancy across a gap.** If the hubs of two consecutive blocks both survive the deletion of a
+single vertex `c`, they remain connected.
+
+The two routes are vertex-disjoint, so `c` lies on at most one and the other is intact. This is what makes
+`Gn` 2-connected between blocks, and it is the only inter-block route there is, `Gn` being a path of blocks
+rather than a cycle. -/
+theorem gnGraph_induce_reachable_hubs (g : Fin (n - 1)) (i i' : Fin n) (hi : i.val = g.val + 1)
+    (hi' : i'.val = g.val) (hc : (core 4 i) ∈ ({c}ᶜ : Set (GnVertex n)))
+    (hc' : (core 4 i') ∈ ({c}ᶜ : Set (GnVertex n))) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨core 4 i, hc⟩ ⟨core 4 i', hc'⟩ := by
+  classical
+  by_cases h₁ : core 0 i = c
+  · refine gnGraph_route_ux g i i' hi hi' hc hc' ?_ ?_ ?_ ?_ <;> subst h₁ <;>
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] <;>
+      first
+        | exact core_ne_core (by decide)
+        | exact gap_ne_core
+  by_cases h₂ : gap 2 g = c
+  · refine gnGraph_route_ux g i i' hi hi' hc hc' ?_ ?_ ?_ ?_ <;> subst h₂ <;>
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] <;>
+      first
+        | exact core_ne_gap
+        | exact gap_ne_gap (by decide)
+  by_cases h₃ : gap 0 g = c
+  · refine gnGraph_route_ux g i i' hi hi' hc hc' ?_ ?_ ?_ ?_ <;> subst h₃ <;>
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] <;>
+      first
+        | exact core_ne_gap
+        | exact gap_ne_gap (by decide)
+  by_cases h₄ : core 1 i' = c
+  · refine gnGraph_route_ux g i i' hi hi' hc hc' ?_ ?_ ?_ ?_ <;> subst h₄ <;>
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] <;>
+      first
+        | exact core_ne_core (by decide)
+        | exact gap_ne_core
+  exact gnGraph_route_rw g i i' hi hi' hc hc' (by simpa using h₁) (by simpa using h₂)
+    (by simpa using h₃) (by simpa using h₄)
+
+end Deletion
+
 end ZonalGraphs
