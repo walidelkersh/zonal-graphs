@@ -33,4 +33,26 @@ theorem exists_three_nonzero_add_eq_zero {Γ : Type*} [AddCommGroup Γ] {g h : �
     exact hne hhg.symm
   · exact ⟨g, g, -(g + g), hg, hg, by rwa [neg_ne_zero], by abel⟩
 
+/-- A set of even size admits a labeling by nonzero group elements summing to zero: split it in half,
+give one half `g` and the other `-g`.
+
+With `exists_three_nonzero_add_eq_zero` this covers the odd case too, one triple absorbing the parity and
+pairs handling the rest, which is what the cycle results over abelian groups need. -/
+theorem exists_labeling_sum_eq_zero_of_even_card {Γ : Type*} [AddCommGroup Γ] {g : Γ} (hg : g ≠ 0)
+    {ι : Type*} [DecidableEq ι] (s : Finset ι) (hs : Even s.card) :
+    ∃ f : ι → Γ, (∀ i, f i ≠ 0) ∧ ∑ i ∈ s, f i = 0 := by
+  obtain ⟨k, hk⟩ := hs
+  obtain ⟨t, hts, htcard⟩ := Finset.exists_subset_card_eq (s := s) (n := k) (by omega)
+  have hsdiff : (s \ t).card = k := by
+    have hadd := Finset.card_sdiff_add_card_eq_card hts
+    omega
+  refine ⟨fun i => if i ∈ t then g else -g, fun i => ?_, ?_⟩
+  · by_cases hi : i ∈ t <;> simp [hi, hg]
+  · rw [← Finset.sum_sdiff hts]
+    have hone : ∀ i ∈ t, (if i ∈ t then g else -g) = g := fun i hi => by simp [hi]
+    have htwo : ∀ i ∈ s \ t, (if i ∈ t then g else -g) = -g := fun i hi => by
+      simp [(Finset.mem_sdiff.mp hi).2]
+    rw [Finset.sum_congr rfl hone, Finset.sum_congr rfl htwo, Finset.sum_const,
+      Finset.sum_const, htcard, hsdiff, ← smul_add, neg_add_cancel, smul_zero]
+
 end ZonalGraphs
