@@ -103,6 +103,18 @@ theorem isGroupZonal_of_injective {Γ' : Type*} [AddCommGroup Γ'] (φ : Γ →+
   exact isGroupZonal_map φ P labeling
     (fun v hz => (labeling v).2 (hinj (by rw [hz, map_zero]))) hlabeling
 
+/-- Cozonality transports along an injective homomorphism, the dual of `isGroupZonal_of_injective`.
+
+A homomorphism commutes with the sum over the regions at a vertex, and injectivity keeps the images of
+nonzero region labels nonzero. -/
+theorem isGroupCozonal_of_injective [DecidableEq Vertex] {Γ' : Type*} [AddCommGroup Γ']
+    (φ : Γ →+ Γ') (hinj : Function.Injective φ) (P : PlaneGraph Vertex Face)
+    (h : P.IsGroupCozonal Γ) : P.IsGroupCozonal Γ' := by
+  obtain ⟨labeling, hlabeling⟩ := h
+  refine ⟨fun R => ⟨φ (labeling R), fun hz => (labeling R).2 (hinj (by rw [hz, map_zero]))⟩,
+    fun v => ?_⟩
+  rw [← map_sum, hlabeling v, map_zero]
+
 /-- **The generalization is faithful.** At `Γ = ZMod 3` the group-valued notion *is* the original one, on
 the nose rather than up to translation.
 
