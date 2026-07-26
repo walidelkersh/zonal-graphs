@@ -78,6 +78,12 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+* **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
+  colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
+  colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
+  exactly when it is Eulerian, which enters as a hypothesis rather than being proved. The entry also pairs
+  the claim with a cozonal dual about bipartite cubic maps.
+
 * **The remaining dual halves** — the cozonal side is now available. Duality needed no multigraphs after
   all: zonality and cozonality never consult the underlying graph, only which vertices bound which
   regions, so abstracting that incidence data makes the dual a transposition and Proposition 1.3 a matter

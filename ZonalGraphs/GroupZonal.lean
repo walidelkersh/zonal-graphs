@@ -66,6 +66,31 @@ theorem isGroupZonal_map {Γ' : Type*} [AddCommGroup Γ'] (φ : Γ →+ Γ')
   simp only [groupZoneValue] at hzonal ⊢
   rw [← map_sum, hzonal R, map_zero]
 
+/-- **Zonality from a three-colouring meeting every region once per colour.**
+
+Give the three colour classes three nonzero elements summing to zero, which exist for any abelian group
+with two distinct nonzero elements by `exists_three_nonzero_add_eq_zero`.  A region whose boundary holds
+exactly one vertex of each colour then sums to `g 0 + g 1 + g 2 = 0`.
+
+This is the labelling half of Proposition 2.8 of Bowling (2025) on Eulerian plane triangulations.  The
+graph-theoretic input, that a plane triangulation is vertex 3-colourable exactly when it is Eulerian, is
+Heawood's theorem and is not proved here; it enters as the hypothesis `hface`. -/
+theorem isGroupZonal_of_threeColouring [DecidableEq Vertex] (P : PlaneGraph Vertex Face)
+    (colouring : Vertex → Fin 3) {g : Fin 3 → Γ} (hg : ∀ i, g i ≠ 0)
+    (hsum : g 0 + g 1 + g 2 = 0)
+    (hface : ∀ (R : Face) (i : Fin 3), {v ∈ P.boundary R | colouring v = i}.card = 1) :
+    P.IsGroupZonal Γ := by
+  refine ⟨fun v => ⟨g (colouring v), hg _⟩, fun R => ?_⟩
+  rw [groupZoneValue, ← Finset.sum_fiberwise (P.boundary R) colouring
+    fun v => (g (colouring v) : Γ)]
+  have hfib : ∀ i : Fin 3,
+      (∑ v ∈ {v ∈ P.boundary R | colouring v = i}, (g (colouring v) : Γ)) = g i := by
+    intro i
+    rw [Finset.sum_congr rfl fun v hv => by
+      rw [(Finset.mem_filter.mp hv).2], Finset.sum_const, hface R i, one_smul]
+  rw [Fin.sum_univ_three, hfib 0, hfib 1, hfib 2]
+  exact hsum
+
 /-- **Observation 2.1 (Bowling, 2025).** Zonality passes to a larger group along any injective
 homomorphism, so in particular a subgroup inclusion.
 
