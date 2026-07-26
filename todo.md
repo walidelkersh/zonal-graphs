@@ -61,6 +61,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 4.4.5, Cor 4.4.6 | `PlaneGraph.isZonal_of_isInnerZonal_of_three_regionsAt` and `isZonal_iff_isInnerZonal_of_three_regionsAt`, on `sum_zoneValue_eq_sum_regionsAt` |
 | Thm 2.5.9 | `PlaneGraph.isZonal_of_forall_isGnRegion`, on `GnVertex.sum_triangle`, `sum_quad`, `sum_pentagon` and `sum_blocks` |
 | Thm 2.5.11 | `PlaneGraph.not_isZonal_of_gn_forcing`, on `eq_of_zoneValue_eq_zero_of_card_boundary_eq_three` |
+| Thm 2.5.5, Thm 2.5.8 | `PlaneGraph.not_nonempty_iso_of_gn_profile`, on `Iso.card_filter_boundary_card` |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -216,8 +217,8 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 2.4.2**: There is a regular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
 - [ ] **Proposition 2.4.3**: Let k be a positive integer. ⋆ If µ(k) ≡ 1 (mod 3), then the zonal Dutch windmill graph Dµ(k) 3 is condition- ally zonal and has at least k distinct zonal planar embeddings. ⋆ If µ(k) ≡ 2 (mod 3), ...
 - [ ] **Theorem 2.5.1**: The graph Gn is 2-connected.
-- [ ] **Theorem 2.5.5**: For 0 ≤ k ≤ n/2, the embeddings Gn,k are distinct.
-- [ ] **Theorem 2.5.8**: For 0 ≤ k ≤ n − 2 n ≥ 3 the embeddings G∗ n,k are distinct.
+- [x] **Theorem 2.5.5**: For 0 ≤ k ≤ n/2, the embeddings Gn,k are distinct.
+- [x] **Theorem 2.5.8**: For 0 ≤ k ≤ n − 2 n ≥ 3 the embeddings G∗ n,k are distinct.
 - [x] **Theorem 2.5.9**: For each k ∈ {0, 2, 3, . . . ,⌊n/2⌋}, the plane graph Gn,k has a zonal labeling.
 - [ ] **Corollary 2.5.10**: The plane graph Gn has at least ⌊n/2⌋ zonal embeddings.
 - [x] **Theorem 2.5.11**: If 1 ≤ k ≤ n − 2, then G∗ n,k does not have a zonal labeling.
