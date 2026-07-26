@@ -1,4 +1,5 @@
 import ZonalGraphs.AbelianGroups
+import ZonalGraphs.BipartiteZonal
 import ZonalGraphs.TreesAndCycles
 
 namespace ZonalGraphs
@@ -58,6 +59,38 @@ The excluded case is exactly the failure of that hypothesis: over `ZMod 2` the o
 theorem isGroupZonal_ofCycle {g h : Γ} (hg : g ≠ 0) (hh : h ≠ 0) (hne : g ≠ h) (n : ℕ)
     (hn : 3 ≤ n) : (ofCycle n hn).IsGroupZonal Γ :=
   isGroupZonal_of_boundary_eq_univ _ (fun _ => rfl) hg hh hne (by simpa using by omega)
+
+/-- **The zonal half of Proposition 2.7 (Bowling, 2025).** A plane graph carrying a proper two-colouring
+whose every facial boundary is balanced is `Γ`-zonal, for any abelian `Γ` with a nonzero element.
+
+Label one colour class `g` and the other `-g`.  A balanced boundary has equally many vertices of each
+colour, so its value is `n • g + n • (-g) = 0`.  Nothing about `ZMod 3` is used, and no facial parity
+argument beyond balance.
+
+This does not discharge the todo entry for Proposition 2.7, which is a conjunction whose dual half
+concerns cozonal labelings of Eulerian plane graphs and is not proved here. -/
+theorem isGroupZonal_of_facialBalance [DecidableEq Vertex] (P : PlaneGraph Vertex Face)
+    (coloring : P.graph.Coloring (Fin 2)) {g : Γ} (hg : g ≠ 0)
+    (hbalance : ∀ R : Face, SimpleGraph.IsBalanced coloring (P.boundary R)) : P.IsGroupZonal Γ := by
+  refine ⟨fun v => ⟨if coloring v = 0 then g else -g, ?_⟩, fun R => ?_⟩
+  · by_cases hv : coloring v = 0 <;> simp [hv, hg]
+  · have hb : {x ∈ P.boundary R | coloring x = 0}.card
+        = {x ∈ P.boundary R | coloring x = 1}.card := hbalance R
+    have hzero : ∀ x ∈ {x ∈ P.boundary R | coloring x = 0},
+        (if coloring x = 0 then g else -g) = g := by
+      intro x hx
+      simp only [Finset.mem_filter] at hx
+      simp [hx.2]
+    have hone : ∀ x ∈ {x ∈ P.boundary R | coloring x = 1},
+        (if coloring x = 0 then g else -g) = -g := by
+      intro x hx
+      simp only [Finset.mem_filter] at hx
+      simp [hx.2]
+    rw [groupZoneValue,
+      ← Finset.sum_filter_add_sum_filter_not (P.boundary R) fun x => coloring x = 0,
+      SimpleGraph.filter_color_ne_zero coloring (P.boundary R),
+      Finset.sum_congr rfl hzero, Finset.sum_congr rfl hone, Finset.sum_const, Finset.sum_const,
+      hb, ← smul_add, add_neg_cancel, smul_zero]
 
 end PlaneGraph
 
