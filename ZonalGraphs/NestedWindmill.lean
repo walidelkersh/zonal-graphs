@@ -252,6 +252,19 @@ theorem conditionallyZonal_windmill (hk : 3 ≤ Fintype.card Blade) (hlen : ∀ 
     have hone : (1 : ZMod 3) = 0 := by linear_combination hcontra
     exact absurd hone (by decide)
 
+/-- Blade lengths given by distinct powers of two make the total length over a nesting set determine
+that set.
+
+This is what makes a Dutch windmill *irregular* in the sense of Theorem 2.3.2, and it is why distinct
+nesting sets give regions of distinct boundary size. -/
+theorem sum_two_pow_val_injective {k : ℕ} :
+    Function.Injective fun N : Finset (Fin k) => ∑ b ∈ N, 2 ^ (b : ℕ) := by
+  intro N₁ N₂ hsum
+  have himage : N₁.image Fin.val = N₂.image Fin.val := by
+    refine Finset.geomSum_injective (n := 2) le_rfl ?_
+    simpa [Finset.sum_image, Fin.val_injective.injOn] using hsum
+  exact Finset.image_injective Fin.val_injective himage
+
 end PlaneGraph
 
 end ZonalGraphs
