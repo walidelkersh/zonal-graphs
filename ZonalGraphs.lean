@@ -20,6 +20,7 @@ import ZonalGraphs.CubicPlanar
 import ZonalGraphs.AbelianGroups
 import ZonalGraphs.BoundaryDifference
 import ZonalGraphs.CycleRankTwo
+import ZonalGraphs.ThetaGraph
 import ZonalGraphs.DutchWindmill
 import ZonalGraphs.WindmillGraph
 import ZonalGraphs.StandardWindmill
