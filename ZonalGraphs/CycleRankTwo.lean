@@ -467,6 +467,49 @@ theorem isZonal_of_theta_pendant_blocks (P : PlaneGraph Vertex Face) {R₁ R₂ 
       Finset.sum_union d01, hT, hv₁, hv₃, hW]
     exact e₃
 
+/-- **Theorem 3.5 (Bowling–Zhang, 2023), the case where the shortest path has an interior vertex.**
+Sums `0, 1, 2, 1, 1`. -/
+theorem isZonal_thetaPendant_of_nonempty (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₁ Q₂ Q₃ W : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ Q₁ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ Q₁ ∪ Q₃ ∪ W)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hdisjoint : ∀ i j : Fin 5, i ≠ j →
+      Disjoint (![T, Q₁, Q₂, Q₃, W] i) (![T, Q₁, Q₂, Q₃, W] j))
+    (hTcard : T.card = 2) (hq₁ : 1 ≤ Q₁.card) (hq₂ : 1 ≤ Q₂.card) (hq₃ : 1 ≤ Q₃.card)
+    (hWcard : W.card = 1) : P.IsZonal :=
+  isZonal_of_theta_pendant_blocks P h₁ h₂ h₃ hfaces hdisjoint ![0, 1, 2, 1, 1]
+    (by
+      intro i
+      fin_cases i
+      · simpa using val_neg_le_of_ne_one (c := T.card) (by omega)
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₁.card hq₁
+      · simpa using val_sub_le_of_ne_zero 2 (by decide) Q₂.card hq₂
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₃.card hq₃
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) W.card (by omega))
+    (by decide) (by decide) (by decide)
+
+/-- **Theorem 3.5, the case where the shortest path is a single edge.** Its interior is then empty, and
+Theorem 3.3 forces the middle path to order at least four since `F` is zonal, so the other two interiors
+have at least two vertices each. Sums `1, 0, 2, 0, 2`. -/
+theorem isZonal_thetaPendant_of_empty (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₂ Q₃ W : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ ∅ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ ∅ ∪ Q₃ ∪ W)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hdisjoint : ∀ i j : Fin 5, i ≠ j →
+      Disjoint (![T, ∅, Q₂, Q₃, W] i) (![T, ∅, Q₂, Q₃, W] j))
+    (hTcard : T.card = 2) (hq₂ : 2 ≤ Q₂.card) (hq₃ : 2 ≤ Q₃.card)
+    (hWcard : W.card = 1) : P.IsZonal :=
+  isZonal_of_theta_pendant_blocks P h₁ h₂ h₃ hfaces hdisjoint ![1, 0, 2, 0, 2]
+    (by
+      intro i
+      fin_cases i
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) T.card (by omega)
+      · simp
+      · simpa using val_sub_le_of_ne_zero 2 (by decide) Q₂.card (by omega)
+      · simpa using val_neg_le_of_ne_one (c := Q₃.card) (by omega)
+      · simpa using val_sub_le_of_ne_zero 2 (by decide) W.card (by omega))
+    (by decide) (by decide) (by decide)
+
 end PlaneGraph
 
 end ZonalGraphs
