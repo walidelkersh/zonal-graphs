@@ -19,6 +19,7 @@ import ZonalGraphs.ThreeConnected
 import ZonalGraphs.CubicPlanar
 import ZonalGraphs.AbelianGroups
 import ZonalGraphs.BoundaryDifference
+import ZonalGraphs.ConstantOnBlocks
 import ZonalGraphs.CycleRankTwo
 import ZonalGraphs.ThetaGraph
 import ZonalGraphs.DutchWindmill
