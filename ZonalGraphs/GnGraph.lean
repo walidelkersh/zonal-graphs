@@ -329,6 +329,58 @@ theorem gnGraph_induce_rim_reachable_next (i i' : Fin n) (g : Fin (n - 1)) (hi :
   · exact absurd rfl hj
 
 
+/-- **The mirror escape route.** With the hub of block `g + 1` removed, every rim vertex of that block still
+reaches the hub of block `g`, through the previous gap rather than the next one.
+
+This is the reflection of `gnGraph_induce_rim_reachable_next`, needed for the last block, which has no next
+gap. Here `r` and `u` leave along `r - y - w - s - v` and `u - z - x - t - v`, and `s` and `t` join them
+across the rim edges. -/
+theorem gnGraph_induce_rim_reachable_prev (i i' : Fin n) (g : Fin (n - 1))
+    (hi : i.val = g.val + 1) (hi' : i'.val = g.val) (j : Fin 5) (hj : j ≠ 4)
+    (hx : core j i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)))
+    (hv : core 4 i' ∈ (({core 4 i}ᶜ) : Set (GnVertex n))) :
+    ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable ⟨core j i, hx⟩
+      ⟨core 4 i', hv⟩ := by
+  have hne : i ≠ i' := by
+    intro h
+    subst h
+    omega
+  have m₀ : core 0 i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core (by decide : (0 : Fin 5) ≠ 4)
+  have m₃ : core 3 i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core (by decide : (3 : Fin 5) ≠ 4)
+  have mw : gap 0 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have mx : gap 1 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have my : gap 2 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have mz : gap 3 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have ms : core 1 i' ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core_block hne.symm
+  have mt : core 2 i' ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core_block hne.symm
+  have routeR : ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable
+      ⟨core 0 i, m₀⟩ ⟨core 4 i', hv⟩ :=
+    (gnGraph_induce_adj m₀ my (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, hi.symm⟩)))).reachable.trans
+      ((gnGraph_induce_adj my mw
+          ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))))⟩).reachable.trans
+        ((gnGraph_induce_adj mw ms (Or.inl ⟨rfl, rfl, hi'.symm⟩)).reachable.trans
+          (gnGraph_induce_adj ms hv ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩).reachable))
+  have routeU : ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable
+      ⟨core 3 i, m₃⟩ ⟨core 4 i', hv⟩ :=
+    (gnGraph_induce_adj m₃ mz (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, hi.symm⟩)))).reachable.trans
+      ((gnGraph_induce_adj mz mx
+          ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨rfl, rfl⟩))))))⟩).reachable.trans
+        ((gnGraph_induce_adj mx mt (Or.inr (Or.inl ⟨rfl, rfl, hi'.symm⟩))).reachable.trans
+          (gnGraph_induce_adj mt hv ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩).reachable))
+  fin_cases j
+  · exact routeR
+  · exact (gnGraph_induce_adj hx m₀ ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))⟩).reachable.trans
+      routeR
+  · exact (gnGraph_induce_adj hx m₃
+      ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))⟩).reachable.trans routeU
+  · exact routeU
+  · exact absurd rfl hj
+
+
 end Deletion
 
 end ZonalGraphs
