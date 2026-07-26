@@ -49,6 +49,27 @@ theorem Iso.card_boundary {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} 
     (P.boundary R).card = (Q.boundary (e.faceEquiv R)).card := by
   rw [← e.boundary_map R, Finset.card_map]
 
+/-- An isomorphism of plane graphs preserves, for every `n`, the number of regions whose boundary
+has exactly `n` vertices.
+
+This is the usable form of the boundary-size invariant: two embeddings of one graph that disagree on
+some such count cannot be isomorphic. -/
+theorem Iso.card_filter_boundary_card {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} (e : P.Iso Q)
+    (n : ℕ) :
+    {R ∈ (Finset.univ : Finset F₁) | (P.boundary R).card = n}.card
+      = {S ∈ (Finset.univ : Finset F₂) | (Q.boundary S).card = n}.card := by
+  refine Finset.card_bij' (fun R _ => e.faceEquiv R) (fun S _ => e.faceEquiv.symm S) ?_ ?_ ?_ ?_
+  · intro R hR
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hR ⊢
+    rw [← e.card_boundary R, hR]
+  · intro S hS
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hS ⊢
+    rw [e.card_boundary (e.faceEquiv.symm S), Equiv.apply_symm_apply, hS]
+  · intro R _
+    exact e.faceEquiv.symm_apply_apply R
+  · intro S _
+    exact e.faceEquiv.apply_symm_apply S
+
 /-- Zonality is invariant under an isomorphism of plane graphs: transport a zonal labeling along
 the vertex relabeling. -/
 theorem IsZonal.of_iso {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} (hP : P.IsZonal)
