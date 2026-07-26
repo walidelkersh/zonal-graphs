@@ -114,6 +114,55 @@ theorem isZonal_iff_card_sdiff_boundary_ne_one (P : PlaneGraph Vertex Face) {R�
   · rw [zoneValue, h₁]; exact hon
   · rw [zoneValue, h₂, ← Finset.sum_sdiff (Finset.subset_univ S), hon, hoff, add_zero]
 
+/-- **Theorem 3.1.3 (Bowling–Zhang, 2023).** Every zonal unicyclic graph is absolutely zonal: each of
+its planar embeddings is zonal.
+
+This is Proposition 2.4 of *Zonal Graphs of Small Cycle Rank*.  In an arbitrary planar embedding the two
+regions have boundaries `S ∪ U₁` and `S ∪ U₂`, where `S` is the cycle and the off-cycle vertices split as
+`U₁`, `U₂` according to which region their tree hangs into.  Give the cycle the sum `1` and each `Uᵢ` the
+sum `2`; both region values are then `1 + 2 = 0`.
+
+Only nonemptiness of each `Uᵢ` is needed, since one vertex already absorbs the single flip required to
+reach the target `2`.  That is the sense in which zonality is embedding-independent here: the previous
+theorem's exceptional case, one vertex off the cycle, cannot split into two nonempty parts. -/
+theorem isZonal_of_boundary_eq_union (P : PlaneGraph Vertex Face) {R₁ R₂ : Face}
+    {S U₁ U₂ : Finset Vertex} (h₁ : P.boundary R₁ = S ∪ U₁) (h₂ : P.boundary R₂ = S ∪ U₂)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂)
+    (hSU₁ : Disjoint S U₁) (hSU₂ : Disjoint S U₂) (hU : Disjoint U₁ U₂)
+    (hScard : 2 ≤ S.card) (hU₁ : U₁.Nonempty) (hU₂ : U₂.Nonempty) : P.IsZonal := by
+  -- Three pairwise disjoint blocks, with targets `1`, `2`, `2`.
+  have hfitTwo : ∀ c : ℕ, 1 ≤ c → ((2 : ZMod 3) - (c : ZMod 3)).val ≤ c := by
+    intro c hc
+    rcases Nat.lt_or_ge c 2 with hsmall | hlarge
+    · obtain rfl : c = 1 := by omega
+      decide
+    · have := ZMod.val_lt ((2 : ZMod 3) - (c : ZMod 3))
+      omega
+  have hfitAny : ∀ (t : ZMod 3) (c : ℕ), 2 ≤ c → (t - (c : ZMod 3)).val ≤ c := by
+    intro t c hc
+    have := ZMod.val_lt (t - (c : ZMod 3))
+    omega
+  have hdisjoint : ∀ i j : Fin 3, i ≠ j → Disjoint (![S, U₁, U₂] i) (![S, U₁, U₂] j) := by
+    intro i j hij
+    fin_cases i <;> fin_cases j <;> simp_all [hSU₁.symm, hSU₂.symm, hU.symm]
+  have hfit : ∀ i : Fin 3,
+      (((![1, 2, 2] : Fin 3 → ZMod 3) i) - ((![S, U₁, U₂] i).card : ZMod 3)).val
+        ≤ (![S, U₁, U₂] i).card := by
+    intro i
+    fin_cases i
+    · simpa using hfitAny 1 S.card hScard
+    · simpa using hfitTwo U₁.card (Finset.card_pos.mpr hU₁)
+    · simpa using hfitTwo U₂.card (Finset.card_pos.mpr hU₂)
+  obtain ⟨labeling, hsum⟩ :=
+    exists_labeling_blockSum_eq ![S, U₁, U₂] hdisjoint ![1, 2, 2] hfit
+  have hS : (∑ v ∈ S, (labeling v : ZMod 3)) = 1 := by simpa using hsum 0
+  have hV₁ : (∑ v ∈ U₁, (labeling v : ZMod 3)) = 2 := by simpa using hsum 1
+  have hV₂ : (∑ v ∈ U₂, (labeling v : ZMod 3)) = 2 := by simpa using hsum 2
+  refine ⟨labeling, fun R => ?_⟩
+  rcases hfaces R with rfl | rfl
+  · rw [zoneValue, h₁, Finset.sum_union hSU₁, hS, hV₁]; decide
+  · rw [zoneValue, h₂, Finset.sum_union hSU₂, hS, hV₂]; decide
+
 end PlaneGraph
 
 end ZonalGraphs
