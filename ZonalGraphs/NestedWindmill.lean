@@ -194,6 +194,27 @@ theorem card_boundary_nestedWindmill (R : Blade ⊕ Unit) :
     (fun b _ c _ hbc => windmillPetal_disjoint len b c hbc)]
   simp [card_windmillPetal]
 
+/-- The region inside `outer` has boundary size `len outer + Σ_{b ∈ N} len b + 1`.
+
+This is the region whose size varies with the nesting set, so it is the one that distinguishes
+nested embeddings from one another. -/
+theorem card_boundary_inl_self (houter : outer ∉ N) :
+    ((nestedWindmill len outer N faceEdges).boundary (.inl outer)).card
+      = len outer + (∑ b ∈ N, len b) + 1 := by
+  rw [card_boundary_nestedWindmill, nestedRegionPetals_inl_self, Finset.sum_insert houter]
+
+/-- The exterior region has boundary size `Σ_{b ∉ N} len b + 1`. -/
+theorem card_boundary_inr (u : Unit) :
+    ((nestedWindmill len outer N faceEdges).boundary (.inr u)).card
+      = (∑ b ∈ Finset.univ \ N, len b) + 1 := by
+  rw [card_boundary_nestedWindmill, nestedRegionPetals_inr]
+
+/-- The disk bounded by a blade other than `outer` has boundary size `len b + 1`, independently of
+the nesting set. -/
+theorem card_boundary_inl_of_ne {b : Blade} (hb : b ≠ outer) :
+    ((nestedWindmill len outer N faceEdges).boundary (.inl b)).card = len b + 1 := by
+  rw [card_boundary_nestedWindmill, nestedRegionPetals_inl_of_ne outer N hb, Finset.sum_singleton]
+
 /-- Blades other than `outer` are plentiful enough to nest any of `0`, `1` or `2` of them, once
 there are at least three blades in all. -/
 theorem exists_nested_card_eq (hk : 3 ≤ Fintype.card Blade) (outer : Blade) {m : ℕ} (hm : m ≤ 2) :
