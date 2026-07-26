@@ -89,4 +89,64 @@ def gnGraph (n : ℕ) : SimpleGraph (GnVertex n) where
     · exact gnCoreAdj_irrefl hadj.2
     · exact gnGapAdj_irrefl hadj.2⟩
 
+/-- Every rim vertex of a block reaches that block's hub, since the hub meets all four. -/
+theorem reachable_hub (j : Fin 5) (i : Fin n) : (gnGraph n).Reachable (core j i) (core 4 i) := by
+  by_cases hj : j = 4
+  · subst hj
+    exact SimpleGraph.Reachable.refl _
+  · exact SimpleGraph.Adj.reachable
+      (show (gnGraph n).Adj (core j i) (core 4 i) from ⟨rfl, Or.inr (Or.inl ⟨rfl, hj⟩)⟩)
+
+/-- Crossing one gap: the hub of block `g + 1` reaches the hub of block `g`, along the path
+`v - r - y - w - s - v`. -/
+theorem reachable_prev (g : Fin (n - 1)) (i i' : Fin n) (hi : i.val = g.val + 1)
+    (hi' : i'.val = g.val) : (gnGraph n).Reachable (core 4 i) (core 4 i') := by
+  have h₁ : (gnGraph n).Adj (core 0 i) (gap 2 g) :=
+    Or.inr (Or.inr (Or.inl ⟨rfl, rfl, hi.symm⟩))
+  have h₂ : (gnGraph n).Adj (gap 2 g) (gap 0 g) :=
+    ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))))⟩
+  have h₃ : (gnGraph n).Adj (gap 0 g) (core 1 i') := Or.inl ⟨rfl, rfl, hi'.symm⟩
+  exact (((reachable_hub 0 i).symm.trans h₁.reachable).trans
+    (h₂.reachable.trans h₃.reachable)).trans (reachable_hub 1 i')
+
+/-- Every hub reaches the hub of block `0`, by walking down one gap at a time. -/
+theorem reachable_hub_zero (hn : 0 < n) :
+    ∀ (m : ℕ) (i : Fin n), i.val = m → (gnGraph n).Reachable (core 4 i) (core 4 ⟨0, hn⟩) := by
+  intro m
+  induction m with
+  | zero =>
+    intro i hi
+    have : i = ⟨0, hn⟩ := Fin.ext hi
+    subst this
+    exact SimpleGraph.Reachable.refl _
+  | succ m ih =>
+    intro i hi
+    have hlt : m < n - 1 := by omega
+    have hm : m < n := by omega
+    exact (reachable_prev ⟨m, hlt⟩ i ⟨m, hm⟩ hi rfl).trans (ih ⟨m, hm⟩ rfl)
+
+/-- Every connector is adjacent to a core vertex: `w` and `x` meet their own block, `y` and `z` the next. -/
+theorem exists_adj_core (k : Fin 4) (g : Fin (n - 1)) :
+    ∃ (j : Fin 5) (i : Fin n), (gnGraph n).Adj (gap k g) (core j i) := by
+  have hg : g.val < n - 1 := g.isLt
+  have hsame : g.val < n := by omega
+  have hnext : g.val + 1 < n := by omega
+  fin_cases k
+  · exact ⟨1, ⟨g.val, hsame⟩, Or.inl ⟨rfl, rfl, rfl⟩⟩
+  · exact ⟨2, ⟨g.val, hsame⟩, Or.inr (Or.inl ⟨rfl, rfl, rfl⟩)⟩
+  · exact ⟨0, ⟨g.val + 1, hnext⟩, Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))⟩
+  · exact ⟨3, ⟨g.val + 1, hnext⟩, Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩))⟩
+
+/-- **`Gn` is connected.** Every vertex walks to its own block's hub, or through a gap to a neighbouring
+block's hub, and the hubs chain down to block `0`. -/
+theorem gnGraph_connected (hn : 0 < n) : (gnGraph n).Connected := by
+  have hbase : ∀ z : GnVertex n, (gnGraph n).Reachable z (core 4 ⟨0, hn⟩) := by
+    rintro (⟨j, i⟩ | ⟨k, g⟩)
+    · exact (reachable_hub j i).trans (reachable_hub_zero hn i.val i rfl)
+    · obtain ⟨j, i, hadj⟩ := exists_adj_core k g
+      exact (hadj.reachable.trans (reachable_hub j i)).trans (reachable_hub_zero hn i.val i rfl)
+  rw [SimpleGraph.connected_iff]
+  exact ⟨fun x y => (hbase x).trans (hbase y).symm, ⟨core 4 ⟨0, hn⟩⟩⟩
+
+
 end ZonalGraphs
