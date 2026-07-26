@@ -14,4 +14,5 @@ import ZonalGraphs.FacialBalance
 import ZonalGraphs.ThreeConnected
 import ZonalGraphs.CubicPlanar
 import ZonalGraphs.DutchWindmill
+import ZonalGraphs.WindmillGraph
 import ZonalGraphs.Wheels
