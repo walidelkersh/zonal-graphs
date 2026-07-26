@@ -29,7 +29,7 @@
 - [x] **Theorem 2.1.4**: Every connected bridgeless cubic planar graph is absolutely zonal. 18 M2 : ..................................................................................... .......................................
 - [x] **Theorem 2.1.5**: For an integer n ≥ 3, the wheel Wn = Cn ∨ K1 is zonal if and only if n ≡ 0 (mod 3) .
 - [ ] **Theorem 2.1.8**: For every positive integer k, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings.
-- [ ] **Proposition 2.2.1**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
+- [x] **Proposition 2.2.1**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
 - [ ] **Theorem 2.2.2**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal.
 - [ ] **Lemma 2.3.1**: Let S be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4Y i=1 ik − 1 k − 1  = 4k − 1 k − 1 3k − 1 k − 1 2k − 1 k − 1  . (2.1)
 - [ ] **Theorem 2.3.2**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
@@ -104,7 +104,7 @@
 - [x] **Theorem 2.1.4**: Every connected bridgeless cubic planar graph is absolutely zonal. 18 M2 : ..................................................................................... .......................................
 - [x] **Theorem 2.1.5**: For an integer n ≥ 3, the wheel Wn = Cn ∨ K1 is zonal if and only if n ≡ 0 (mod 3) .
 - [ ] **Theorem 2.1.8**: For every positive integer k, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings.
-- [ ] **Proposition 2.2.1**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
+- [x] **Proposition 2.2.1**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
 - [ ] **Theorem 2.2.2**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal.
 - [ ] **Lemma 2.3.1**: Let S be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4Y i=1 ik − 1 k − 1  = 4k − 1 k − 1 3k − 1 k − 1 2k − 1 k − 1  . (2.1)
 - [ ] **Theorem 2.3.2**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.

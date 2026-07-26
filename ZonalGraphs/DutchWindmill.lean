@@ -23,9 +23,17 @@ face data.
 
 Mathlib provides no windmill construction, so the canonical three-region realization is built here
 as `PlaneGraph.ofTwoBladedWindmill`.
+
+`PlaneGraph.IsWindmillEmbedding` then records the face data shared by *every* planar embedding of a
+Dutch windmill with any number of blades: deleting the hub leaves pairwise disjoint *petals*, and
+each region is bounded by the hub together with a set of whole petals.  Region values reduce to
+`ℓ(hub) + Σ qᵢ` over the petal sums `qᵢ`, which yields the congruence
+`IsWindmillEmbedding.card_eq_one_of_isZonal`: an embedding having a region per petal and a region
+bounded by all petals — the standard embedding — is zonal only if the number of blades is `1`
+modulo `3`.
 -/
 
-universe u v
+universe u v w
 
 namespace PlaneGraph
 
@@ -64,6 +72,84 @@ theorem not_isZonal_of_isTwoBladedWindmill {P : PlaneGraph Vertex Face}
   exact (labeling hub).property hsum
 
 end FaceStructure
+
+section WindmillEmbedding
+
+variable {Face : Type v} [Fintype Face] {Blade : Type w}
+
+/-- The face data common to *every* planar embedding of a Dutch windmill.
+
+All cycles of a Dutch windmill meet in the hub, so deleting the hub leaves the pairwise disjoint
+*petals* `C - hub`.  However the cycles are nested in the plane, each region is bounded by the hub
+together with a set of whole petals, recorded by `regionPetals`.  This covers the standard
+embedding, the nested embeddings, and the hybrids of the two. -/
+structure IsWindmillEmbedding (P : PlaneGraph Vertex Face) (hub : Vertex)
+    (petal : Blade → Finset Vertex) (regionPetals : Face → Finset Blade) : Prop where
+  /-- The hub has been deleted from every petal. -/
+  hub_notMem_petal : ∀ b, hub ∉ petal b
+  /-- Distinct cycles meet only in the hub, so distinct petals are disjoint. -/
+  petal_disjoint : ∀ b c, b ≠ c → Disjoint (petal b) (petal c)
+  /-- Each region is bounded by the hub together with a set of whole petals. -/
+  boundary_eq : ∀ R, P.boundary R = insert hub ((regionPetals R).biUnion petal)
+
+namespace IsWindmillEmbedding
+
+variable {P : PlaneGraph Vertex Face} {hub : Vertex} {petal : Blade → Finset Vertex}
+  {regionPetals : Face → Finset Blade}
+
+/-- The value of a region of a windmill embedding is the hub's label plus the petal sums of the
+petals bounding it. -/
+theorem zoneValue_eq (h : P.IsWindmillEmbedding hub petal regionPetals)
+    (labeling : VertexLabeling Vertex) (R : Face) :
+    P.zoneValue labeling R =
+      (labeling hub : ZMod 3) + ∑ b ∈ regionPetals R, ∑ v ∈ petal b, (labeling v : ZMod 3) := by
+  have hnot : hub ∉ (regionPetals R).biUnion petal := by
+    simp only [Finset.mem_biUnion]
+    push_neg
+    exact fun b _ => h.hub_notMem_petal b
+  rw [zoneValue, h.boundary_eq R, Finset.sum_insert hnot,
+    Finset.sum_biUnion fun b _ c _ hbc => h.petal_disjoint b c hbc]
+
+/-- **The windmill congruence.** If a windmill embedding has a region bounded by each single petal
+and also a region bounded by all the petals at once, then it is zonal only when the number of
+petals is congruent to `1` modulo `3`.
+
+Each single-petal region forces its petal sum to be `-ℓ(hub)`, so the all-petal region has value
+`ℓ(hub) * (1 - k)` for `k` petals.  Since `ZMod 3` is a field and zonal labels are nonzero, `k = 1`
+in `ZMod 3`. -/
+theorem card_eq_one_of_isZonal [Fintype Blade]
+    (h : P.IsWindmillEmbedding hub petal regionPetals) {single : Blade → Face} {full : Face}
+    (hsingle : ∀ b, regionPetals (single b) = {b}) (hfull : regionPetals full = Finset.univ)
+    (hzonal : P.IsZonal) : (Fintype.card Blade : ZMod 3) = 1 := by
+  haveI : Fact (Nat.Prime 3) := ⟨by norm_num⟩
+  obtain ⟨labeling, hlabeling⟩ := hzonal
+  have hval : ∀ R : Face, P.zoneValue labeling R = 0 := hlabeling
+  have hpetal : ∀ b, (∑ v ∈ petal b, (labeling v : ZMod 3)) = -(labeling hub : ZMod 3) := by
+    intro b
+    have hb := h.zoneValue_eq labeling (single b)
+    rw [hval, hsingle b, Finset.sum_singleton] at hb
+    linear_combination -hb
+  have hfullval := h.zoneValue_eq labeling full
+  rw [hval, hfull] at hfullval
+  simp only [hpetal, Finset.sum_const, Finset.card_univ, nsmul_eq_mul] at hfullval
+  have hmul : (labeling hub : ZMod 3) * (1 - (Fintype.card Blade : ZMod 3)) = 0 := by
+    linear_combination -hfullval
+  rcases mul_eq_zero.mp hmul with hzero | hzero
+  · exact absurd hzero (labeling hub).property
+  · linear_combination -hzero
+
+/-- A windmill embedding with a region per petal and a region bounded by all petals is not zonal
+once the number of petals is not `1` modulo `3`.  This is the non-zonal half of Theorem 2.2.2 for
+the standard embedding, and it subsumes Proposition 2.2.1, where there are two petals. -/
+theorem not_isZonal_of_card_ne_one [Fintype Blade]
+    (h : P.IsWindmillEmbedding hub petal regionPetals) {single : Blade → Face} {full : Face}
+    (hsingle : ∀ b, regionPetals (single b) = {b}) (hfull : regionPetals full = Finset.univ)
+    (hcard : (Fintype.card Blade : ZMod 3) ≠ 1) : ¬ P.IsZonal :=
+  fun hzonal => hcard (h.card_eq_one_of_isZonal hsingle hfull hzonal)
+
+end IsWindmillEmbedding
+
+end WindmillEmbedding
 
 /-- The canonical three-region realization of a two-bladed windmill: a connected graph whose vertex
 set is covered by two blades meeting exactly in the hub.
