@@ -96,6 +96,17 @@ needed, so the logical dependency is visible in the statement of every result th
   type (3) supergraph. That is a construction task of the same kind as `windmillGraph`, not a case split.
   The labellings are done; the embeddings are not.
 
+  Design for that construction, so resuming does not start from the paper. Mirror `windmillGraph`.
+  Vertices `Bool ⊕ (Σ i : Fin 3, Fin (len i))`, with `Bool` naming the two branch vertices and `len i` the
+  number of interior vertices of the `i`-th path. Adjacency: consecutive interior vertices of a common
+  path, the first interior vertex of each path to `inl false`, the last to `inl true`, and `inl false` to
+  `inl true` directly when some `len i = 0`. Symmetry and looplessness go by `rintro` on the sum type,
+  comparing `.val` as naturals so no dependent casts appear, which is what made `windmillAdj` work.
+  Connectivity: walk each interior vertex down its own path to a branch vertex by induction on its index,
+  then join the two branch vertices through any path, exactly as `reachable_hub` does. Two boundary
+  functions are then needed, one per subcase, matching the shapes consumed by
+  `isZonal_of_theta_outsideBlock` and `isZonal_of_theta_threeBlocks`.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
