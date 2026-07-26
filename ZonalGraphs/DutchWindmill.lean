@@ -151,6 +151,95 @@ end IsWindmillEmbedding
 
 end WindmillEmbedding
 
+section PetalSums
+
+/-- The labeling giving the label `2` to the vertices of `flip` and the label `1` to all others. -/
+def flipLabeling (flip : Finset Vertex) : VertexLabeling Vertex :=
+  fun v => if v ∈ flip then ⟨2, by decide⟩ else ⟨1, by decide⟩
+
+omit [Fintype Vertex] in
+/-- Summing a flip labeling over a set adds one for each flipped vertex that the set contains. -/
+theorem sum_flipLabeling (flip s : Finset Vertex) :
+    ∑ v ∈ s, (flipLabeling flip v : ZMod 3) = (s.card : ZMod 3) + ((s ∩ flip).card : ZMod 3) := by
+  have hsplit := Finset.sum_filter_add_sum_filter_not s (fun v => v ∈ flip)
+    fun v => (flipLabeling flip v : ZMod 3)
+  have hcard := Finset.card_filter_add_card_filter_not (s := s) (p := fun v => v ∈ flip)
+  have h2 : ∀ v ∈ {v ∈ s | v ∈ flip}, (flipLabeling flip v : ZMod 3) = 2 := by
+    intro v hv
+    simp only [Finset.mem_filter] at hv
+    simp [flipLabeling, hv.2]
+  have h1 : ∀ v ∈ {v ∈ s | ¬ v ∈ flip}, (flipLabeling flip v : ZMod 3) = 1 := by
+    intro v hv
+    simp only [Finset.mem_filter] at hv
+    simp [flipLabeling, hv.2]
+  rw [Finset.sum_congr rfl h2, Finset.sum_congr rfl h1, Finset.sum_const, Finset.sum_const,
+    nsmul_eq_mul, nsmul_eq_mul] at hsplit
+  rw [Finset.filter_mem_eq_inter] at hsplit hcard
+  rw [← hsplit, ← hcard]
+  push_cast
+  ring
+
+omit [Fintype Vertex] in
+/-- **Prescribing petal sums.** If the petals avoid the hub, are pairwise disjoint, and each has at
+least two vertices, then every assignment of target petal sums is realized by some labeling, which
+moreover gives the hub the label `1`.
+
+Label every vertex `1`, then in each petal flip `(target - |petal|).val ≤ 2` vertices from `1` to
+`2`; each flip raises that petal's sum by exactly one.  Two vertices per petal therefore suffice to
+reach any target in `ZMod 3`, and Lemma 2.0.4 is what guarantees petals of a cycle minus its hub
+are large enough. -/
+theorem exists_labeling_petalSum_eq {Blade : Type w} [Fintype Blade] (hub : Vertex)
+    (petal : Blade → Finset Vertex) (hhub : ∀ b, hub ∉ petal b)
+    (hdisjoint : ∀ b c, b ≠ c → Disjoint (petal b) (petal c))
+    (hcard : ∀ b, 2 ≤ (petal b).card) (target : Blade → ZMod 3) :
+    ∃ labeling : VertexLabeling Vertex, (labeling hub : ZMod 3) = 1 ∧
+      ∀ b, ∑ v ∈ petal b, (labeling v : ZMod 3) = target b := by
+  have hbound : ∀ b, (target b - ((petal b).card : ZMod 3)).val ≤ (petal b).card := by
+    intro b
+    have hlt := ZMod.val_lt (target b - ((petal b).card : ZMod 3))
+    have := hcard b
+    omega
+  choose F hFsubset hFcard using fun b => Finset.exists_subset_card_eq (hbound b)
+  have hhubFlip : hub ∉ Finset.univ.biUnion F := by
+    simp only [Finset.mem_biUnion]
+    push_neg
+    exact fun b _ hmem => hhub b (hFsubset b hmem)
+  refine ⟨flipLabeling (Finset.univ.biUnion F), by simp [flipLabeling, hhubFlip], fun b => ?_⟩
+  have hinter : petal b ∩ Finset.univ.biUnion F = F b := by
+    ext v
+    simp only [Finset.mem_inter, Finset.mem_biUnion, Finset.mem_univ, true_and]
+    refine ⟨fun ⟨hv, c, hc⟩ => ?_, fun hv => ⟨hFsubset b hv, b, hv⟩⟩
+    by_cases hbc : c = b
+    · exact hbc ▸ hc
+    · exact absurd hv (Finset.disjoint_left.mp (hdisjoint c b hbc) (hFsubset c hc))
+  rw [sum_flipLabeling, hinter, hFcard, ZMod.natCast_zmod_val]
+  ring
+
+end PetalSums
+
+section ZonalWindmill
+
+variable {Face : Type v} [Fintype Face] {Blade : Type w} [Fintype Blade]
+  {P : PlaneGraph Vertex Face} {hub : Vertex} {petal : Blade → Finset Vertex}
+  {regionPetals : Face → Finset Blade}
+
+/-- A windmill embedding is zonal as soon as *some* assignment of petal sums makes every region
+value vanish.
+
+Together with `IsWindmillEmbedding.card_eq_one_of_isZonal` this reduces the zonality of any Dutch
+windmill embedding to arithmetic in `ZMod 3` over its region-petal data. -/
+theorem IsWindmillEmbedding.isZonal_of_forall_sum_eq_zero
+    (h : P.IsWindmillEmbedding hub petal regionPetals) (hcard : ∀ b, 2 ≤ (petal b).card)
+    (target : Blade → ZMod 3)
+    (hregions : ∀ R : Face, 1 + ∑ b ∈ regionPetals R, target b = 0) : P.IsZonal := by
+  obtain ⟨labeling, hhub, hpetal⟩ :=
+    exists_labeling_petalSum_eq hub petal h.hub_notMem_petal h.petal_disjoint hcard target
+  refine ⟨labeling, fun R => ?_⟩
+  rw [h.zoneValue_eq labeling R, hhub, Finset.sum_congr rfl fun b _ => hpetal b]
+  exact hregions R
+
+end ZonalWindmill
+
 /-- The canonical three-region realization of a two-bladed windmill: a connected graph whose vertex
 set is covered by two blades meeting exactly in the hub.
 
