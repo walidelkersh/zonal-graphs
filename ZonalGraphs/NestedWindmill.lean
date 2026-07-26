@@ -303,6 +303,32 @@ theorem two_le_irregularLen (k : ℕ) (b : Fin k) : 2 ≤ irregularLen k b := by
   simp only [irregularLen]
   omega
 
+/-- **The swap case is impossible for an even number of blades.**
+
+If two nesting sets of equal size had totals satisfying `S₁ + S₂ = Σ_{b ≠ outer} len b`, then the left
+side would be even — a sum of two totals of odd terms over sets of equal size — while the right side
+has the parity of `k - 1`.  For `k` even that is odd, a contradiction.
+
+This is what lets the separating argument for Theorem 2.3.2 avoid any estimate on the largest
+blades. -/
+theorem not_sum_add_sum_eq_of_even {k : ℕ} (hk : Even k) (outer : Fin k)
+    {N₁ N₂ : Finset (Fin k)} (hcard : N₁.card = N₂.card) :
+    (∑ b ∈ N₁, irregularLen k b) + ∑ b ∈ N₂, irregularLen k b
+      ≠ ∑ b ∈ Finset.univ.erase outer, irregularLen k b := by
+  intro hcontra
+  have hpos : 0 < k := Nat.lt_of_le_of_lt (Nat.zero_le (outer : ℕ)) outer.isLt
+  have hleft : Even ((∑ b ∈ N₁, irregularLen k b) + ∑ b ∈ N₂, irregularLen k b) := by
+    rw [Nat.even_add, even_sum_iff_even_card_of_forall_odd fun b _ => irregularLen_odd k b,
+      even_sum_iff_even_card_of_forall_odd fun b _ => irregularLen_odd k b, hcard]
+  have hcard_erase : (Finset.univ.erase outer).card = k - 1 := by
+    rw [Finset.card_erase_of_mem (Finset.mem_univ outer), Finset.card_univ, Fintype.card_fin]
+  have hright : ¬Even (∑ b ∈ Finset.univ.erase outer, irregularLen k b) := by
+    have hk2 : k % 2 = 0 := Nat.even_iff.mp hk
+    rw [even_sum_iff_even_card_of_forall_odd fun b _ => irregularLen_odd k b, hcard_erase,
+      Nat.even_sub (by omega : 1 ≤ k), Nat.even_iff, Nat.even_iff]
+    omega
+  exact hright (hcontra ▸ hleft)
+
 end PlaneGraph
 
 end ZonalGraphs
