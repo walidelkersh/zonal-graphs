@@ -69,6 +69,27 @@ theorem isZonal_of_isInnerZonal_of_three_regionsAt [DecidableEq Face] (P : Plane
     rwa [Finset.sum_eq_zero fun S hS => hexc S (Finset.ne_of_mem_erase hS), add_zero] at hsum
   · exact hexc R hR
 
+/-- **A single vertex off the count destroys zonality.**
+
+If exactly one vertex lies on a number of regions not divisible by three, the region values cannot all
+vanish. The total is that vertex's incidence count times its label, a product of two nonzero elements of
+the field `ZMod 3`.
+
+This is the mechanism behind the non-zonality results for nearly cubic plane graphs, where the single
+vertex of degree two lies on two regions while every other vertex lies on three. -/
+theorem not_isZonal_of_unique_regionsAt_not_three_dvd (P : PlaneGraph Vertex Face) (w : Vertex)
+    (hw : ¬ (3 ∣ (P.regionsAt w).card))
+    (hrest : ∀ v, v ≠ w → 3 ∣ (P.regionsAt v).card) : ¬ P.IsZonal := by
+  haveI : Fact (Nat.Prime 3) := ⟨by norm_num⟩
+  rintro ⟨labeling, hlabeling⟩
+  have hzero : (∑ R : Face, P.zoneValue labeling R) = 0 :=
+    Finset.sum_eq_zero fun R _ => hlabeling R
+  rw [P.sum_zoneValue_eq_sum_regionsAt labeling,
+    Finset.sum_eq_single w
+      (fun v _ hv => by rw [(ZMod.natCast_eq_zero_iff _ _).mpr (hrest v hv), zero_mul])
+      fun hmem => absurd (Finset.mem_univ w) hmem] at hzero
+  exact mul_ne_zero (fun hc => hw ((ZMod.natCast_eq_zero_iff _ _).mp hc)) (labeling w).2 hzero
+
 /-- **Corollary 4.4.6 (Bowling, 2025).** A cubic map is zonal exactly when it is inner zonal.
 
 One direction is Theorem 4.4.5. The other holds of any plane graph with a region to nominate as
