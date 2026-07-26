@@ -192,9 +192,31 @@ needed, so the logical dependency is visible in the statement of every result th
   run that did not succeed, and check a file with a build rather than with LSP diagnostics, which reported
   this file clean while it held a type error.
 
-  What remains for Theorem 2.5.1 is the wrapper: every surviving vertex must reach a surviving hub, which
-  needs the case where the deleted vertex is a hub itself, and the ends `n = 1` where a block keeps both of
-  its undivided edges and there may be no surviving hub to aim at.
+  **What remains is one case, fully mapped.** Every deletion of a non-hub vertex is settled by
+  `gnGraph_induce_connected_of_nohub`, built from the gap redundancy, the core-to-hub step, the
+  connector-to-hub step and range-restricted chaining `gnGraph_induce_hub_down`.
+
+  Left over is `c = core 4 i₀`, a deleted hub. Every other vertex survives there, so the memberships reduce to
+  discrimination facts, but the chain cannot pass through the missing hub and the block must be bridged through
+  its rim. Three sub-cases by the position of `i₀`, with every route named:
+  - `i₀.val = 0`: only the next gap exists. Anchor the hub of block 1. The rim of `i₀` reaches it by
+    `gnGraph_induce_rim_reachable_next`, and every other block chains down to block 1 by
+    `gnGraph_induce_hub_down` with `lo = 1`.
+  - `i₀.val + 1 = n`: only the previous gap exists. The mirror, using
+    `gnGraph_induce_rim_reachable_prev` and `lo = 0`.
+  - `0 < i₀.val` and `i₀.val + 1 < n`: both gaps exist. Anchor the hub of block `i₀ + 1`. Blocks above chain
+    with `lo = i₀.val + 1`; blocks below chain to block `0` with `lo = 0`; and the two sides meet at the rim of
+    `i₀`, which reaches the hub below by the previous route and the hub above by the next route. That rim is the
+    bridge, and it is the reason `Gn` survives losing a hub at all.
+  - Connectors, in every sub-case: the deleted vertex is a hub, so a connector's own core attachment always
+    survives. If its block is not `i₀` that block's hub is available; if it is `i₀` the attachment is a rim
+    vertex and the escape routes apply.
+  - `n = 1`: no gap exists, so a connector is impossible, `Fin (n - 1)` being empty. The single block carries
+    both conditional edges, since `i.val = 0` and `i.val + 1 = n` hold together, so the rim is the four-cycle
+    `r-s-t-u-r` and deleting the hub leaves it connected.
+
+  No new mathematics is involved in what remains, only the assembly; every route above is an existing lemma or
+  a stated edge of `gnCoreAdj`, `gnGapAdj` or `gnMixedAdj`.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
