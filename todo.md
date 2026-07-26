@@ -56,7 +56,10 @@ The count of genuinely distinct statements is therefore well below the number of
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
 (facial colour balance, proved rather than assumed), `windmillGraph_connected`,
-`PlaneGraph.isZonal_of_three_dvd_card_boundary`.
+`PlaneGraph.isZonal_of_three_dvd_card_boundary`, `PlaneGraph.isZonal_of_blockDecomposition`,
+`PlaneGraph.not_isZonal_of_boundary_insert`, and on the abelian-group side `IsGroupZonal` with
+`isGroupZonal_zmod_three_iff` showing it is definitionally the classical notion, `IsGroupCozonal`,
+`isGroupZonal_of_facialBalance` (the zonal half of Prop 2.7) and `isGroupZonal_map` (Observation 2.2).
 
 ## Carried as explicit hypotheses, not proved
 

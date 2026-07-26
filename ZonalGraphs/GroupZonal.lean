@@ -38,6 +38,34 @@ value `0`. -/
 def IsGroupZonal (P : PlaneGraph Vertex Face) (Γ : Type*) [AddCommGroup Γ] : Prop :=
   ∃ labeling : GroupLabeling Vertex Γ, ∀ R : Face, P.groupZoneValue labeling R = 0
 
+/-- The regions having a given vertex on their boundary, written `X_v` in the literature. -/
+def regionsAt [DecidableEq Vertex] (P : PlaneGraph Vertex Face) (v : Vertex) : Finset Face :=
+  {R ∈ Finset.univ | v ∈ P.boundary R}
+
+/-- A plane graph is `Γ`-*cozonal* when some labeling of its **regions** by nonzero elements of `Γ` gives
+every vertex the value `0`, the value of a vertex being the sum over the regions on whose boundary it
+lies.
+
+This is the exact dual of zonality: zonal labels vertices and sums over each region's boundary, cozonal
+labels regions and sums over each vertex's incident regions. -/
+def IsGroupCozonal [DecidableEq Vertex] (P : PlaneGraph Vertex Face) (Γ : Type*)
+    [AddCommGroup Γ] : Prop :=
+  ∃ labeling : Face → {x : Γ // x ≠ 0},
+    ∀ v : Vertex, ∑ R ∈ P.regionsAt v, (labeling R : Γ) = 0
+
+/-- **Observation 2.2 (Bowling, 2025).** A group homomorphism carries a `Γ`-zonal labeling avoiding its
+kernel to a `Γ'`-zonal labeling.
+
+No vertex label lies in the kernel, so the images are again nonzero, and a homomorphism commutes with the
+sum defining a region's value. -/
+theorem isGroupZonal_map {Γ' : Type*} [AddCommGroup Γ'] (φ : Γ →+ Γ')
+    (P : PlaneGraph Vertex Face) (labeling : GroupLabeling Vertex Γ)
+    (hkernel : ∀ v, φ (labeling v) ≠ 0)
+    (hzonal : ∀ R : Face, P.groupZoneValue labeling R = 0) : P.IsGroupZonal Γ' := by
+  refine ⟨fun v => ⟨φ (labeling v), hkernel v⟩, fun R => ?_⟩
+  simp only [groupZoneValue] at hzonal ⊢
+  rw [← map_sum, hzonal R, map_zero]
+
 /-- **The generalization is faithful.** At `Γ = ZMod 3` the group-valued notion *is* the original one, on
 the nose rather than up to translation.
 
