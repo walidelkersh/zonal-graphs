@@ -62,6 +62,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 2.5.9 | `PlaneGraph.isZonal_of_forall_isGnRegion`, on `GnVertex.sum_triangle`, `sum_quad`, `sum_pentagon` and `sum_blocks` |
 | Thm 2.5.11 | `PlaneGraph.not_isZonal_of_gn_forcing`, on `eq_of_zoneValue_eq_zero_of_card_boundary_eq_three` |
 | Thm 2.5.5, Thm 2.5.8 | `PlaneGraph.not_nonempty_iso_of_gn_profile`, on `Iso.card_filter_boundary_card` |
+| Prop 2.4.1 | `PlaneGraph.isZonal_of_card_boundary_eq_three_or_nine` |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -213,7 +214,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Theorem 2.2.2**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal.
 - [ ] **Lemma 2.3.1**: Let S be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4Y i=1 ik − 1 k − 1  = 4k − 1 k − 1 3k − 1 k − 1 2k − 1 k − 1  . (2.1)
 - [x] **Theorem 2.3.2**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
-- [ ] **Proposition 2.4.1**: For a positive integer k, the plane graph Fk is zonal.
+- [x] **Proposition 2.4.1**: For a positive integer k, the plane graph Fk is zonal.
 - [ ] **Theorem 2.4.2**: There is a regular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
 - [ ] **Proposition 2.4.3**: Let k be a positive integer. ⋆ If µ(k) ≡ 1 (mod 3), then the zonal Dutch windmill graph Dµ(k) 3 is condition- ally zonal and has at least k distinct zonal planar embeddings. ⋆ If µ(k) ≡ 2 (mod 3), ...
 - [ ] **Theorem 2.5.1**: The graph Gn is 2-connected.
