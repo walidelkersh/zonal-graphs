@@ -37,6 +37,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Theorem 2.2.2 | `PlaneGraph.conditionallyZonal_windmill` |
 | Theorem 2.3.2 | `PlaneGraph.exists_irregular_windmill_many_zonal_embeddings` |
 | Theorem 3.1.1 | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one` |
+| Theorem 3.1.3 | `PlaneGraph.isZonal_of_boundary_eq_union` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -104,7 +105,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 2.5.13**: The plane graph Gn is a 2-connected graph having at least ⌊n/2⌋ distinct zonal planar embeddings and at least n − 1 distinct non-zonal planar em- beddings. 47 Chapter 3 Graphs of Small Cycle Rank I...
 - [x] **Theorem 3.1.1**: A unicyclic graph G is zonal if and only if G ̸= C ⋆ K2 for any cycle C.
 - [ ] **Corollary 3.1.2**: For each cycle C and each integer i ∈ {0, 1, 2}, there is a label- ing ℓ : V (C) → {1, 2} of C such that P(ℓ, C) = i in Z3. We are now prepared to verify the following result. 49
-- [ ] **Theorem 3.1.3**: Every zonal unicyclic graph is absolutely zonal.
+- [x] **Theorem 3.1.3**: Every zonal unicyclic graph is absolutely zonal.
 - [ ] **Theorem 3.2.1**: Let G be a plane graph of cycle rank 2 and type (1). Then G is zonal if and only if G is not minimal.
 - [ ] **Corollary 3.2.2**: Let G be a graph of cycle rank 2 and type (1). If G is minimal, then G is not zonal. Otherwise, G is absolutely zonal. 53
 - [ ] **Theorem 3.2.3**: Let G be a plane graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
@@ -143,7 +144,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 1.4.**: [3] Every nontrivial tree and every cycle is zonal. The cycle rank of a connected graph of order n size m is the number m − n + 1. Thus, cycles have cycle rank 1. In general, the graphs of cycle ra...
 - [ ] **Lemma 2.2.**: Let X be a nonempty set of vertices of a graph. (1) For each i = 1, 2, there is a labeling ℓi : X → {1, 2} ⊆Z3 of X such that P(ℓi, X) = i in Z3. (2) If |X| ≥2, then there is a labeling ℓ0 : X → {1...
 - [x] **Theorem 2.3.**: A unicyclic graph G is zonal if and only if G ̸= C ⋆ K2 for any cycle C.
-- [ ] **Proposition 2.4.**: Every planar embedding of a zonal graph of cycle rank 1 is zonal.
+- [x] **Proposition 2.4.**: Every planar embedding of a zonal graph of cycle rank 1 is zonal.
 - [ ] **Theorem 3.1.**: Let G be a graph of cycle rank 2 and type (1). Then G is zonal if and only if G is not minimal.
 - [ ] **Theorem 3.2.**: Let G be a graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
 - [ ] **Theorem 3.3.**: Let G be a minimal graph of cycle rank2 and type (3) consisting of three internally disjoint u − v paths Pi of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and onl...
