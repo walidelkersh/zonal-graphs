@@ -455,6 +455,48 @@ theorem exists_many_singleton_nestingSets (t : ℕ) :
   rw [card_singleton_nestingSets]
   omega
 
+/-- **Theorem 2.3.2 (Bowling–Zhang, 2022).** There is an irregular Dutch windmill graph with an
+arbitrarily large number of distinct zonal planar embeddings.
+
+Given a target `t`, take `k = 6(t+1)` blades with the pairwise distinct lengths `irregularLen k`, so the
+windmill is irregular.  As `k ≡ 0 (mod 3)` the congruence `m = 2k + 1` in `ZMod 3` reads `m = 1`, so the
+admissible nesting sets are the `k - 1 ≥ t` singletons avoiding `outer`.  Each yields a zonal embedding
+by `isZonal_nestedWindmill`, and distinct singletons yield non-isomorphic embeddings by
+`nestingSet_eq_of_iso`, `k` being even. -/
+theorem exists_irregular_windmill_many_zonal_embeddings (t : ℕ) :
+    ∃ (k : ℕ) (outer : Fin k) (S : Finset (Finset (Fin k))),
+      t ≤ S.card ∧ (∀ N ∈ S, outer ∉ N) ∧
+      (∀ N ∈ S, (nestedWindmill (irregularLen k) outer N fun _ => ∅).IsZonal) ∧
+      ∀ N₁ ∈ S, ∀ N₂ ∈ S, N₁ ≠ N₂ →
+        IsEmpty ((nestedWindmill (irregularLen k) outer N₁ fun _ => ∅).Iso
+          (nestedWindmill (irregularLen k) outer N₂ fun _ => ∅)) := by
+  obtain ⟨k, hk, hkpos⟩ : ∃ k : ℕ, k = 6 * (t + 1) ∧ 0 < k := ⟨6 * (t + 1), rfl, by omega⟩
+  refine ⟨k, ⟨0, hkpos⟩, (Finset.univ.erase ⟨0, hkpos⟩).image fun b => ({b} : Finset (Fin k)),
+    ?_, ?_, ?_, ?_⟩
+  · rw [card_singleton_nestingSets]; omega
+  -- Every member is a singleton avoiding `outer`.
+  · intro N hN
+    obtain ⟨b, hb, rfl⟩ := Finset.mem_image.mp hN
+    simpa using (Finset.ne_of_mem_erase hb).symm
+  -- Each such nesting set gives a zonal embedding.
+  · intro N hN
+    obtain ⟨b, hb, rfl⟩ := Finset.mem_image.mp hN
+    have hout : (⟨0, hkpos⟩ : Fin k) ∉ ({b} : Finset (Fin k)) := by
+      simpa using (Finset.ne_of_mem_erase hb).symm
+    refine isZonal_nestedWindmill (irregularLen k) _ _ _ (two_le_irregularLen k) hout ?_
+    rw [Finset.card_singleton, Fintype.card_fin, hk]
+    have h6 : (6 : ZMod 3) = 0 := by decide
+    push_cast
+    linear_combination (-2 * ((t : ZMod 3) + 1)) * h6
+  -- Distinct singletons give non-isomorphic embeddings.
+  · intro N₁ hN₁ N₂ hN₂ hne
+    obtain ⟨b₁, hb₁, rfl⟩ := Finset.mem_image.mp hN₁
+    obtain ⟨b₂, hb₂, rfl⟩ := Finset.mem_image.mp hN₂
+    refine ⟨fun e => hne ?_⟩
+    refine nestingSet_eq_of_iso ⟨3 * (t + 1), by omega⟩ _ ?_ ?_ (by simp) _ _ e
+    · simpa using (Finset.ne_of_mem_erase hb₁).symm
+    · simpa using (Finset.ne_of_mem_erase hb₂).symm
+
 end PlaneGraph
 
 end ZonalGraphs
