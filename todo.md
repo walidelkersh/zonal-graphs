@@ -88,6 +88,34 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+* **The Gn family, Theorems 2.5.1 and 2.5.5 to 2.5.13** — no longer blocked on unread sources. The
+  construction, recovered from pages 38 to 43 of the dissertation, is this. Take W4, the wheel of order
+  five, as Fi with outer cycle (ri, si, ti, ui) and hub vi. Replace the edge si-ti by the path
+  (si, wi, xi, ti) for i at most n-1, replace the edge ri-ui by the path (ri, y(i-1), z(i-1), ui) for i at
+  least 2, then add the edges wi-yi and xi-zi joining consecutive blocks. So Gn has 9n-4 vertices, and the
+  irregular cases are i = 1 and i = n, where one of the two subdivided edges is absent. The embeddings
+  Gn,k are obtained by turning the sub-embedding on the first k blocks inside out, and Observation 2.5.4
+  records that Gn,k then has an exterior region of boundary length 8(n-k), an interior region of length
+  8k, and all other regions of length 3, 4 or 5, with 5n regions in total.
+
+  What each entry needs from here:
+  - **Theorem 2.5.9** (Gn,k is zonal for k in {0, 2, 3, ..., n/2}) needs only the region structure, since
+    zonality reads the boundary function and never the adjacency. The labeling is explicit: ri, si, ti, ui
+    and vi all take a common value ai, while wi and yi take 1 and xi and zi take 2. The coefficients ai
+    come from Lemma 2.0.4, which is already proved here, applied to split the indices at k. This is the
+    most reachable of the group; what is missing is the full region list, which runs past the page break
+    in the extract and needs pages 43 to 44 read again.
+  - **Theorem 2.5.1** (Gn is 2-connected) needs Gn built as a SimpleGraph and connectivity of every
+    vertex-deleted subgraph. That is harder than the windmill and theta constructions already here,
+    because those needed plain connectivity rather than deletion-robust connectivity.
+  - **Theorems 2.5.5, 2.5.8, 2.5.11 and Corollaries 2.5.10, 2.5.12** rest on the embeddings being
+    distinct, which is an isomorphism-invariant argument of the kind `nestingSet_eq_of_iso` already
+    carries for windmills.
+
+  The method that recovered this is worth recording: `pdftotext -f <first> -l <last>` on the PDFs in
+  `C:\ProjectsCT & ZONAL`. The same method should be used to repair the entries tagged
+  `[ARTIFACT: ...]`, most of which are truncations rather than genuine non-statements.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
