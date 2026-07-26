@@ -48,6 +48,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
 | Prop 2.3 (zonal labeling) | `PlaneGraph.isZonal_of_card_boundary_eq_three` and `isInnerZonal_of_card_boundary_interior_eq_three` |
+| Thm 3.3 (max degree 3) | `PlaneGraph.zonal_of_isSubdivision` and `innerZonal_of_isSubdivision` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -183,7 +184,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 3.1**: , G is inner zonal. We claim that G is not zonal. Assume, to the contrary, thatG has a zonal labeling ℓ. Then ℓ(Ri) = 0 for i = 1, 2, 3 and so∑9 i=1 ℓ(vi) = 0. Thus, ℓ(R5) =∑10 i=1 ℓ(vi) = ℓ(v10)̸=...
 - [ ] **Proposition 3.1.**: No nearly cubic plane graph is zonal. 133 A. Bowling and P. Zhang/ Discrete Math. Lett. 12 (2023) 130–137 134
 - [ ] **Theorem 3.2.**: Every 2-connected nearly cubic plane graph is inner zonal.
-- [ ] **Theorem 3.3.**: Let H be a plane graph, letZ be a nonempty set of edges ofH and let G be the graph obtained by subdividing each edge inZ at least twice. Then (1) G is zonal if H is zonal and (2) G is inner zonal i...
+- [x] **Theorem 3.3.**: Let H be a plane graph, letZ be a nonempty set of edges ofH and let G be the graph obtained by subdividing each edge inZ at least twice. Then (1) G is zonal if H is zonal and (2) G is inner zonal i...
 - [ ] **Theorem 3.4.**: If G is a connected cubic plane graph with bridges, thenG is not zonal. By Theorem 3.4, no connected cubic plane graph with bridges is zonal. We also saw that the nearly cubic plane graph of Figure...
 - [ ] **Theorem 3.5.**: If G is a connected cubic plane graph with bridges, thenG is not inner zonal.
 - [ ] **Proposition 3.2.**: Let G be a nearly cubic plane graph. Ifℓ is an inner zonal labeling ofG, then there exists a regionR all of whose boundary vertices have degree3 such that ℓ(R)̸= 0.
