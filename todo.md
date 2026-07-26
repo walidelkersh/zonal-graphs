@@ -102,18 +102,34 @@ needed, so the logical dependency is visible in the statement of every result th
   - **Theorem 2.5.9** (Gn,k is zonal for k in {0, 2, 3, ..., n/2}) needs only the region structure, since
     zonality reads the boundary function and never the adjacency. The labeling is explicit: ri, si, ti, ui
     and vi all take a common value ai, while wi and yi take 1 and xi and zi take 2. The coefficients ai
-    come from Lemma 2.0.4, which is already proved here, applied to split the indices at k. This is the
-    most reachable of the group; what is missing is the full region list, which runs past the page break
-    in the extract and needs pages 43 to 44 read again.
+    come from Lemma 2.0.4, which is already proved here, applied to split the indices at k. The region
+    list is now recovered in full, so nothing outstanding remains to be read. Writing ai for the common
+    value on block i, the regions and their sums are: n of boundary (ri, si, vi) summing to 3ai; n of
+    boundary (vi, ti, ui) summing to 3ai; n-2 of boundary (wi, yi, zi, xi) summing to 1+1+2+2 = 6, and
+    n-1 of them when k = 0; n-1 of boundary (ri, vi, ui, z(i-1), y(i-1)) summing to 3ai+3; and n-1 of
+    boundary (si, wi, xi, ti, vi) summing to 3ai+3. The exterior region of length 8(n-k) carries the
+    eight labels r, s, t, u, w, x, y, z of each block above k, contributing 4ai+6 per block, so its total
+    is the sum of the ai above k because 4 = 1 in ZMod 3. The interior region of length 8k is the same
+    with the blocks at or below k. Those two are exactly where the split condition from Lemma 2.0.4 is
+    used, and every other region vanishes outright.
   - **Theorem 2.5.1** (Gn is 2-connected) needs Gn built as a SimpleGraph and connectivity of every
     vertex-deleted subgraph. That is harder than the windmill and theta constructions already here,
     because those needed plain connectivity rather than deletion-robust connectivity.
-  - **Theorems 2.5.5, 2.5.8, 2.5.11 and Corollaries 2.5.10, 2.5.12** rest on the embeddings being
+  - **Theorem 2.5.11** (Gn,k is not zonal for 1 <= k <= n-2) is a forcing chain, and its engine is now
+    proved as `eq_of_zoneValue_eq_zero_of_card_boundary_eq_three`: a region with three boundary vertices
+    forces a zonal labeling to be constant on it, because three nonzero elements of ZMod 3 summing to
+    zero must coincide. The chain runs: vn lies on three triangles, so rn, sn, tn, un and vn share a
+    label, taken to be 1; the region (y(n-1), z(n-1), un, vn, rn) then forces the two remaining labels to
+    sum to 0; the nine-vertex region forces w(n-1) and x(n-1) to be 1; the triangles at v(n-1) force its
+    block onto one label; and the region (v(n-1), s(n-1), w(n-1), x(n-1), u(n-1)) then sums to three
+    times that label plus 2, which never vanishes.
+  - **Theorems 2.5.5, 2.5.8 and Corollaries 2.5.10, 2.5.12** rest on the embeddings being
     distinct, which is an isomorphism-invariant argument of the kind `nestingSet_eq_of_iso` already
     carries for windmills.
 
   The method that recovered this is worth recording: `pdftotext -f <first> -l <last>` on the PDFs in
-  `C:\ProjectsCT & ZONAL`. The same method should be used to repair the entries tagged
+  `C:\ProjectsCT & ZONAL`. Printed page numbers lag the PDF indices by about six, so search by
+  theorem number rather than by page. The same method should be used to repair the entries tagged
   `[ARTIFACT: ...]`, most of which are truncations rather than genuine non-statements.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
