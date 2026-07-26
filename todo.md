@@ -75,6 +75,15 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+* **Theorem 1.1.1** (the Euler identity) — a finding, not an excuse. In the rotation-system model a map's
+  Euler characteristic is `V - E + F` with `V`, `E`, `F` the orbit counts of `rotate`, `dartRev` and
+  `faceMap`, and genus is *defined* by `V - E + F = 2 - 2g`. Planarity is genus zero, so `V - E + F = 2`
+  is the definition of planar rather than a theorem about it. Proving Euler as stated needs planarity
+  defined independently, either topologically in the plane, which needs the Jordan curve theorem, or
+  combinatorially via Kuratowski. Until one of those exists the entry is not provable as written, and the
+  same applies to Theorems 1.1.2, 1.1.3 and the outerplanarity results that rest on it.
+  `RotationSystem.two_dvd_card_dart` is the first genuine ingredient: reversal is a fixed-point-free
+  involution, so the darts pair off and `E` is `Fintype.card Dart / 2`.
 
 
 ## 01_Bowling_2023_Zonality_in_Graphs_Dissertation.pdf

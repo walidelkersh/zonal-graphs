@@ -72,6 +72,29 @@ theorem coloring_vertexOf_faceMap_ne {Colour : Type*} (coloring : E.graph.Colori
   rw [E.vertexOf_faceMap]
   exact (coloring.valid (E.adj_vertexOf_dartRev d)).symm
 
+/-- Reversal has no fixed dart.  This is not assumed: a dart and its reverse have adjacent endpoints, and
+adjacency in a simple graph is irreflexive, so the endpoints differ and the darts cannot coincide. -/
+theorem dartRev_ne (d : Dart) : E.dartRev d ≠ d := by
+  intro hfix
+  have hadj := E.adj_vertexOf_dartRev d
+  rw [hfix] at hadj
+  exact E.graph.irrefl hadj
+
+include E in
+/-- **The dart count is even, and half of it is the number of edges.**
+
+Reversal is a fixed-point-free involution, so it pairs the darts off.  This is the edge count entering
+Euler's identity: an embedding has `Fintype.card Dart / 2` edges. -/
+theorem two_dvd_card_dart [DecidableEq Dart] : 2 ∣ Fintype.card Dart := by
+  have hsq : E.dartRev ^ 2 = 1 := by
+    ext d
+    simp [pow_two, E.dartRev_involutive]
+  have hsupport : E.dartRev.support = Finset.univ := by
+    ext d
+    simp [Equiv.Perm.mem_support, E.dartRev_ne d]
+  have hdvd := Equiv.Perm.two_dvd_card_support hsq
+  rwa [hsupport, Finset.card_univ] at hdvd
+
 section Balance
 
 variable {D : Type w}
