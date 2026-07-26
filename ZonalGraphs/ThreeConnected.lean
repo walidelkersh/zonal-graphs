@@ -70,6 +70,16 @@ theorem Iso.card_filter_boundary_card {P : PlaneGraph V₁ F₁} {Q : PlaneGraph
   · intro S _
     exact e.faceEquiv.apply_symm_apply S
 
+/-- An isomorphism of plane graphs preserves the sum of the squares of the region boundary sizes.
+
+This is a sharper invariant than the plain sum, which is often forced to agree for combinatorial
+reasons, and it is easier to use than the per-size counts of `Iso.card_filter_boundary_card`, since it
+needs no care about distinct regions happening to share a boundary size. -/
+theorem Iso.sum_boundary_card_sq {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} (e : P.Iso Q) :
+    ∑ R : F₁, ((P.boundary R).card) ^ 2 = ∑ S : F₂, ((Q.boundary S).card) ^ 2 := by
+  rw [← Equiv.sum_comp e.faceEquiv fun S => ((Q.boundary S).card) ^ 2]
+  exact Finset.sum_congr rfl fun R _ => by rw [e.card_boundary R]
+
 /-- Zonality is invariant under an isomorphism of plane graphs: transport a zonal labeling along
 the vertex relabeling. -/
 theorem IsZonal.of_iso {P : PlaneGraph V₁ F₁} {Q : PlaneGraph V₂ F₂} (hP : P.IsZonal)
