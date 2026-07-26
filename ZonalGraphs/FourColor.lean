@@ -66,6 +66,35 @@ theorem fourColorZonalStatement_iff (P : PlaneGraph Vertex Face) :
       (P.IsBridgeless → P.IsCubic → (P.IsFourFaceColorable ↔ P.IsZonal)) :=
   Iff.rfl
 
+/-- A *tricoloring* of a plane graph: a colouring of the edges with three colours in which every colour
+appears on the boundary of every region.
+
+This is the notion dual to a proper edge 3-colouring of a cubic map, and it is what Theorem 1.4 of
+Bowling (2025) relates to cozonal labelings of plane triangulations.  That equivalence is *not* proved
+here; its argument lives in a reference outside this project's sources, and guessing it would risk
+building on a wrong reading. The definition is recorded so the statement is at least expressible. -/
+def IsTricoloring (P : PlaneGraph Vertex Face) (colouring : Sym2 Vertex → Fin 3) : Prop :=
+  ∀ (R : Face) (i : Fin 3), ∃ e ∈ P.boundaryEdges R, colouring e = i
+
+/-- On a triangulation a tricoloring is injective on each region's boundary: three edges carrying three
+colours forces the three to be distinct.
+
+Counting does the work. Every colour appears, so the image of the boundary has all three elements, and a
+three-element set whose image has three elements is mapped injectively. -/
+theorem IsTricoloring.injOn_boundaryEdges [DecidableEq (Sym2 Vertex)]
+    {P : PlaneGraph Vertex Face} {colouring : Sym2 Vertex → Fin 3} (h : P.IsTricoloring colouring)
+    (R : Face) (htri : (P.boundaryEdges R).card = 3) :
+    Set.InjOn colouring (P.boundaryEdges R) := by
+  refine Finset.injOn_of_card_image_eq ?_
+  have hsub : (Finset.univ : Finset (Fin 3)) ⊆ (P.boundaryEdges R).image colouring := by
+    intro i _
+    obtain ⟨e, he, hei⟩ := h R i
+    exact Finset.mem_image.mpr ⟨e, he, hei⟩
+  have hge : 3 ≤ ((P.boundaryEdges R).image colouring).card := by
+    simpa using Finset.card_le_card hsub
+  have hle := Finset.card_image_le (s := P.boundaryEdges R) (f := colouring)
+  omega
+
 end PlaneGraph
 
 end ZonalGraphs
