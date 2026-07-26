@@ -7,6 +7,7 @@ import ZonalGraphs.LabelComplement
 import ZonalGraphs.LabelingSums
 import ZonalGraphs.RegionBoundary
 import ZonalGraphs.TreesAndCycles
+import ZonalGraphs.Unicyclic
 import ZonalGraphs.FourColor
 import ZonalGraphs.Subdivisions
 import ZonalGraphs.BipartiteZonal
