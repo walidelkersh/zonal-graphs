@@ -180,6 +180,11 @@ theorem gap_ne_core {j : Fin 5} {i : Fin n} {k : Fin 4} {g : Fin (n - 1)} : gap 
 theorem gap_ne_gap {k₁ k₂ : Fin 4} {g₁ g₂ : Fin (n - 1)} (h : k₁ ≠ k₂) : gap k₁ g₁ ≠ gap k₂ g₂ := by
   simp [gap, h]
 
+/-- Core vertices of different blocks differ, whatever their roles. -/
+theorem core_ne_core_block {j₁ j₂ : Fin 5} {i₁ i₂ : Fin n} (h : i₁ ≠ i₂) :
+    core j₁ i₁ ≠ core j₂ i₂ := by
+  simp [core, h]
+
 section Deletion
 
 variable {c : GnVertex n}
@@ -265,6 +270,63 @@ theorem gnGraph_induce_reachable_hub (j : Fin 5) (i : Fin n)
   · subst hj
     exact SimpleGraph.Reachable.refl _
   · exact (gnGraph_induce_adj hx hv ⟨rfl, Or.inr (Or.inl ⟨rfl, hj⟩)⟩).reachable
+
+
+/-- **The escape route when a hub is deleted.** With the hub of block `g` removed, every rim vertex of that
+block still reaches the hub of block `g + 1`.
+
+No case analysis is needed here, unlike the gap redundancy: the deleted vertex is known to be the hub, so
+every other vertex survives automatically. The rim vertices `s` and `t` leave through their own gap, along
+`s - w - y - r - v` and `t - x - z - u - v`, and `r` and `u` join them across the surviving rim edges `r-s`
+and `t-u`. -/
+theorem gnGraph_induce_rim_reachable_next (i i' : Fin n) (g : Fin (n - 1)) (hi : i.val = g.val)
+    (hi' : i'.val = g.val + 1) (j : Fin 5) (hj : j ≠ 4)
+    (hx : core j i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)))
+    (hv : core 4 i' ∈ (({core 4 i}ᶜ) : Set (GnVertex n))) :
+    ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable ⟨core j i, hx⟩
+      ⟨core 4 i', hv⟩ := by
+  have hne : i ≠ i' := by
+    intro h
+    subst h
+    omega
+  -- memberships: everything other than the hub of block `i` survives
+  have m₁ : core 1 i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core (by decide : (1 : Fin 5) ≠ 4)
+  have m₂ : core 2 i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core (by decide : (2 : Fin 5) ≠ 4)
+  have mw : gap 0 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have mx : gap 1 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have my : gap 2 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have mz : gap 3 g ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by simpa using gap_ne_core
+  have mr : core 0 i' ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core_block hne.symm
+  have mu : core 3 i' ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core_block hne.symm
+  -- the route out of `s`, and the route out of `t`
+  have routeS : ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable
+      ⟨core 1 i, m₁⟩ ⟨core 4 i', hv⟩ :=
+    (gnGraph_induce_adj m₁ mw (Or.inl ⟨rfl, rfl, hi.symm⟩)).reachable.trans
+      ((gnGraph_induce_adj mw my
+          ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))⟩).reachable.trans
+        ((gnGraph_induce_adj my mr
+            (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, hi'.symm⟩)))).reachable.trans
+          (gnGraph_induce_adj mr hv ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩).reachable))
+  have routeT : ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable
+      ⟨core 2 i, m₂⟩ ⟨core 4 i', hv⟩ :=
+    (gnGraph_induce_adj m₂ mx (Or.inr (Or.inl ⟨rfl, rfl, hi.symm⟩))).reachable.trans
+      ((gnGraph_induce_adj mx mz
+          ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))))⟩).reachable.trans
+        ((gnGraph_induce_adj mz mu
+            (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, hi'.symm⟩)))).reachable.trans
+          (gnGraph_induce_adj mu hv ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩).reachable))
+  -- the four rim vertices, `r` and `u` joining across the surviving rim edges
+  fin_cases j
+  · exact (gnGraph_induce_adj hx m₁ ⟨rfl, Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))⟩).reachable.trans routeS
+  · exact routeS
+  · exact routeT
+  · exact (gnGraph_induce_adj hx m₂ ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+      (Or.inl ⟨rfl, rfl⟩)))))⟩).reachable.trans routeT
+  · exact absurd rfl hj
 
 
 end Deletion
