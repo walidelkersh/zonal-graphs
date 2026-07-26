@@ -279,6 +279,16 @@ theorem sum_two_pow_succ_inj_of_card_eq {k : ℕ} {N₁ N₂ : Finset (Fin k)}
     omega
   exact sum_two_pow_val_injective hpow
 
+/-- A sum of odd terms has the parity of the number of terms.
+
+This is the parity input to Theorem 2.3.2.  With every blade length odd, the total over a nesting set
+has the parity of the set's size, so for two nesting sets of equal size the sum of their totals is
+even, while the total over all blades but `outer` has the parity of `k - 1`.  Taking `k` even
+therefore rules out the unwanted case of the separating argument with no size estimate at all. -/
+theorem even_sum_iff_even_card_of_forall_odd {α : Type*} {s : Finset α} {f : α → ℕ}
+    (hodd : ∀ b ∈ s, Odd (f b)) : Even (∑ b ∈ s, f b) ↔ Even s.card := by
+  rw [Finset.even_sum_iff_even_card_odd f, Finset.filter_true_of_mem hodd]
+
 end PlaneGraph
 
 end ZonalGraphs
