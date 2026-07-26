@@ -82,22 +82,15 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
-* **Theorem 3.6** — two subcases, and only one of them is a block labelling. Its statement is that a
-  cycle-rank-two graph properly containing a minimal *zonal* type (3) graph `F`, and not equal to
-  `F ⋆ K₂`, is zonal. Writing `U` for the vertices outside `F`, split as `U₀` at the branch vertices and
-  `Uᵢ` at the interior of the `i`-th path:
-
-  - The subcase where each `U₀ ∪ Uᵢ` is a single vertex *is* a direct labelling, and a seven-block one:
-    blocks `T`, `Q₁`, `Q₂`, `Q₃`, `W₁`, `W₂`, `W₃` with sums `2, 1, 1, 1, 2, 2, 2`, each region reading
-    `2 + 1 + 1 + 2 = 0`. This generalizes `isZonal_of_theta_pendant_blocks` from one pendant block to
-    three, one per region.
-  - The subcase where some `U₀ ∪ Uᵢ` has at least two vertices is *not* a labelling argument. It deletes
-    those vertices, applies the already-proved case to the smaller graph, and extends the labelling back
-    using Lemma 2.0.4 to make the deleted set sum to zero. That is an induction on the graph, which none
-    of the present machinery supports; the block engines all label a fixed vertex set in one go.
-
-  So 3.6 needs a new ingredient, not another instantiation. Recording this because the surface similarity
-  to 3.4 and 3.5 is misleading.
+* **Theorem 3.6** — both subcases are now block labellings, correcting an earlier note here that claimed
+  the second needed graph induction. That note confused the published *technique* with the labelling it
+  produces. The argument deletes the outside vertices, applies the earlier case, and extends the labelling
+  back; but the composed labelling is still a block labelling, with the outside set as one more block
+  carrying target `0` on the boundary of a single region. Both subcases are instantiations of engines that
+  exist: `isZonal_of_theta_outsideBlock` with sums `1, 1, 1, 1, 0` for the deletion subcase, and
+  `isZonal_of_theta_threeBlocks` with sums `2, 1, 1, 1, 2, 2, 2` for the one-vertex-per-region subcase.
+  What remains is the bookkeeping that the two subcases exhaust the hypotheses, which is a case split on
+  whether some `U₀ ∪ Uᵢ` has at least two vertices.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each

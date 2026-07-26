@@ -577,6 +577,34 @@ theorem isZonal_of_theta_threeBlocks (P : PlaneGraph Vertex Face) {R₁ R₂ R�
       Finset.sum_union d01, sT, s1, s3, u3]
     exact e₃
 
+/-- **The deletion subcase of Theorem 3.6, as a block labelling rather than an induction.**
+
+The published argument deletes the outside vertices `U`, applies the earlier case to the smaller graph,
+and extends the labelling back so that `U` sums to zero.  The labelling it produces is nonetheless a
+block labelling: `U` is one more block, appearing on the boundary of a single region, with target `0`.
+So the theta-plus-extra-block engine applies directly, with sums `1, 1, 1, 1, 0`.
+
+The hypothesis that `U` is not a single vertex is exactly the subcase condition `|U₀ ∪ Uᵢ| ≥ 2`, and it is
+what lets `U` carry the target `0`. -/
+theorem isZonal_of_theta_outsideBlock (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₁ Q₂ Q₃ U : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ Q₁ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ Q₁ ∪ Q₃ ∪ U)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hdisjoint : ∀ i j : Fin 5, i ≠ j →
+      Disjoint (![T, Q₁, Q₂, Q₃, U] i) (![T, Q₁, Q₂, Q₃, U] j))
+    (hTcard : T.card = 2) (hq₁ : 1 ≤ Q₁.card) (hq₂ : 1 ≤ Q₂.card) (hq₃ : 1 ≤ Q₃.card)
+    (hU : U.card ≠ 1) : P.IsZonal :=
+  isZonal_of_theta_pendant_blocks P h₁ h₂ h₃ hfaces hdisjoint ![1, 1, 1, 1, 0]
+    (by
+      intro i
+      fin_cases i
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) T.card (by omega)
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₁.card hq₁
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₂.card hq₂
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₃.card hq₃
+      · simpa using val_neg_le_of_ne_one hU)
+    (by decide) (by decide) (by decide)
+
 end PlaneGraph
 
 end ZonalGraphs
