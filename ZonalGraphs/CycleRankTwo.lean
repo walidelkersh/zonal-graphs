@@ -153,6 +153,82 @@ theorem isZonal_iff_not_minimal_cycleRankTwo_typeOne (P : PlaneGraph Vertex Face
     Finset.univ_subset_iff] at hempty
   exact hne hempty
 
+/-- A block absorbs the flips needed to reach the target `0` exactly when it is not a single vertex: an
+empty block needs none, a block of two or more has room, but one vertex would need two flips. -/
+theorem val_neg_le_of_ne_one {c : ℕ} (hc : c ≠ 1) : ((0 : ZMod 3) - (c : ZMod 3)).val ≤ c := by
+  rcases Nat.lt_or_ge c 2 with hsmall | hlarge
+  · obtain rfl : c = 0 := by omega
+    decide
+  · have := ZMod.val_lt ((0 : ZMod 3) - (c : ZMod 3))
+    omega
+
+/-- Splitting the total label sum of a type (2) graph over its two cycles and the vertices lying on no
+cycle. -/
+theorem sum_univ_eq_of_cover {S₁ S₂ W : Finset Vertex} (hd₁₂ : Disjoint S₁ S₂)
+    (hd₁W : Disjoint S₁ W) (hd₂W : Disjoint S₂ W) (hcover : S₁ ∪ S₂ ∪ W = Finset.univ)
+    (labeling : VertexLabeling Vertex) :
+    (∑ v ∈ Finset.univ, (labeling v : ZMod 3))
+      = (∑ v ∈ S₁, (labeling v : ZMod 3)) + (∑ v ∈ S₂, (labeling v : ZMod 3))
+        + ∑ v ∈ W, (labeling v : ZMod 3) := by
+  rw [← hcover, Finset.sum_union (Finset.disjoint_union_left.mpr ⟨hd₁W, hd₂W⟩),
+    Finset.sum_union hd₁₂]
+
+/-- **Theorem 3.2.3 (Bowling–Zhang, 2023).** A plane graph of cycle rank two and type (2) is zonal if and
+only if either every vertex lies on a cycle or at least two vertices lie on no cycle.
+
+Type (2) means the graph contains two *disjoint* cycles joined by a path, so its three regions are
+bounded by the two cycles and by the whole graph.  Writing `W` for the vertices on no cycle, both cycle
+regions can be made to vanish and the exterior value is then exactly the sum over `W`.  That sum can be
+made zero precisely when `W` is not a single vertex — empty needs nothing, two or more can be balanced,
+but one vertex contributes its own nonzero label.
+
+The shape of the argument is the same as for unicyclic graphs in Theorem 3.1.1: the obstruction is always
+a lone vertex off the cycles. -/
+theorem isZonal_iff_card_ne_one_cycleRankTwo_typeTwo (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {S₁ S₂ W : Finset Vertex} (h₁ : P.boundary R₁ = S₁) (h₂ : P.boundary R₂ = S₂)
+    (h₃ : P.boundary R₃ = Finset.univ) (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hd₁₂ : Disjoint S₁ S₂) (hd₁W : Disjoint S₁ W) (hd₂W : Disjoint S₂ W)
+    (hcover : S₁ ∪ S₂ ∪ W = Finset.univ) (hS₁ : 3 ≤ S₁.card) (hS₂ : 3 ≤ S₂.card) :
+    P.IsZonal ↔ W.card ≠ 1 := by
+  constructor
+  · -- A lone vertex off the cycles is the whole obstruction.
+    rintro ⟨labeling, hlabeling⟩ hone
+    obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hone
+    have hv₁ : (∑ v ∈ S₁, (labeling v : ZMod 3)) = 0 := by
+      have h := hlabeling R₁; rwa [zoneValue, h₁] at h
+    have hv₂ : (∑ v ∈ S₂, (labeling v : ZMod 3)) = 0 := by
+      have h := hlabeling R₂; rwa [zoneValue, h₂] at h
+    have hv₃ : (∑ v ∈ Finset.univ, (labeling v : ZMod 3)) = 0 := by
+      have h := hlabeling R₃; rwa [zoneValue, h₃] at h
+    have hsplit := sum_univ_eq_of_cover hd₁₂ hd₁W hd₂W hcover labeling
+    rw [hx, Finset.sum_singleton, hv₁, hv₂, hv₃] at hsplit
+    exact (labeling x).2 (by linear_combination -hsplit)
+  · intro hne
+    have hdisjoint : ∀ i j : Fin 3, i ≠ j →
+        Disjoint (![S₁, S₂, W] i) (![S₁, S₂, W] j) := by
+      intro i j hij
+      fin_cases i <;> fin_cases j <;>
+        simp_all [hd₁₂.symm, hd₁W.symm, hd₂W.symm]
+    have hfit : ∀ i : Fin 3,
+        (((![0, 0, 0] : Fin 3 → ZMod 3) i) - ((![S₁, S₂, W] i).card : ZMod 3)).val
+          ≤ (![S₁, S₂, W] i).card := by
+      intro i
+      fin_cases i
+      · simpa using val_neg_le_of_ne_one (c := S₁.card) (by omega)
+      · simpa using val_neg_le_of_ne_one (c := S₂.card) (by omega)
+      · simpa using val_neg_le_of_ne_one hne
+    obtain ⟨labeling, hsum⟩ :=
+      exists_labeling_blockSum_eq ![S₁, S₂, W] hdisjoint ![0, 0, 0] hfit
+    have hc₁ : (∑ v ∈ S₁, (labeling v : ZMod 3)) = 0 := by simpa using hsum 0
+    have hc₂ : (∑ v ∈ S₂, (labeling v : ZMod 3)) = 0 := by simpa using hsum 1
+    have hcW : (∑ v ∈ W, (labeling v : ZMod 3)) = 0 := by simpa using hsum 2
+    refine ⟨labeling, fun R => ?_⟩
+    rcases hfaces R with rfl | rfl | rfl
+    · rw [zoneValue, h₁]; exact hc₁
+    · rw [zoneValue, h₂]; exact hc₂
+    · rw [zoneValue, h₃, sum_univ_eq_of_cover hd₁₂ hd₁W hd₂W hcover, hc₁, hc₂, hcW]
+      decide
+
 end PlaneGraph
 
 end ZonalGraphs
