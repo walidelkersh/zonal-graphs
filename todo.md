@@ -43,6 +43,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Theorem 3.2.3 | `PlaneGraph.isZonal_iff_card_ne_one_cycleRankTwo_typeTwo` |
 | Corollary 3.2.4 | the theorem above, per embedding |
 | Thm 3.3 (small cycle rank) | `PlaneGraph.isZonal_iff_cycleRankTwo_typeThree` |
+| Thm 3.4 (small cycle rank) | `PlaneGraph.isZonal_of_contains_minimal_nonZonal` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -153,7 +154,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Theorem 3.1.**: Let G be a graph of cycle rank 2 and type (1). Then G is zonal if and only if G is not minimal.
 - [x] **Theorem 3.2.**: Let G be a graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
 - [x] **Theorem 3.3.**: Let G be a minimal graph of cycle rank2 and type (3) consisting of three internally disjoint u − v paths Pi of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and onl...
-- [ ] **Theorem 3.4.**: Let F be a minimal non-zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph, then G is zonal. 7 www.ejgta.org Zonal graphs of small cy...
+- [x] **Theorem 3.4.**: Let F be a minimal non-zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph, then G is zonal. 7 www.ejgta.org Zonal graphs of small cy...
 - [ ] **Theorem 3.5.**: If F is a minimal zonal graph of cycle rank 2 and type (3), then F ⋆ K2 is zonal.
 - [ ] **Theorem 3.6.**: Let F be a minimal zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph and G ̸= F ⋆ K2, then G is zonal.
 - [ ] **Lemma 2.2**: ). Since B∗ 2 is the boundary of the region R∗ 2 of F , it follows that X (ℓF , B∗ 2) = ℓF (u) +ℓF (v) + X (ℓF , Q2) + X (ℓF , Q3) = ℓ(u) +ℓ(v) + X (ℓ, Q2) + X (ℓ, Q3) = 0in Z3. In the graph G, the...
