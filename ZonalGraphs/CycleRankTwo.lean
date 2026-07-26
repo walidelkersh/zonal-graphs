@@ -246,6 +246,63 @@ theorem not_isZonal_of_cycleRankTwo_typeThree_minimal (P : PlaneGraph Vertex Fac
     (h₃ : P.boundary R₃ = T ∪ Q₃) (hw : w ∉ T ∪ Q₃) : ¬P.IsZonal :=
   P.not_isZonal_of_boundary_insert h₃ h₂ hw
 
+/-- **Zonality of a type (3) graph from prescribed block sums.**
+
+Type (3) has three internally disjoint `u`–`v` paths, so with `T = {u, v}` and `Qᵢ` the interior of the
+`i`-th path, the three regions are bounded by `T ∪ Qᵢ ∪ Qⱼ` for the three pairs.  Prescribing a sum for
+each of the four blocks makes every region value a sum of three of the four prescribed values, so the
+three equations `t T + t Qᵢ + t Qⱼ = 0` suffice.
+
+Both cases of Theorem 3.3 use a *constant* assignment: all four blocks get `0`, or all four get `1`.  The
+three equations then read `0 + 0 + 0 = 0` and `1 + 1 + 1 = 0` respectively. -/
+theorem isZonal_of_theta_blocks (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₁ Q₂ Q₃ : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ Q₁ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ Q₁ ∪ Q₃)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hdT₁ : Disjoint T Q₁) (hdT₂ : Disjoint T Q₂) (hdT₃ : Disjoint T Q₃)
+    (hd₁₂ : Disjoint Q₁ Q₂) (hd₁₃ : Disjoint Q₁ Q₃) (hd₂₃ : Disjoint Q₂ Q₃)
+    (t : ZMod 3) (hthree : t + t + t = 0)
+    (hfitT : (t - (T.card : ZMod 3)).val ≤ T.card)
+    (hfit₁ : (t - (Q₁.card : ZMod 3)).val ≤ Q₁.card)
+    (hfit₂ : (t - (Q₂.card : ZMod 3)).val ≤ Q₂.card)
+    (hfit₃ : (t - (Q₃.card : ZMod 3)).val ≤ Q₃.card) : P.IsZonal := by
+  have hdisjoint : ∀ i j : Fin 4, i ≠ j →
+      Disjoint (![T, Q₁, Q₂, Q₃] i) (![T, Q₁, Q₂, Q₃] j) := by
+    intro i j hij
+    fin_cases i <;> fin_cases j <;>
+      simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+        Matrix.cons_val_two, Matrix.tail_cons] <;>
+      first
+        | exact absurd rfl hij
+        | exact hdT₁ | exact hdT₂ | exact hdT₃
+        | exact hd₁₂ | exact hd₁₃ | exact hd₂₃
+        | exact hdT₁.symm | exact hdT₂.symm | exact hdT₃.symm
+        | exact hd₁₂.symm | exact hd₁₃.symm | exact hd₂₃.symm
+  obtain ⟨labeling, hsum⟩ :=
+    exists_labeling_blockSum_eq ![T, Q₁, Q₂, Q₃] hdisjoint (fun _ => t) (by
+      intro i
+      fin_cases i <;>
+        simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+          Matrix.cons_val_two, Matrix.tail_cons] <;>
+        first
+          | exact hfitT | exact hfit₁ | exact hfit₂ | exact hfit₃)
+  have hT : (∑ v ∈ T, (labeling v : ZMod 3)) = t := by simpa using hsum 0
+  have hv₁ : (∑ v ∈ Q₁, (labeling v : ZMod 3)) = t := by simpa using hsum 1
+  have hv₂ : (∑ v ∈ Q₂, (labeling v : ZMod 3)) = t := by simpa using hsum 2
+  have hv₃ : (∑ v ∈ Q₃, (labeling v : ZMod 3)) = t := by simpa using hsum 3
+  -- Each region boundary is a disjoint union of three of the four blocks.
+  have hsplit : ∀ A B : Finset Vertex, Disjoint T A → Disjoint T B → Disjoint A B →
+      (∑ v ∈ T ∪ A ∪ B, (labeling v : ZMod 3))
+        = (∑ v ∈ T, (labeling v : ZMod 3)) + (∑ v ∈ A, (labeling v : ZMod 3))
+          + ∑ v ∈ B, (labeling v : ZMod 3) := by
+    intro A B hTA hTB hAB
+    rw [Finset.sum_union (Finset.disjoint_union_left.mpr ⟨hTB, hAB⟩), Finset.sum_union hTA]
+  refine ⟨labeling, fun R => ?_⟩
+  rcases hfaces R with rfl | rfl | rfl
+  · rw [zoneValue, h₁, hsplit Q₁ Q₂ hdT₁ hdT₂ hd₁₂, hT, hv₁, hv₂]; exact hthree
+  · rw [zoneValue, h₂, hsplit Q₂ Q₃ hdT₂ hdT₃ hd₂₃, hT, hv₂, hv₃]; exact hthree
+  · rw [zoneValue, h₃, hsplit Q₁ Q₃ hdT₁ hdT₃ hd₁₃, hT, hv₁, hv₃]; exact hthree
+
 end PlaneGraph
 
 end ZonalGraphs
