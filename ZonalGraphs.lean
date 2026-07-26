@@ -22,6 +22,7 @@ import ZonalGraphs.BoundaryDifference
 import ZonalGraphs.ConstantOnBlocks
 import ZonalGraphs.CycleRankTwo
 import ZonalGraphs.ThetaGraph
+import ZonalGraphs.GnFamily
 import ZonalGraphs.InnerZonal
 import ZonalGraphs.TriangleForcing
 import ZonalGraphs.UniformSubdivision
