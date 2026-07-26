@@ -381,6 +381,27 @@ theorem gnGraph_induce_rim_reachable_prev (i i' : Fin n) (g : Fin (n - 1))
   · exact absurd rfl hj
 
 
+/-- With no hub deleted, every hub still reaches the hub of block `0`, by the gap redundancy one gap at a
+time. -/
+theorem gnGraph_induce_reachable_hub_zero (hn : 0 < n) (hnohub : ∀ k : Fin n, c ≠ core 4 k) :
+    ∀ (m : ℕ) (i : Fin n), i.val = m →
+      ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable
+        ⟨core 4 i, by simpa using (hnohub i).symm⟩
+        ⟨core 4 ⟨0, hn⟩, by simpa using (hnohub ⟨0, hn⟩).symm⟩ := by
+  intro m
+  induction m with
+  | zero =>
+    intro i hi
+    have : i = ⟨0, hn⟩ := Fin.ext hi
+    subst this
+    exact SimpleGraph.Reachable.refl _
+  | succ m ih =>
+    intro i hi
+    have hlt : m < n - 1 := by omega
+    have hm : m < n := by omega
+    exact (gnGraph_induce_reachable_hubs ⟨m, hlt⟩ i ⟨m, hm⟩ hi rfl _ _).trans (ih ⟨m, hm⟩ rfl)
+
+
 end Deletion
 
 end ZonalGraphs
