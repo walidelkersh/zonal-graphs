@@ -114,6 +114,73 @@ theorem isZonal_nestedWindmill (hlen : ∀ b, 2 ≤ len b) (houter : outer ∉ N
       Finset.sdiff_singleton_eq_erase, Finset.sum_const, nsmul_eq_mul]
     linear_combination 2 * hcast - 4 * hm + (-2 * (Fintype.card Blade : ZMod 3) - 2) * h3
 
+/-- **Converse: a zonal nested embedding forces the congruence.**
+
+The disk of each blade other than `outer` forces that blade's petal sum to be `-ℓ(hub)`.  The two
+remaining regions then read `ℓ(hub) + q(outer) - m·ℓ(hub) = 0` and
+`ℓ(hub) + q(outer) - e·ℓ(hub) = 0`, where `e = k - m - 1` counts the blades left outside besides
+`outer`.  Subtracting eliminates the unknown `q(outer)`, and since `ZMod 3` is a field with
+`ℓ(hub) ≠ 0` we get `e = m`, hence `2m + 1 = k` and so `m = 2k + 1`. -/
+theorem card_eq_of_isZonal_nestedWindmill (houter : outer ∉ N)
+    (hzonal : (nestedWindmill len outer N faceEdges).IsZonal) :
+    (N.card : ZMod 3) = 2 * (Fintype.card Blade : ZMod 3) + 1 := by
+  have h3 : (3 : ZMod 3) = 0 := by decide
+  haveI : Fact (Nat.Prime 3) := ⟨by norm_num⟩
+  have hemb := isWindmillEmbedding_nestedWindmill len outer N faceEdges
+  obtain ⟨labeling, hlabeling⟩ := hzonal
+  have hval : ∀ R, (nestedWindmill len outer N faceEdges).zoneValue labeling R = 0 := hlabeling
+  have houterMem : outer ∈ Finset.univ \ N := by simp [houter]
+  -- Each blade other than `outer` bounds a disk of its own, fixing its petal sum.
+  have hsingle : ∀ b, b ≠ outer →
+      (∑ v ∈ windmillPetal len b, (labeling v : ZMod 3)) = -(labeling none : ZMod 3) := by
+    intro b hb
+    have hstep := hemb.zoneValue_eq labeling (.inl b)
+    rw [hval, nestedRegionPetals_inl_of_ne outer N hb, Finset.sum_singleton] at hstep
+    linear_combination -hstep
+  -- The part of `outer`'s disk outside the nested blades.
+  have hinner : (labeling none : ZMod 3) + (∑ v ∈ windmillPetal len outer, (labeling v : ZMod 3))
+      + (N.card : ZMod 3) * (-(labeling none : ZMod 3)) = 0 := by
+    have hstep := hemb.zoneValue_eq labeling (.inl outer)
+    rw [hval, nestedRegionPetals_inl_self, Finset.sum_insert houter,
+      Finset.sum_congr rfl (fun b hb => hsingle b fun hbo => houter (hbo ▸ hb)),
+      Finset.sum_const, nsmul_eq_mul] at hstep
+    linear_combination -hstep
+  -- The exterior region.
+  have hext : (labeling none : ZMod 3) + (∑ v ∈ windmillPetal len outer, (labeling v : ZMod 3))
+      + (((Finset.univ \ N).erase outer).card : ZMod 3) * (-(labeling none : ZMod 3)) = 0 := by
+    have hstep := hemb.zoneValue_eq labeling (.inr ())
+    rw [hval, nestedRegionPetals_inr,
+      ← Finset.add_sum_erase _ (fun b => ∑ v ∈ windmillPetal len b, (labeling v : ZMod 3))
+        houterMem,
+      Finset.sum_congr rfl (fun b hb => hsingle b (Finset.ne_of_mem_erase hb)),
+      Finset.sum_const, nsmul_eq_mul] at hstep
+    linear_combination -hstep
+  -- Eliminate the outer petal sum and cancel the nonzero hub label.
+  have hmul : ((((Finset.univ \ N).erase outer).card : ZMod 3) - (N.card : ZMod 3))
+      * (labeling none : ZMod 3) = 0 := by linear_combination hinner - hext
+  have hem : (((Finset.univ \ N).erase outer).card : ZMod 3) = (N.card : ZMod 3) := by
+    rcases mul_eq_zero.mp hmul with hzero | hzero
+    · linear_combination hzero
+    · exact absurd hzero (labeling none).2
+  -- Card bookkeeping by addition, as in the forward direction.
+  have hsum : (Finset.univ \ N).card + N.card = Fintype.card Blade := by
+    rw [← Finset.card_univ]
+    exact Finset.card_sdiff_add_card_eq_card (Finset.subset_univ N)
+  have herase : ((Finset.univ \ N).erase outer).card + 1 = (Finset.univ \ N).card :=
+    Finset.card_erase_add_one houterMem
+  have hcast : (((Finset.univ \ N).erase outer).card : ZMod 3) + 1 + (N.card : ZMod 3)
+      = (Fintype.card Blade : ZMod 3) := by
+    have hnat : ((Finset.univ \ N).erase outer).card + 1 + N.card = Fintype.card Blade := by omega
+    exact_mod_cast congrArg (fun n : ℕ => (n : ZMod 3)) hnat
+  linear_combination -2 * hem + 2 * hcast + (-(N.card : ZMod 3) - 1) * h3
+
+/-- **The nested Dutch windmill embedding is zonal exactly when `m = 2k + 1` in `ZMod 3`.** -/
+theorem isZonal_nestedWindmill_iff (hlen : ∀ b, 2 ≤ len b) (houter : outer ∉ N) :
+    (nestedWindmill len outer N faceEdges).IsZonal ↔
+      (N.card : ZMod 3) = 2 * (Fintype.card Blade : ZMod 3) + 1 :=
+  ⟨card_eq_of_isZonal_nestedWindmill len outer N faceEdges houter,
+    isZonal_nestedWindmill len outer N faceEdges hlen houter⟩
+
 end PlaneGraph
 
 end ZonalGraphs
