@@ -47,11 +47,9 @@ theorem zonal_boundary_label_counts_modEq (P : PlaneGraph Vertex Face)
     | empty => simp
     | @insert a s ha ih =>
       rcases label_cases a with h1 | h2
-      · have hne : (labeling a : ZMod 3) ≠ 2 := by simpa [h1] using hone
-        simp [Finset.filter_insert, ha, h1, hne, ih, hone]
+      · simp [Finset.filter_insert, ha, h1, ih, hone]
         ring
-      · have hne : (labeling a : ZMod 3) ≠ 1 := by simpa [h2] using htwo
-        simp [Finset.filter_insert, ha, h2, hne, ih, htwo]
+      · simp [Finset.filter_insert, ha, h2, ih, htwo]
         ring
   have hz := hlabeling R
   rw [hsum] at hz
