@@ -47,6 +47,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
+| Prop 2.3 (zonal labeling) | `PlaneGraph.isZonal_of_card_boundary_eq_three` and `isInnerZonal_of_card_boundary_interior_eq_three` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
