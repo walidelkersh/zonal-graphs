@@ -351,6 +351,55 @@ theorem isZonal_iff_cycleRankTwo_typeThree (P : PlaneGraph Vertex Face) {R₁ R�
       · exact val_sub_le_of_ne_zero 1 (by decide) _ h₂pos
       · exact val_sub_le_of_ne_zero 1 (by decide) _ (by omega)
 
+/-- **Theorem 3.4 (Bowling–Zhang, 2023).** A plane graph of cycle rank two properly containing a minimal
+non-zonal graph of cycle rank two and type (3) is zonal.
+
+The contained graph being non-zonal pins its shape by Theorem 3.3: the shortest path is the edge `uv` and
+the middle path has a single interior vertex `w`.  Embed so that one region is the triangle on `T ∪ W`,
+another is bounded by `T ∪ Q₃`, and the third by everything.  Give `T` the sum `2`, `W` and `Q₃` the sum
+`1` each, and the vertices `U` outside the contained graph the sum `2`.  The three regions then read
+`2 + 1`, `2 + 1` and `2 + 1 + 1 + 2`, all zero in `ZMod 3`.
+
+Properness enters only as `U` being nonempty, which is what lets `U` carry the sum `2`. -/
+theorem isZonal_of_contains_minimal_nonZonal (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T W Q₃ U : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ W)
+    (h₂ : P.boundary R₂ = T ∪ W ∪ Q₃ ∪ U) (h₃ : P.boundary R₃ = T ∪ Q₃)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hTcard : T.card = 2) (hWcard : W.card = 1) (hQ₃ : Q₃.Nonempty) (hU : U.Nonempty)
+    (hdTW : Disjoint T W) (hdTQ : Disjoint T Q₃) (hdTU : Disjoint T U)
+    (hdWQ : Disjoint W Q₃) (hdWU : Disjoint W U) (hdQU : Disjoint Q₃ U) : P.IsZonal := by
+  have hdisjoint : ∀ i j : Fin 4, i ≠ j →
+      Disjoint (![T, W, Q₃, U] i) (![T, W, Q₃, U] j) := by
+    intro i j hij
+    fin_cases i <;> fin_cases j <;>
+      first
+        | exact absurd rfl hij
+        | exact hdTW | exact hdTQ | exact hdTU | exact hdWQ | exact hdWU | exact hdQU
+        | exact hdTW.symm | exact hdTQ.symm | exact hdTU.symm
+        | exact hdWQ.symm | exact hdWU.symm | exact hdQU.symm
+  obtain ⟨labeling, hsum⟩ :=
+    exists_labeling_blockSum_eq ![T, W, Q₃, U] hdisjoint ![2, 1, 1, 2] (by
+      intro i
+      fin_cases i
+      · simpa using val_sub_le_of_ne_zero 2 (by decide) T.card (by omega)
+      · simpa using val_sub_le_of_ne_zero 1 (by decide) W.card (by omega)
+      · exact val_sub_le_of_ne_zero 1 (by decide) _ (Finset.card_pos.mpr hQ₃)
+      · exact val_sub_le_of_ne_zero 2 (by decide) _ (Finset.card_pos.mpr hU))
+  have hT : (∑ v ∈ T, (labeling v : ZMod 3)) = 2 := by simpa using hsum 0
+  have hW : (∑ v ∈ W, (labeling v : ZMod 3)) = 1 := by simpa using hsum 1
+  have hQ : (∑ v ∈ Q₃, (labeling v : ZMod 3)) = 1 := by simpa using hsum 2
+  have hUs : (∑ v ∈ U, (labeling v : ZMod 3)) = 2 := by simpa using hsum 3
+  refine ⟨labeling, fun R => ?_⟩
+  rcases hfaces R with rfl | rfl | rfl
+  · rw [zoneValue, h₁, Finset.sum_union hdTW, hT, hW]; decide
+  · rw [zoneValue, h₂,
+      Finset.sum_union (Finset.disjoint_union_left.mpr
+        ⟨Finset.disjoint_union_left.mpr ⟨hdTU, hdWU⟩, hdQU⟩),
+      Finset.sum_union (Finset.disjoint_union_left.mpr ⟨hdTQ, hdWQ⟩),
+      Finset.sum_union hdTW, hT, hW, hQ, hUs]
+    decide
+  · rw [zoneValue, h₃, Finset.sum_union hdTQ, hT, hQ]; decide
+
 end PlaneGraph
 
 end ZonalGraphs
