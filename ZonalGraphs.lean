@@ -10,4 +10,5 @@ import ZonalGraphs.Subdivisions
 import ZonalGraphs.BipartiteZonal
 import ZonalGraphs.ThreeConnected
 import ZonalGraphs.CubicPlanar
+import ZonalGraphs.DutchWindmill
 import ZonalGraphs.Wheels
