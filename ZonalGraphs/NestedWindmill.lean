@@ -181,6 +181,19 @@ theorem isZonal_nestedWindmill_iff (hlen : ∀ b, 2 ≤ len b) (houter : outer �
   ⟨card_eq_of_isZonal_nestedWindmill len outer N faceEdges houter,
     isZonal_nestedWindmill len outer N faceEdges hlen houter⟩
 
+/-- The boundary of a region of a nested embedding consists of the hub together with the petals
+bounding it, so its size is `1` plus the total length of those blades.
+
+Combined with `Iso.card_boundary` this is what separates nested embeddings with different nesting
+sets, and hence counts distinct embeddings. -/
+theorem card_boundary_nestedWindmill (R : Blade ⊕ Unit) :
+    ((nestedWindmill len outer N faceEdges).boundary R).card
+      = (∑ b ∈ nestedRegionPetals outer N R, len b) + 1 := by
+  show (insert none ((nestedRegionPetals outer N R).biUnion (windmillPetal len))).card = _
+  rw [Finset.card_insert_of_notMem (by simp), Finset.card_biUnion
+    (fun b _ c _ hbc => windmillPetal_disjoint len b c hbc)]
+  simp [card_windmillPetal]
+
 /-- Blades other than `outer` are plentiful enough to nest any of `0`, `1` or `2` of them, once
 there are at least three blades in all. -/
 theorem exists_nested_card_eq (hk : 3 ≤ Fintype.card Blade) (outer : Blade) {m : ℕ} (hm : m ≤ 2) :
