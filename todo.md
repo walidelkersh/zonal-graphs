@@ -82,24 +82,22 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
-* **Theorem 3.5** — the labellings are worked out, the formalization is not. `F ⋆ K₂` attaches a pendant
-  `w` to a vertex of the third path, so with `T` the branch pair and `Qᵢ` the path interiors the three
-  regions are bounded by `T ∪ Q₁ ∪ Q₂`, `T ∪ Q₂ ∪ Q₃` and `T ∪ Q₁ ∪ Q₃ ∪ {w}`. Five blocks, and two cases.
-  When `n₁ ≥ 3` take the sums `T = 0`, `Q₁ = 1`, `Q₂ = 2`, `Q₃ = 1`, `w = 1`; the regions read `0+1+2`,
-  `0+2+1` and `0+1+1+1`, all zero. When `n₁ = 2` the interior `Q₁` is empty and Theorem 3.3 forces
-  `n₂ ≥ 4`, so take `T = 1`, `Q₂ = 2`, `Q₃ = 0`, `w = 2`; the regions read `1+2`, `1+2+0` and `1+0+2`.
-  Every fit condition holds: the pendant block has one vertex and a nonzero target, and `Q₃` has at least
-  two so it can carry `0`. What remains is only the encoding, most cheaply through
-  `isZonal_of_blockDecomposition`.
+* **Theorem 3.6** — two subcases, and only one of them is a block labelling. Its statement is that a
+  cycle-rank-two graph properly containing a minimal *zonal* type (3) graph `F`, and not equal to
+  `F ⋆ K₂`, is zonal. Writing `U` for the vertices outside `F`, split as `U₀` at the branch vertices and
+  `Uᵢ` at the interior of the `i`-th path:
 
-* **Corollary 3.7 and Theorem 3.8** — blocked on Theorems 3.5 and 3.6 specifically, and worth stating
-  precisely because both look closer than they are. Theorem 3.8 collects the cycle-rank-two
-  characterization in three parts: parts (1) and (2) are `isZonal_iff_not_minimal_cycleRankTwo_typeOne`
-  and `isZonal_iff_card_ne_one_cycleRankTwo_typeTwo`, both proved. Part (3) and Corollary 3.7 assert that
-  a non-minimal type (3) graph is zonal, and the proved case
-  `isZonal_of_contains_minimal_nonZonal` covers only supergraphs of a minimal *non-zonal* graph. The
-  remaining case, supergraphs of a minimal *zonal* type (3) graph, is Theorems 3.5 and 3.6, which are not
-  proved. Both entries are conjunctions and stay unchecked until those land.
+  - The subcase where each `U₀ ∪ Uᵢ` is a single vertex *is* a direct labelling, and a seven-block one:
+    blocks `T`, `Q₁`, `Q₂`, `Q₃`, `W₁`, `W₂`, `W₃` with sums `2, 1, 1, 1, 2, 2, 2`, each region reading
+    `2 + 1 + 1 + 2 = 0`. This generalizes `isZonal_of_theta_pendant_blocks` from one pendant block to
+    three, one per region.
+  - The subcase where some `U₀ ∪ Uᵢ` has at least two vertices is *not* a labelling argument. It deletes
+    those vertices, applies the already-proved case to the smaller graph, and extends the labelling back
+    using Lemma 2.0.4 to make the deleted set sum to zero. That is an induction on the graph, which none
+    of the present machinery supports; the block engines all label a fixed vertex set in one go.
+
+  So 3.6 needs a new ingredient, not another instantiation. Recording this because the surface similarity
+  to 3.4 and 3.5 is misleading.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
