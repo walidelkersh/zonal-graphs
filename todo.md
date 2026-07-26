@@ -47,6 +47,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 3.3 (small cycle rank) | `PlaneGraph.isZonal_iff_cycleRankTwo_typeThree` |
 | Thm 3.4 (small cycle rank) | `PlaneGraph.isZonal_of_contains_minimal_nonZonal` |
 | Thm 3.5 (small cycle rank) | `PlaneGraph.isZonal_thetaPendant_of_nonempty` and `isZonal_thetaPendant_of_empty` |
+| Thm 3.6 (small cycle rank) | `PlaneGraph.isZonal_cycleRankTwo_typeThree_proper` |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -82,28 +83,6 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
-* **Theorem 3.6** — both subcases are now block labellings, correcting an earlier note here that claimed
-  the second needed graph induction. That note confused the published *technique* with the labelling it
-  produces. The argument deletes the outside vertices, applies the earlier case, and extends the labelling
-  back; but the composed labelling is still a block labelling, with the outside set as one more block
-  carrying target `0` on the boundary of a single region. Both subcases are instantiations of engines that
-  exist: `isZonal_of_theta_outsideBlock` with sums `1, 1, 1, 1, 0` for the deletion subcase, and
-  `isZonal_of_theta_threeBlocks` with sums `2, 1, 1, 1, 2, 2, 2` for the one-vertex-per-region subcase.
-  What remains is *not* bookkeeping, correcting a second claim of mine. The two subcases use two different
-  embeddings, chosen according to the case, so at this interface they are theorems about two different
-  `PlaneGraph` values rather than two branches of one proof. Combining them into the paper's statement, that
-  the *graph* is zonal, needs the abstract-graph layer and a construction of both embeddings for a general
-  type (3) supergraph. That is a construction task of the same kind as `windmillGraph`, not a case split.
-  The labellings are done; the embeddings are not.
-
-  The graph itself is now built: `thetaGraph` with `thetaGraph_connected`, in `ZonalGraphs.ThetaGraph`.
-  Vertices are `Bool ⊕ (Σ i : Fin 3, Fin (len i))`, adjacency joins consecutive interior vertices of a common
-  path and the ends of each path to the branch vertices, with the branch vertices adjacent exactly when some
-  path has no interior. Comparing indices as naturals keeps dependent casts out, and connectivity walks each
-  interior vertex down its own path then joins the branch vertices through any path. What is still missing for
-  Theorem 3.6 is only the two boundary functions, one per subcase, matching the shapes that
-  `isZonal_of_theta_outsideBlock` and `isZonal_of_theta_threeBlocks` consume.
-
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
@@ -217,7 +196,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Theorem 3.3.**: Let G be a minimal graph of cycle rank2 and type (3) consisting of three internally disjoint u − v paths Pi of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and onl...
 - [x] **Theorem 3.4.**: Let F be a minimal non-zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph, then G is zonal. 7 www.ejgta.org Zonal graphs of small cy...
 - [x] **Theorem 3.5.**: If F is a minimal zonal graph of cycle rank 2 and type (3), then F ⋆ K2 is zonal.
-- [ ] **Theorem 3.6.**: Let F be a minimal zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph and G ̸= F ⋆ K2, then G is zonal.
+- [x] **Theorem 3.6.**: Let F be a minimal zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph and G ̸= F ⋆ K2, then G is zonal.
 - [ ] [ARTIFACT: an excerpt from the proof of Theorem 3.6, not a statement]
 - [ ] **Corollary 3.7.**: Let G be a graph of a cycle rank2 and type (3) containing three internally disjoint paths of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and only if G is not mini...
 - [ ] **Theorem 3.8.**: Let G be a graph of a cycle rank 2. (1) If G is of type (1), then G is zonal if and only if G is not minimal. (2) If G is of type (2), then G is zonal if and only if either every vertex of G belong...
