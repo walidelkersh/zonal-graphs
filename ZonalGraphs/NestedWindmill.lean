@@ -289,6 +289,20 @@ theorem even_sum_iff_even_card_of_forall_odd {α : Type*} {s : Finset α} {f : �
     (hodd : ∀ b ∈ s, Odd (f b)) : Even (∑ b ∈ s, f b) ↔ Even s.card := by
   rw [Finset.even_sum_iff_even_card_odd f, Finset.filter_true_of_mem hodd]
 
+/-- The blade lengths used for Theorem 2.3.2: pairwise distinct, all odd, and all at least three, so
+every blade is a cycle and no two blades have the same length — an *irregular* Dutch windmill. -/
+def irregularLen (k : ℕ) : Fin k → ℕ := fun b => 2 ^ ((b : ℕ) + 1) + 1
+
+theorem irregularLen_odd (k : ℕ) (b : Fin k) : Odd (irregularLen k b) := by
+  refine ⟨2 ^ (b : ℕ), ?_⟩
+  simp only [irregularLen, pow_succ]
+  ring
+
+theorem two_le_irregularLen (k : ℕ) (b : Fin k) : 2 ≤ irregularLen k b := by
+  have hpow : 1 ≤ 2 ^ ((b : ℕ) + 1) := Nat.one_le_two_pow
+  simp only [irregularLen]
+  omega
+
 end PlaneGraph
 
 end ZonalGraphs
