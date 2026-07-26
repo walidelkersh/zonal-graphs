@@ -402,6 +402,79 @@ theorem gnGraph_induce_reachable_hub_zero (hn : 0 < n) (hnohub : ∀ k : Fin n, 
     exact (gnGraph_induce_reachable_hubs ⟨m, hlt⟩ i ⟨m, hm⟩ hi rfl _ _).trans (ih ⟨m, hm⟩ rfl)
 
 
+/-- One step from a connector to a hub, through a surviving core attachment point. -/
+theorem gnGraph_induce_gap_via_core {k : Fin 4} {g : Fin (n - 1)} {j : Fin 5} {i : Fin n}
+    (hadj : (gnGraph n).Adj (gap k g) (core j i)) (hj : j ≠ 4)
+    (hk : gap k g ∈ ({c}ᶜ : Set (GnVertex n))) (hjm : core j i ∈ ({c}ᶜ : Set (GnVertex n)))
+    (hv : core 4 i ∈ ({c}ᶜ : Set (GnVertex n))) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨gap k g, hk⟩ ⟨core 4 i, hv⟩ :=
+  (gnGraph_induce_adj hk hjm hadj).reachable.trans
+    (gnGraph_induce_adj hjm hv ⟨rfl, Or.inr (Or.inl ⟨rfl, hj⟩)⟩).reachable
+
+/-- **A surviving connector reaches some surviving hub.**
+
+Each connector has its own core attachment point: `w` meets `s` and `x` meets `t` in their own block, `y`
+meets `r` and `z` meets `u` in the next. When that point survives the connector uses it; when it is the
+deleted vertex the connector crosses to its gap partner, `w` to `y` and `x` to `z`, whose own attachment then
+certainly survives, the deleted vertex being already accounted for.
+
+No hub is deleted here, so every hub is an available target. -/
+theorem gnGraph_induce_gap_reachable_some_hub (hnohub : ∀ k : Fin n, c ≠ core 4 k) (k : Fin 4)
+    (g : Fin (n - 1)) (hx : gap k g ∈ ({c}ᶜ : Set (GnVertex n))) :
+    ∃ i : Fin n, ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨gap k g, hx⟩
+      ⟨core 4 i, by simpa using (hnohub i).symm⟩ := by
+  have hg : g.val < n - 1 := g.isLt
+  have h0 : g.val < n := by omega
+  have h1 : g.val + 1 < n := by omega
+  have hblk : (⟨g.val, h0⟩ : Fin n) ≠ (⟨g.val + 1, h1⟩ : Fin n) := by
+    simp [Fin.ext_iff]
+  -- the two candidate attachment points for each connector, and the crossing between the partners
+  have wy : (gnGraph n).Adj (gap 0 g) (gap 2 g) :=
+    ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))⟩
+  have xz : (gnGraph n).Adj (gap 1 g) (gap 3 g) :=
+    ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))))⟩
+  have aS : (gnGraph n).Adj (gap 0 g) (core 1 ⟨g.val, h0⟩) := Or.inl ⟨rfl, rfl, rfl⟩
+  have aT : (gnGraph n).Adj (gap 1 g) (core 2 ⟨g.val, h0⟩) := Or.inr (Or.inl ⟨rfl, rfl, rfl⟩)
+  have aR : (gnGraph n).Adj (gap 2 g) (core 0 ⟨g.val + 1, h1⟩) :=
+    Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))
+  have aU : (gnGraph n).Adj (gap 3 g) (core 3 ⟨g.val + 1, h1⟩) :=
+    Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩))
+  fin_cases k
+  · by_cases h : core 1 ⟨g.val, h0⟩ = c
+    · have mr : core 0 (⟨g.val + 1, h1⟩ : Fin n) ∈ ({c}ᶜ : Set (GnVertex n)) := by
+        rw [← h]
+        simpa using core_ne_core_block hblk.symm
+      have my : gap 2 g ∈ ({c}ᶜ : Set (GnVertex n)) := by rw [← h]; simpa using gap_ne_core
+      exact ⟨⟨g.val + 1, h1⟩, (gnGraph_induce_adj hx my wy).reachable.trans
+        (gnGraph_induce_gap_via_core aR (by decide) my mr _)⟩
+    · exact ⟨⟨g.val, h0⟩, gnGraph_induce_gap_via_core aS (by decide) hx (by simpa using h) _⟩
+  · by_cases h : core 2 ⟨g.val, h0⟩ = c
+    · have mu : core 3 (⟨g.val + 1, h1⟩ : Fin n) ∈ ({c}ᶜ : Set (GnVertex n)) := by
+        rw [← h]
+        simpa using core_ne_core_block hblk.symm
+      have mz : gap 3 g ∈ ({c}ᶜ : Set (GnVertex n)) := by rw [← h]; simpa using gap_ne_core
+      exact ⟨⟨g.val + 1, h1⟩, (gnGraph_induce_adj hx mz xz).reachable.trans
+        (gnGraph_induce_gap_via_core aU (by decide) mz mu _)⟩
+    · exact ⟨⟨g.val, h0⟩, gnGraph_induce_gap_via_core aT (by decide) hx (by simpa using h) _⟩
+  · by_cases h : core 0 ⟨g.val + 1, h1⟩ = c
+    · have ms : core 1 (⟨g.val, h0⟩ : Fin n) ∈ ({c}ᶜ : Set (GnVertex n)) := by
+        rw [← h]
+        simpa using core_ne_core_block hblk
+      have mw : gap 0 g ∈ ({c}ᶜ : Set (GnVertex n)) := by rw [← h]; simpa using gap_ne_core
+      exact ⟨⟨g.val, h0⟩, (gnGraph_induce_adj hx mw wy.symm).reachable.trans
+        (gnGraph_induce_gap_via_core aS (by decide) mw ms _)⟩
+    · exact ⟨⟨g.val + 1, h1⟩,
+        gnGraph_induce_gap_via_core aR (by decide) hx (by simpa using h) _⟩
+  · by_cases h : core 3 ⟨g.val + 1, h1⟩ = c
+    · have mt : core 2 (⟨g.val, h0⟩ : Fin n) ∈ ({c}ᶜ : Set (GnVertex n)) := by
+        rw [← h]
+        simpa using core_ne_core_block hblk
+      have mx : gap 1 g ∈ ({c}ᶜ : Set (GnVertex n)) := by rw [← h]; simpa using gap_ne_core
+      exact ⟨⟨g.val, h0⟩, (gnGraph_induce_adj hx mx xz.symm).reachable.trans
+        (gnGraph_induce_gap_via_core aT (by decide) mx mt _)⟩
+    · exact ⟨⟨g.val + 1, h1⟩,
+        gnGraph_induce_gap_via_core aU (by decide) hx (by simpa using h) _⟩
+
 end Deletion
 
 end ZonalGraphs
