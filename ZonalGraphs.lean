@@ -2,6 +2,7 @@
 -- Import modules here that should be built as part of the library.
 import ZonalGraphs.Basic
 import ZonalGraphs.Definitions
+import ZonalGraphs.DivisibleBoundary
 import ZonalGraphs.LabelComplement
 import ZonalGraphs.LabelingSums
 import ZonalGraphs.RegionBoundary
