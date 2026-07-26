@@ -417,6 +417,56 @@ theorem isZonal_edgeAmalgamation (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : 
     (by decide) (val_neg_le_of_ne_one (by omega)) (val_neg_le_of_ne_one (by simp))
     (val_neg_le_of_ne_one (by omega)) (val_neg_le_of_ne_one (by omega))
 
+/-- **Zonality of a theta graph carrying a pendant block, from prescribed block sums.**
+
+This is the shape of `F ⋆ K₂` for a type (3) graph `F`: the three regions are bounded by the branch pair
+`T` together with two path interiors, and the region containing the pendant also carries `W`.  Prescribing
+a sum per block reduces zonality to the three displayed equations.
+
+Theorem 3.5 of Bowling–Zhang instantiates it twice.  With the shortest path of order at least three the
+sums `0, 1, 2, 1, 1` work; with it of order two the first interior is empty and Theorem 3.3 forces the
+middle path to order at least four, so `1, 2, 0, 2` works instead. -/
+theorem isZonal_of_theta_pendant_blocks (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    {T Q₁ Q₂ Q₃ W : Finset Vertex} (h₁ : P.boundary R₁ = T ∪ Q₁ ∪ Q₂)
+    (h₂ : P.boundary R₂ = T ∪ Q₂ ∪ Q₃) (h₃ : P.boundary R₃ = T ∪ Q₁ ∪ Q₃ ∪ W)
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hdisjoint : ∀ i j : Fin 5, i ≠ j →
+      Disjoint (![T, Q₁, Q₂, Q₃, W] i) (![T, Q₁, Q₂, Q₃, W] j))
+    (t : Fin 5 → ZMod 3)
+    (hfit : ∀ i : Fin 5, (t i - ((![T, Q₁, Q₂, Q₃, W] i).card : ZMod 3)).val
+      ≤ (![T, Q₁, Q₂, Q₃, W] i).card)
+    (e₁ : t 0 + t 1 + t 2 = 0) (e₂ : t 0 + t 2 + t 3 = 0)
+    (e₃ : t 0 + t 1 + t 3 + t 4 = 0) : P.IsZonal := by
+  obtain ⟨labeling, hsum⟩ := exists_labeling_blockSum_eq ![T, Q₁, Q₂, Q₃, W] hdisjoint t hfit
+  have hT : (∑ v ∈ T, (labeling v : ZMod 3)) = t 0 := by simpa using hsum 0
+  have hv₁ : (∑ v ∈ Q₁, (labeling v : ZMod 3)) = t 1 := by simpa using hsum 1
+  have hv₂ : (∑ v ∈ Q₂, (labeling v : ZMod 3)) = t 2 := by simpa using hsum 2
+  have hv₃ : (∑ v ∈ Q₃, (labeling v : ZMod 3)) = t 3 := by simpa using hsum 3
+  have hW : (∑ v ∈ W, (labeling v : ZMod 3)) = t 4 := by simpa using hsum 4
+  have d01 : Disjoint T Q₁ := hdisjoint 0 1 (by decide)
+  have d02 : Disjoint T Q₂ := hdisjoint 0 2 (by decide)
+  have d03 : Disjoint T Q₃ := hdisjoint 0 3 (by decide)
+  have d04 : Disjoint T W := hdisjoint 0 4 (by decide)
+  have d12 : Disjoint Q₁ Q₂ := hdisjoint 1 2 (by decide)
+  have d13 : Disjoint Q₁ Q₃ := hdisjoint 1 3 (by decide)
+  have d14 : Disjoint Q₁ W := hdisjoint 1 4 (by decide)
+  have d23 : Disjoint Q₂ Q₃ := hdisjoint 2 3 (by decide)
+  have d34 : Disjoint Q₃ W := hdisjoint 3 4 (by decide)
+  refine ⟨labeling, fun R => ?_⟩
+  rcases hfaces R with rfl | rfl | rfl
+  · rw [zoneValue, h₁, Finset.sum_union (Finset.disjoint_union_left.mpr ⟨d02, d12⟩),
+      Finset.sum_union d01, hT, hv₁, hv₂]
+    exact e₁
+  · rw [zoneValue, h₂, Finset.sum_union (Finset.disjoint_union_left.mpr ⟨d03, d23⟩),
+      Finset.sum_union d02, hT, hv₂, hv₃]
+    exact e₂
+  · rw [zoneValue, h₃,
+      Finset.sum_union (Finset.disjoint_union_left.mpr
+        ⟨Finset.disjoint_union_left.mpr ⟨d04, d14⟩, d34⟩),
+      Finset.sum_union (Finset.disjoint_union_left.mpr ⟨d03, d13⟩),
+      Finset.sum_union d01, hT, hv₁, hv₃, hW]
+    exact e₃
+
 end PlaneGraph
 
 end ZonalGraphs
