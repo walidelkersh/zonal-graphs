@@ -23,6 +23,7 @@ import ZonalGraphs.ConstantOnBlocks
 import ZonalGraphs.CycleRankTwo
 import ZonalGraphs.ThetaGraph
 import ZonalGraphs.InnerZonal
+import ZonalGraphs.TriangleForcing
 import ZonalGraphs.UniformSubdivision
 import ZonalGraphs.DutchWindmill
 import ZonalGraphs.WindmillGraph
