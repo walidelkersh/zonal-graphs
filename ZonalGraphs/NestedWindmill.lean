@@ -265,6 +265,20 @@ theorem sum_two_pow_val_injective {k : ℕ} :
     simpa [Finset.sum_image, Fin.val_injective.injOn] using hsum
   exact Finset.image_injective Fin.val_injective himage
 
+/-- Blade lengths `2 ^ i + 1` also determine a nesting set from its total length, provided the size
+of the set is known: the two totals differ from the power-of-two totals by exactly the size.
+
+These lengths are preferable to bare powers of two for Theorem 2.3.2, because they are odd, which lets
+the unwanted case in the separating argument be excluded by parity rather than by a bound on the sum
+of the largest blades. -/
+theorem sum_two_pow_succ_inj_of_card_eq {k : ℕ} {N₁ N₂ : Finset (Fin k)}
+    (hcard : N₁.card = N₂.card)
+    (hsum : ∑ b ∈ N₁, (2 ^ (b : ℕ) + 1) = ∑ b ∈ N₂, (2 ^ (b : ℕ) + 1)) : N₁ = N₂ := by
+  have hpow : ∑ b ∈ N₁, 2 ^ (b : ℕ) = ∑ b ∈ N₂, 2 ^ (b : ℕ) := by
+    simp only [Finset.sum_add_distrib, Finset.sum_const, smul_eq_mul, mul_one] at hsum
+    omega
+  exact sum_two_pow_val_injective hpow
+
 end PlaneGraph
 
 end ZonalGraphs
