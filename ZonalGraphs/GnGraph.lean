@@ -1,0 +1,92 @@
+import ZonalGraphs.GnFamily
+
+namespace ZonalGraphs
+
+/-!
+# The graph `Gn`
+
+`GnFamily` needed only the region structure of `Gn,k`, since zonality reads the boundary function and never
+the adjacency. Theorem 2.5.1 is about the graph itself, so the adjacency has to be built.
+
+Block `i` is the wheel `W4` with outer cycle `(r, s, t, u)` and hub `v`, and the hub is joined to all four.
+The edge `s-t` of block `i` is subdivided by `w` and `x` of gap `i`, and the edge `r-u` of block `i` is
+subdivided by `y` and `z` of gap `i - 1`. Consecutive blocks are then joined by `w-y` and `x-z` inside each
+gap. Gap `i` exists only for `i + 1 < n`, so block `n - 1` keeps its `s-t` edge undivided and block `0`
+keeps its `r-u` edge, which is where the two irregular ends come from.
+
+Indices are compared as natural numbers throughout, following `windmillGraph` and `thetaGraph`, so that no
+dependent casts appear.
+-/
+
+universe u
+
+variable {n : ℕ}
+
+open GnVertex
+
+/-- Adjacency of two core vertices of the same block: the hub meets all four rim vertices, `r-s` and `t-u`
+are always present, and `s-t` and `r-u` are present exactly at the ends where their subdividing gap is
+absent. -/
+def gnCoreAdj (n : ℕ) (j₁ j₂ : Fin 5) (i : Fin n) : Prop :=
+  (j₁ = 4 ∧ j₂ ≠ 4) ∨ (j₂ = 4 ∧ j₁ ≠ 4) ∨
+    (j₁ = 0 ∧ j₂ = 1) ∨ (j₁ = 1 ∧ j₂ = 0) ∨ (j₁ = 2 ∧ j₂ = 3) ∨ (j₁ = 3 ∧ j₂ = 2) ∨
+    (((j₁ = 1 ∧ j₂ = 2) ∨ (j₁ = 2 ∧ j₂ = 1)) ∧ i.val + 1 = n) ∨
+    (((j₁ = 0 ∧ j₂ = 3) ∨ (j₁ = 3 ∧ j₂ = 0)) ∧ i.val = 0)
+
+/-- Adjacency of two connector vertices of the same gap: the path `w-x`, the path `y-z`, and the two joining
+edges `w-y` and `x-z`. -/
+def gnGapAdj (k₁ k₂ : Fin 4) : Prop :=
+  (k₁ = 0 ∧ k₂ = 1) ∨ (k₁ = 1 ∧ k₂ = 0) ∨ (k₁ = 2 ∧ k₂ = 3) ∨ (k₁ = 3 ∧ k₂ = 2) ∨
+    (k₁ = 0 ∧ k₂ = 2) ∨ (k₁ = 2 ∧ k₂ = 0) ∨ (k₁ = 1 ∧ k₂ = 3) ∨ (k₁ = 3 ∧ k₂ = 1)
+
+/-- Adjacency between the core vertex `j` of block `i` and the connector `k` of gap `g`: `s` meets `w` and
+`t` meets `x` in the gap of the same index, while `r` meets `y` and `u` meets `z` in the previous gap. -/
+def gnMixedAdj (j : Fin 5) (i : Fin n) (k : Fin 4) (g : Fin (n - 1)) : Prop :=
+  (j = 1 ∧ k = 0 ∧ g.val = i.val) ∨ (j = 2 ∧ k = 1 ∧ g.val = i.val) ∨
+    (j = 0 ∧ k = 2 ∧ g.val + 1 = i.val) ∨ (j = 3 ∧ k = 3 ∧ g.val + 1 = i.val)
+
+/-- Adjacency in `Gn`. -/
+def gnAdj (n : ℕ) : GnVertex n → GnVertex n → Prop
+  | Sum.inl (j₁, i₁), Sum.inl (j₂, i₂) => i₁ = i₂ ∧ gnCoreAdj n j₁ j₂ i₁
+  | Sum.inl (j, i), Sum.inr (k, g) => gnMixedAdj j i k g
+  | Sum.inr (k, g), Sum.inl (j, i) => gnMixedAdj j i k g
+  | Sum.inr (k₁, g₁), Sum.inr (k₂, g₂) => g₁ = g₂ ∧ gnGapAdj k₁ k₂
+
+theorem gnCoreAdj_symm {j₁ j₂ : Fin 5} {i : Fin n} (h : gnCoreAdj n j₁ j₂ i) :
+    gnCoreAdj n j₂ j₁ i := by
+  unfold gnCoreAdj at h ⊢
+  tauto
+
+theorem gnGapAdj_symm {k₁ k₂ : Fin 4} (h : gnGapAdj k₁ k₂) : gnGapAdj k₂ k₁ := by
+  unfold gnGapAdj at h ⊢
+  tauto
+
+theorem gnCoreAdj_irrefl {j : Fin 5} {i : Fin n} : ¬ gnCoreAdj n j j i := by
+  unfold gnCoreAdj
+  rintro (⟨h, hne⟩ | ⟨h, hne⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ |
+    ⟨⟨h₁, h₂⟩ | ⟨h₁, h₂⟩, -⟩ | ⟨⟨h₁, h₂⟩ | ⟨h₁, h₂⟩, -⟩) <;> simp_all
+
+theorem gnGapAdj_irrefl {k : Fin 4} : ¬ gnGapAdj k k := by
+  unfold gnGapAdj
+  rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;>
+    simp_all
+
+/-- The graph `Gn`. -/
+def gnGraph (n : ℕ) : SimpleGraph (GnVertex n) where
+  Adj := gnAdj n
+  symm := by
+    rintro (⟨j₁, i₁⟩ | ⟨k₁, g₁⟩) (⟨j₂, i₂⟩ | ⟨k₂, g₂⟩) hadj
+    · obtain ⟨hi, hcore⟩ := hadj
+      subst hi
+      exact ⟨rfl, gnCoreAdj_symm hcore⟩
+    · exact hadj
+    · exact hadj
+    · obtain ⟨hg, hgap⟩ := hadj
+      subst hg
+      exact ⟨rfl, gnGapAdj_symm hgap⟩
+  loopless := ⟨by
+    rintro (⟨j, i⟩ | ⟨k, g⟩) hadj
+    · exact gnCoreAdj_irrefl hadj.2
+    · exact gnGapAdj_irrefl hadj.2⟩
+
+end ZonalGraphs
