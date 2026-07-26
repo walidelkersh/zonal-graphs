@@ -140,6 +140,23 @@ needed, so the logical dependency is visible in the statement of every result th
   theorem number rather than by page. The same method should be used to repair the entries tagged
   `[ARTIFACT: ...]`, most of which are truncations rather than genuine non-statements.
 
+* **Theorems 4.3.1, 4.3.2, 4.3.5, 4.3.6 and 4.3.8 — a new kind of obstruction, and it is the interface.**
+  The proof of 4.3.1 is Theorem 6.16 of Chartrand, Egan and Zhang, in `chartrand2019.pdf`, and it runs by
+  induction on the number of chords: the step deletes the interior vertices of one region to reach a
+  smaller bicubic map with one fewer chord. Its base case is proved here as
+  `exists_labeling_pair_eq_of_two_boundaries` and `isInnerZonal_of_one_chord`, so the entry is not
+  checked off, since only the base case is done.
+
+  The step cannot be stated faithfully on `PlaneGraph`. Face data is carried as given, so "deleting the
+  interior vertices of this region leaves a bicubic map whose exterior boundary is a Hamiltonian cycle
+  with one fewer chord" is not derivable; it would have to be assumed, and that assumption concedes most
+  of the statement. This is unlike the other blockers, which are missing mathlib content. The fix is
+  structural: build `PlaneGraph` from a `RotationSystem`, where vertex deletion acts on the darts and the
+  new faces are computed as `faceMap` orbits rather than posited. `Embedding.lean` already has the
+  rotation system, `faceMap` and the orbit view, so the missing piece is the bridge from a rotation
+  system to a `PlaneGraph`, plus the effect of deletion on it. That one construction would unblock all
+  five of these entries, and it is the highest-leverage piece of infrastructure left in the project.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
