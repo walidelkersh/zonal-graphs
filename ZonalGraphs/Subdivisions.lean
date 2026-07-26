@@ -130,6 +130,29 @@ theorem zonal_of_isSubdivision (P : PlaneGraph Vertex Face)
   rw [zoneValue_subdivision_eq P X H S oldLabeling newLabeling hnew R]
   exact hold R
 
+/-- **Theorem 3.3(2) of Bowling–Zhang (2023).** If `P` is inner zonal and `H` is obtained by
+subdividing all edges in `X` two or more times, then `H` is inner zonal.
+
+Subdivision leaves the face type alone, so the exceptional region of `P` serves as the exceptional
+region of `H`.  The inserted vertices contribute zero to every region value, exactly as in the zonal
+case, so the two statements share the computation `zoneValue_subdivision_eq`. -/
+theorem innerZonal_of_isSubdivision (P : PlaneGraph Vertex Face)
+    (X : Finset (Sym2 Vertex)) (H : PlaneGraph Vertex' Face)
+    (hP : P.IsInnerZonal) (S : P.IsSubdivision X H) : H.IsInnerZonal := by
+  classical
+  obtain ⟨oldLabeling, exceptional, hold⟩ := hP
+  have hexists : ∀ e, ∃ labeling : VertexLabeling (S.NewVertex e),
+      labelingSum labeling = 0 := fun e =>
+    exists_labelingSum_zero_of_two_le (S.NewVertex e) (S.two_le_card e)
+  choose newLabeling hnew using hexists
+  refine ⟨fun x =>
+    match S.vertexEquiv x with
+    | Sum.inl v => oldLabeling v
+    | Sum.inr z => newLabeling z.1 z.2, exceptional, ?_⟩
+  intro R hR
+  rw [zoneValue_subdivision_eq P X H S oldLabeling newLabeling hnew R]
+  exact hold R hR
+
 end PlaneGraph
 
 end
