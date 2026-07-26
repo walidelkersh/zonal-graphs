@@ -159,6 +159,24 @@ needed, so the logical dependency is visible in the statement of every result th
   system to a `PlaneGraph`, plus the effect of deletion on it. That one construction would unblock all
   five of these entries, and it is the highest-leverage piece of infrastructure left in the project.
 
+* **Theorem 2.5.1, the 2-connectedness of Gn — half done, and the rest is volume rather than a blocker.**
+  `Gn` is now a real graph, `gnGraph`, with symmetry, looplessness, connectivity (`gnGraph_connected`) and
+  the vertex count `5n + 4(n-1) = 9n - 4` all proved. `IsTwoConnected` is a conjunction and its first
+  half, `3 <= card`, is `three_le_card_gnVertex`.
+
+  What remains is the second half: for every vertex `c`, the induced graph on the complement of `{c}` is
+  connected. Nothing is missing from mathlib for this; it is case volume. The redundancy that makes it true
+  is worth writing down, because it is what the paths must use. Inside a block the hub meets all four rim
+  vertices, so losing one rim vertex still leaves the rim connected through the hub, and losing the hub
+  leaves the rim connected through its own cycle. Across a gap there are two vertex-disjoint connections,
+  `w-y` and `x-z`, so no single deletion separates consecutive blocks. Note `Gn` is a path of blocks rather
+  than a cycle, so the gap redundancy is doing all the work between blocks and there is no second route
+  around.
+
+  The practical cost is that `SimpleGraph.induce` puts the work in the subtype `{x // x != c}`, so each
+  path has to be built there. Nine vertex families and the two irregular ends give a wide case split. This
+  is the largest single remaining proof in the Gn group.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
