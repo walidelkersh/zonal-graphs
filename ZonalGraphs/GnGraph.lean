@@ -1,3 +1,4 @@
+import ZonalGraphs.BipartiteZonal
 import ZonalGraphs.GnFamily
 
 namespace ZonalGraphs
@@ -545,6 +546,150 @@ theorem gnGraph_induce_hub_down_range (lo top : ℕ)
     exact (gnGraph_induce_reachable_hubs ⟨lo + d, hlt⟩ i ⟨lo + d, hm⟩ hi rfl mi mmid).trans
       (ih ⟨lo + d, hm⟩ i' rfl (by show lo + d ≤ top; omega) hi' mmid mi')
 
+/-- **The deleted vertex is a hub.** Then every other vertex survives, and the block that lost its hub is
+bridged through its rim.
+
+The anchor is `r` of the deleted block. Rim vertices of that block reach each other through an adjacent hub, by
+whichever escape route exists, or through the block's own edges when `n = 1` and there is no gap. Every other
+block reaches its own hub and chains to the hub beside the deleted one, upward or downward, and that hub reaches
+the anchor by reversing the escape route. Connectors reduce to their core attachment, which always survives
+here. -/
+theorem gnGraph_induce_connected_of_hub (i₀ : Fin n) :
+    ((gnGraph n).induce (({core 4 i₀}ᶜ) : Set (GnVertex n))).Connected := by
+  have mR : core 0 i₀ ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+    simpa using core_ne_core (by decide : (0 : Fin 5) ≠ 4)
+  have hcore : ∀ (j : Fin 5) (i : Fin n) (h : core j i ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n))),
+      ((gnGraph n).induce (({core 4 i₀}ᶜ) : Set (GnVertex n))).Reachable ⟨core j i, h⟩
+        ⟨core 0 i₀, mR⟩ := by
+    intro j i h
+    by_cases hii : i = i₀
+    · subst hii
+      have hj : j ≠ 4 := by
+        intro hj4
+        subst hj4
+        exact h rfl
+      by_cases hnext : i.val + 1 < n
+      · have hg : i.val < n - 1 := by omega
+        have mv : core 4 (⟨i.val + 1, hnext⟩ : Fin n) ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+          have hb : i ≠ (⟨i.val + 1, hnext⟩ : Fin n) := by
+            simp [Fin.ext_iff]
+          simpa using core_ne_core_block hb.symm
+        exact (gnGraph_induce_rim_reachable_next i ⟨i.val + 1, hnext⟩ ⟨i.val, hg⟩ rfl rfl j hj
+            h mv).trans
+          (gnGraph_induce_rim_reachable_next i ⟨i.val + 1, hnext⟩ ⟨i.val, hg⟩ rfl rfl 0
+            (by decide) mR mv).symm
+      · by_cases hprev : 1 ≤ i.val
+        · have hg : i.val - 1 < n - 1 := by omega
+          have ha : i.val - 1 < n := by omega
+          have mv : core 4 (⟨i.val - 1, ha⟩ : Fin n) ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+            have hb : i ≠ (⟨i.val - 1, ha⟩ : Fin n) := by
+              simp only [ne_eq, Fin.ext_iff]
+              omega
+            simpa using core_ne_core_block hb.symm
+          have hval : i.val = (⟨i.val - 1, hg⟩ : Fin (n - 1)).val + 1 := by
+            show i.val = i.val - 1 + 1
+            omega
+          exact (gnGraph_induce_rim_reachable_prev i ⟨i.val - 1, ha⟩ ⟨i.val - 1, hg⟩ hval rfl
+              j hj h mv).trans
+            (gnGraph_induce_rim_reachable_prev i ⟨i.val - 1, ha⟩ ⟨i.val - 1, hg⟩ hval rfl 0
+              (by decide) mR mv).symm
+        · have h0 : i.val = 0 := by omega
+          have hlast : i.val + 1 = n := by omega
+          have mS : core 1 i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+            simpa using core_ne_core (by decide : (1 : Fin 5) ≠ 4)
+          have mT : core 2 i ∈ (({core 4 i}ᶜ) : Set (GnVertex n)) := by
+            simpa using core_ne_core (by decide : (2 : Fin 5) ≠ 4)
+          have sr : ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable
+              ⟨core 1 i, mS⟩ ⟨core 0 i, mR⟩ :=
+            (gnGraph_induce_adj mS mR ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))⟩).reachable
+          have ts : ((gnGraph n).induce (({core 4 i}ᶜ) : Set (GnVertex n))).Reachable
+              ⟨core 2 i, mT⟩ ⟨core 1 i, mS⟩ :=
+            (gnGraph_induce_adj mT mS ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              (Or.inl ⟨Or.inr ⟨rfl, rfl⟩, hlast⟩))))))⟩).reachable
+          fin_cases j
+          · exact SimpleGraph.Reachable.refl _
+          · exact sr
+          · exact ts.trans sr
+          · exact (gnGraph_induce_adj h mR ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              (Or.inr ⟨Or.inr ⟨rfl, rfl⟩, h0⟩))))))⟩).reachable
+          · exact absurd rfl hj
+    · have mv : core 4 i ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+        simpa using core_ne_core_block hii
+      refine (gnGraph_induce_reachable_hub j i h mv).trans ?_
+      rcases Nat.lt_or_ge i₀.val i.val with hlt | hge
+      · have ha : i₀.val + 1 < n := by omega
+        have hg : i₀.val < n - 1 := by omega
+        have msurv : ∀ k : Fin n, i₀.val + 1 ≤ k.val → k.val ≤ i.val → core 4 i₀ ≠ core 4 k := by
+          intro k hk _
+          refine core_ne_core_block ?_
+          intro hcon
+          rw [hcon] at hk
+          omega
+        have mtop : core 4 (⟨i₀.val + 1, ha⟩ : Fin n) ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+          simpa using (msurv ⟨i₀.val + 1, ha⟩ (by show i₀.val + 1 ≤ i₀.val + 1; omega)
+            (by show i₀.val + 1 ≤ i.val; omega)).symm
+        exact (gnGraph_induce_hub_down_range (i₀.val + 1) i.val msurv (i.val - (i₀.val + 1)) i
+            ⟨i₀.val + 1, ha⟩ (by omega) (by omega) rfl mv mtop).trans
+          (gnGraph_induce_rim_reachable_next i₀ ⟨i₀.val + 1, ha⟩ ⟨i₀.val, hg⟩ rfl rfl 0
+            (by decide) mR mtop).symm
+      · have hne : i.val ≠ i₀.val := fun hcon => hii (Fin.ext hcon)
+        have hlt : i.val < i₀.val := by omega
+        have ha : i₀.val - 1 < n := by omega
+        have hg : i₀.val - 1 < n - 1 := by omega
+        have msurv : ∀ k : Fin n, i.val ≤ k.val → k.val ≤ i₀.val - 1 → core 4 i₀ ≠ core 4 k := by
+          intro k _ hk
+          refine core_ne_core_block ?_
+          intro hcon
+          rw [hcon] at hk
+          omega
+        have mtop : core 4 (⟨i₀.val - 1, ha⟩ : Fin n) ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+          simpa using (msurv ⟨i₀.val - 1, ha⟩ (by show i.val ≤ i₀.val - 1; omega)
+            (by show i₀.val - 1 ≤ i₀.val - 1; omega)).symm
+        exact (gnGraph_induce_hub_down_range i.val (i₀.val - 1) msurv (i₀.val - 1 - i.val)
+            ⟨i₀.val - 1, ha⟩ i (by show i₀.val - 1 = i.val + (i₀.val - 1 - i.val); omega)
+            (by show i₀.val - 1 ≤ i₀.val - 1; omega) rfl mtop mv).symm.trans
+          (gnGraph_induce_rim_reachable_prev i₀ ⟨i₀.val - 1, ha⟩ ⟨i₀.val - 1, hg⟩
+            (by show i₀.val = i₀.val - 1 + 1; omega) rfl 0 (by decide) mR mtop).symm
+  have hall : ∀ z : {x : GnVertex n // x ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n))},
+      ((gnGraph n).induce (({core 4 i₀}ᶜ) : Set (GnVertex n))).Reachable z ⟨core 0 i₀, mR⟩ := by
+    rintro ⟨(⟨j, i⟩ | ⟨k, g⟩), hz⟩
+    · exact hcore j i hz
+    · have hgl : g.val < n - 1 := g.isLt
+      have h0 : g.val < n := by omega
+      have h1 : g.val + 1 < n := by omega
+      fin_cases k
+      · have m : core 1 (⟨g.val, h0⟩ : Fin n) ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+          simpa using core_ne_core (by decide : (1 : Fin 5) ≠ 4)
+        exact (gnGraph_induce_adj hz m (Or.inl ⟨rfl, rfl, rfl⟩)).reachable.trans (hcore _ _ m)
+      · have m : core 2 (⟨g.val, h0⟩ : Fin n) ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+          simpa using core_ne_core (by decide : (2 : Fin 5) ≠ 4)
+        exact (gnGraph_induce_adj hz m (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))).reachable.trans
+          (hcore _ _ m)
+      · have m : core 0 (⟨g.val + 1, h1⟩ : Fin n) ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+          simpa using core_ne_core (by decide : (0 : Fin 5) ≠ 4)
+        exact (gnGraph_induce_adj hz m (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩)))).reachable.trans
+          (hcore _ _ m)
+      · have m : core 3 (⟨g.val + 1, h1⟩ : Fin n) ∈ (({core 4 i₀}ᶜ) : Set (GnVertex n)) := by
+          simpa using core_ne_core (by decide : (3 : Fin 5) ≠ 4)
+        exact (gnGraph_induce_adj hz m (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩)))).reachable.trans
+          (hcore _ _ m)
+  rw [SimpleGraph.connected_iff]
+  exact ⟨fun x y => (hall x).trans (hall y).symm, ⟨⟨core 0 i₀, mR⟩⟩⟩
+
+
 end Deletion
+
+/-- **Theorem 2.5.1 (Bowling, 2023).** The graph `Gn` is 2-connected.
+
+Its order is at least three, being `9n - 4`, and deleting any single vertex leaves a connected graph. The two
+cases are whether the deleted vertex is a hub. If it is not, every hub survives and the hubs chain; if it is,
+the block that lost its hub is bridged through its rim. -/
+theorem gnGraph_isTwoConnected (hn : 1 ≤ n) : SimpleGraph.IsTwoConnected (gnGraph n) := by
+  refine ⟨three_le_card_gnVertex hn, fun v => ?_⟩
+  by_cases hhub : ∃ i : Fin n, v = core 4 i
+  · obtain ⟨i, rfl⟩ := hhub
+    exact gnGraph_induce_connected_of_hub i
+  · push_neg at hhub
+    exact gnGraph_induce_connected_of_nohub (by omega) hhub
 
 end ZonalGraphs
