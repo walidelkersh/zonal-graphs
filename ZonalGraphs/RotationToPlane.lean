@@ -11,15 +11,16 @@ since a modified face structure has to be posited rather than computed. The indu
 the dissertation delete vertices and read off the faces of what remains, so they cannot be stated
 faithfully against the interface.
 
-This module closes that gap in the direction that matters: it builds a `PlaneGraph` out of a
-`RotationSystem`, where the faces are *defined* as the orbits of `faceMap` rather than assumed. Two darts
-lie on the same face when a power of `faceMap` carries one to the other, which is an equivalence, and the
-faces are its quotient. The boundary of a face is the image of its darts under `vertexOf`, and its
-boundary edges are the edges those darts span.
+`FacialBalance.toPlaneGraph` already bridges the two, but it takes the faces as an *indexing* by sets of
+darts and takes their `faceMap`-invariance as a hypothesis, so the face structure is still posited. What is
+added here is that the faces are *computed*: two darts lie on the same face when a power of `faceMap`
+carries one to the other, which is an equivalence, and the faces are its quotient. A face's boundary is
+the image of its darts under `vertexOf` and its boundary edges are the edges those darts span.
 
-The immediate payoff is `isBalanced_boundary_darts`. Facial colour balance was available for any
-`faceMap`-invariant set of darts, but on the interface nothing said a face *was* such a set. Here it is
-one by construction, so the balance holds of the faces of an actual embedding with no hypothesis at all.
+The difference shows in `faceMap_mem_darts_iff`, which is the invariance hypothesis of the older bridge
+appearing here as a theorem. `isBalanced_boundary_darts` then gets facial colour balance for the faces of
+an actual embedding with no hypothesis about the face structure at all, where before an indexing had to be
+supplied and its invariance assumed.
 
 Deletion is not treated here. What it needs is the effect on darts of removing a vertex, after which the
 new faces come out of this same quotient; that is the remaining step for the section 4.3 inductions.
@@ -79,7 +80,7 @@ noncomputable def boundaryEdges (R : E.Face) : Finset (Sym2 Vertex) := by
 
 Connectivity of the embedded graph is the one thing a rotation system does not already carry, so it is a
 hypothesis. A dart is needed to name an exterior face. -/
-noncomputable def toPlaneGraph [Nonempty Dart] (hconn : E.graph.Connected) :
+noncomputable def toPlaneGraphOfOrbits [Nonempty Dart] (hconn : E.graph.Connected) :
     PlaneGraph Vertex E.Face where
   graph := E.graph
   connected := hconn
@@ -87,8 +88,8 @@ noncomputable def toPlaneGraph [Nonempty Dart] (hconn : E.graph.Connected) :
   boundaryEdges := E.boundaryEdges
   exterior := E.faceOf (Classical.arbitrary Dart)
 
-@[simp] theorem toPlaneGraph_boundary [Nonempty Dart] (hconn : E.graph.Connected) (R : E.Face) :
-    (E.toPlaneGraph hconn).boundary R = E.boundary R := rfl
+@[simp] theorem toPlaneGraphOfOrbits_boundary [Nonempty Dart] (hconn : E.graph.Connected) (R : E.Face) :
+    (E.toPlaneGraphOfOrbits hconn).boundary R = E.boundary R := rfl
 
 /-- **Facial colour balance for the faces of an actual embedding.**
 
