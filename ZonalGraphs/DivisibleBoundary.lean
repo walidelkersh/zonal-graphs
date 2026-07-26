@@ -65,6 +65,16 @@ theorem isInnerZonal_of_card_boundary_interior_eq_three (P : PlaneGraph Vertex F
     (htri : ∀ R : Face, R ≠ P.exterior → (P.boundary R).card = 3) : P.IsInnerZonal :=
   P.isInnerZonal_of_three_dvd_card_boundary_interior fun R hR => (htri R hR) ▸ dvd_rfl
 
+/-- **Proposition 2.4.1 (Bowling, 2023).** The plane graph `Fk` is zonal.
+
+Its regions have boundaries of order `3` or `9`, both multiples of three, so the constant labeling `1`
+gives every region value zero. The source argues exactly this, and the general statement it instantiates
+is `isZonal_of_three_dvd_card_boundary`. -/
+theorem isZonal_of_card_boundary_eq_three_or_nine (P : PlaneGraph Vertex Face)
+    (h : ∀ R : Face, (P.boundary R).card = 3 ∨ (P.boundary R).card = 9) : P.IsZonal :=
+  P.isZonal_of_three_dvd_card_boundary fun R => by rcases h R with hR | hR <;> omega
+
+
 end PlaneGraph
 
 end ZonalGraphs
