@@ -1,5 +1,62 @@
 # Master Formalization To-Do List
 
+## How to read this list
+
+`- [x]` means the statement is formalized **and** the GitHub build was green at the time it was
+checked. Every checked item is listed in the index below with the Lean declaration that proves it, so
+a checkmark can be audited.
+
+Three caveats about the list itself, all consequences of extracting it from PDFs:
+
+* **Sections `00` and `01` are the same dissertation twice** and are byte-identical apart from
+  checkmarks. Check an item in one and check it in the other.
+* **The same theorem recurs across papers under different numbers.** For instance "every 2-connected
+  bipartite planar graph is absolutely zonal" is Proposition 2.1.1 in `00`/`01`, Proposition 4.1 in
+  `02` and Proposition 2.2 in `04`. One Lean proof discharges all of its aliases.
+* **Some entries are extraction artifacts, not statements**: ten carry no theorem number
+  (`**Theorem **:`) and about fifteen begin mid-sentence, being the prose that happened to follow a
+  theorem reference. They are not provable as written and should be ignored or rewritten against the
+  source.
+
+The count of genuinely distinct statements is therefore well below the number of lines here.
+
+## Proved in Lean
+
+| Statement | Declaration |
+| --- | --- |
+| Theorem 2.0.1 | `PlaneGraph.every_nontrivial_tree_is_zonal` |
+| Theorem 2.0.2 | `PlaneGraph.every_cycle_is_zonal` |
+| Lemma 2.0.3 | `zonal_boundary_label_counts_modEq` |
+| Lemma 2.0.4 | `lemma_2_0_4` |
+| Proposition 2.0.5 | `zonal_of_isSubdivision` |
+| Proposition 2.1.1 | `every_twoConnected_bipartite_planar_isAbsolutelyZonal` |
+| Theorem 2.1.3 | `threeConnected_zonal_isAbsolutelyZonal` |
+| Theorem 2.1.4 | `bridgeless_cubic_planar_isAbsolutelyZonal` |
+| Theorem 2.1.5 | `wheel_isZonal_iff_modEq_zero` |
+| Proposition 2.2.1 | `PlaneGraph.not_isZonal_ofTwoBladedWindmill` |
+| Theorem 2.2.2 | `PlaneGraph.conditionallyZonal_windmill` |
+| Theorem 2.3.2 | `PlaneGraph.exists_irregular_windmill_many_zonal_embeddings` |
+| Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
+
+Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
+(facial colour balance, proved rather than assumed), `windmillGraph_connected`,
+`PlaneGraph.isZonal_of_three_dvd_card_boundary`.
+
+## Carried as explicit hypotheses, not proved
+
+These are deliberately *not* checked. Each is recorded as a named proposition and passed in where
+needed, so the logical dependency is visible in the statement of every result that uses it.
+
+* **Theorem 1.3.2 / 4.1.1** (`CubicZonalIffBridgeless`) — a connected cubic plane graph is zonal iff
+  bridgeless. A theorem in the literature, but its proof invokes the Four Color Theorem, and a
+  4CT-free proof would itself constitute a new proof of 4CT.
+* **Theorem 2.1.2** (`WhitneyUniqueEmbedding`) — Whitney's unique-embedding theorem. Not out of reach
+  mathematically; it is not expressible while `PlaneGraph` is an interface of supplied face data.
+  `ZonalGraphs.Embedding` begins the combinatorial-embedding layer that would make it expressible.
+* **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
+  no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
+  Theorem 2.3.2 was proved without it.
+
 
 ## 00_Previously_Downloaded_Zonal_Paper.pdf
 
@@ -171,7 +228,7 @@
 - [ ] **Corollary 3.7.**: Let G be a graph of a cycle rank2 and type (3) containing three internally disjoint paths of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and only if G is not mini...
 - [ ] **Theorem 3.8.**: Let G be a graph of a cycle rank 2. (1) If G is of type (1), then G is zonal if and only if G is not minimal. (2) If G is of type (2), then G is zonal if and only if either every vertex of G belong...
 - [ ] **Theorem 3.9.**: Let F be a minimal graph of cycle rank 2. (1) If F is of type (1), then every planar embedding of F ⋆ K2 is zonal. (2) If F is of type (2) such that at least one vertex of F belongs to no cycle in ...
-- [ ] **Proposition 4.1.**: Every 2-connected bipartite plane graph is zonal. We now present some observations on 2-connected graphs of cycle rank 3.
+- [x] **Proposition 4.1.**: Every 2-connected bipartite plane graph is zonal. We now present some observations on 2-connected graphs of cycle rank 3.
 - [ ] **Proposition 4.2.**: There are infinitely many 2-connected zonal graphs of cycle rank 3.
 - [ ] **Proposition 4.3.**: Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a number of times of the same parity, then the resulting graph is zonal.
 - [ ] **Proposition 4.4.**: There are infinitely many 2-connected non-zonal graphs of cycle rank 3.
@@ -203,15 +260,15 @@
 - [ ] **Theorem 1.2.**: If every cubic map is zonal, then the chromatic number of every planar graph is at most 4. Thus, if it could be shown that every cubic map is zonal without using the Four Color Theorem, then the Fo...
 - [ ] **Theorem would**: follow. This shows that studying zonal labelings of planar graphs are of interest, especially cubic planar graphs, and cubic maps in particular. 2. Absolutely zonal graphs The following result was ...
 - [ ] **Proposition 2.1.**: Every nontrivial tree and every cycle is zonal. Since there is only one planar embedding of a nontrivial tree or a cycle, it follows that every nontrivial tree and every cycle is absolutely zonal. ...
-- [ ] **Proposition 2.2.**: Every 2-connected bipartite planar graph is absolutely zonal.
+- [x] **Proposition 2.2.**: Every 2-connected bipartite planar graph is absolutely zonal.
 - [ ] **Theorem 2.1.**: (Whitney’s Theorem) Every 3-connected planar graph is uniquely embeddable in the plane. As a consequence of Theorem 2.1, every 3-connected planar graph is either absolutely zonal or non-zonal. Ever...
 - [ ] **Theorem 2.2.**: For an integer n≥ 3, the wheel Wn =Cn∨K1 is zonal if and only if n≡ 0 (mod 3) .
 - [ ] **Theorem 2.3.**: For every positive integerk, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings. 2 A. Bowling and P. Zhang/ Electron. J. Math. 4 (2022) 1–11...
-- [ ] **Proposition 3.1.**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
+- [x] **Proposition 3.1.**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
 - [ ] **Lemma 3.1.**: LetX be a nonempty set of vertices of a graph. (1) For eachi = 1, 2, there is a labeling ℓi :X→{ 1, 2}⊆ Z3 ofX such that∑(ℓi,X ) =i in Z3. (2) If|X|≥ 2, then there is a labeling ℓ0 :X→{ 1, 2}⊆ Z3 o...
-- [ ] **Theorem 3.1.**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal. 4 A. Bowling and P. Zhang/ Electron. J. Math. 4 (2022) 1–11 5
+- [x] **Theorem 3.1.**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal. 4 A. Bowling and P. Zhang/ Electron. J. Math. 4 (2022) 1–11 5
 - [ ] **Lemma 4.1.**: LetS be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4∏ i=1 (ik− 1 k− 1 ) = (4k− 1 k− 1 )(3k− 1 k− 1 )(2k− 1 k− 1 ) . (1) 7 A. Bo...
-- [ ] **Theorem 4.1.**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
+- [x] **Theorem 4.1.**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
 - [ ] **Proposition 5.1.**: For a positive integer k, the plane graph Fk is zonal.
 - [ ] **Theorem 5.1.**: There is a regular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
 - [ ] **Proposition 5.2.**: Letk be a positive integer . ⋆ Ifµ(k)≡ 1 (mod 3), then the zonal Dutch windmill graph Dµ(k) 3 is conditionally zonal and has at least k distinct zonal planar embeddings. ⋆ Ifµ(k)≡ 2 (mod 3), then t...
