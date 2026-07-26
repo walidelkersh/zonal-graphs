@@ -54,6 +54,40 @@ theorem hasFacialBipartitionBalance_toPlaneGraph (hconnected : E.graph.Connected
       exterior).HasFacialBipartitionBalance := fun coloring R =>
   E.isBalanced_image_of_faceMap_invariant coloring (faceDarts R) (hinvariant R) (hinjOn R)
 
+omit [DecidableEq Vertex] in
+/-- **Facial vanishing over an arbitrary abelian group.**
+
+Fix an abelian group `Γ` and an element `g`.  Label one colour class of a proper two-colouring by `g` and
+the other by `-g`.  Every `faceMap`-invariant set of darts then sums to zero, because the two classes are
+equinumerous there, so the sum is `n • g + n • (-g)`.
+
+This is the group-valued form of facial balance, and it is what Proposition 2.7 of Bowling (2025) needs:
+a 2-connected bipartite plane graph is `Γ`-zonal for every abelian `Γ`.  Nothing about `ZMod 3` is used;
+the argument only needs `g` and its negative to cancel. -/
+theorem sum_colourLabel_eq_zero {Γ : Type*} [AddCommGroup Γ] (coloring : E.graph.Coloring (Fin 2))
+    (g : Γ) (faceDarts : Finset Dart)
+    (hinvariant : ∀ d, E.faceMap d ∈ faceDarts ↔ d ∈ faceDarts) :
+    ∑ d ∈ faceDarts, (if coloring (E.vertexOf d) = 0 then g else -g) = 0 := by
+  have hnot : {d ∈ faceDarts | ¬coloring (E.vertexOf d) = 0}
+      = {d ∈ faceDarts | coloring (E.vertexOf d) = 1} :=
+    Finset.filter_congr fun d _ => by
+      have hc : ∀ c : Fin 2, ¬c = 0 ↔ c = 1 := by decide
+      exact hc _
+  have hpos : ∀ d ∈ {d ∈ faceDarts | coloring (E.vertexOf d) = 0},
+      (if coloring (E.vertexOf d) = 0 then g else -g) = g := by
+    intro d hd
+    simp only [Finset.mem_filter] at hd
+    simp [hd.2]
+  have hneg : ∀ d ∈ {d ∈ faceDarts | coloring (E.vertexOf d) = 1},
+      (if coloring (E.vertexOf d) = 0 then g else -g) = -g := by
+    intro d hd
+    simp only [Finset.mem_filter] at hd
+    simp [hd.2]
+  rw [← Finset.sum_filter_add_sum_filter_not faceDarts fun d => coloring (E.vertexOf d) = 0, hnot,
+    Finset.sum_congr rfl hpos, Finset.sum_congr rfl hneg, Finset.sum_const, Finset.sum_const,
+    E.isBalanced_of_faceMap_invariant coloring faceDarts hinvariant, ← smul_add,
+    add_neg_cancel, smul_zero]
+
 end RotationSystem
 
 end ZonalGraphs
