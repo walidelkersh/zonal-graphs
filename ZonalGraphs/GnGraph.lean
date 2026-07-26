@@ -149,4 +149,20 @@ theorem gnGraph_connected (hn : 0 < n) : (gnGraph n).Connected := by
   exact ⟨fun x y => (hbase x).trans (hbase y).symm, ⟨core 4 ⟨0, hn⟩⟩⟩
 
 
+/-- `Gn` has `5n + 4(n-1)` vertices, five per block and four per gap, which is `9n - 4` for `n` at least
+one. This is the count stated in the source. -/
+theorem card_gnVertex : Fintype.card (GnVertex n) = 5 * n + 4 * (n - 1) := by
+  simp [GnVertex, Fintype.card_sum, Fintype.card_prod]
+
+theorem card_gnVertex_eq (hn : 1 ≤ n) : Fintype.card (GnVertex n) = 9 * n - 4 := by
+  rw [card_gnVertex]
+  omega
+
+/-- The first half of 2-connectedness: `Gn` has at least three vertices. Even `G1`, a single wheel, has
+five. -/
+theorem three_le_card_gnVertex (hn : 1 ≤ n) : 3 ≤ Fintype.card (GnVertex n) := by
+  rw [card_gnVertex]
+  omega
+
+
 end ZonalGraphs
