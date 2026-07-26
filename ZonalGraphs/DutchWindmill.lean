@@ -180,6 +180,34 @@ theorem sum_flipLabeling (flip s : Finset Vertex) :
   ring
 
 omit [Fintype Vertex] in
+/-- **Prescribing the label sums of pairwise disjoint blocks.**
+
+Label every vertex `1`, then inside each block flip `(target - |block|).val` vertices from `1` to `2`;
+each flip raises that block's sum by exactly one.  The only requirement is that a block hold as many
+vertices as the flips it must absorb, which is the hypothesis `hfit`, and since `(t - c).val ≤ 2` any
+block with at least two vertices satisfies it for every target.
+
+Nothing is asked of the blocks beyond being pairwise disjoint — they need not cover the vertices, since
+a flip labeling is defined everywhere. This is the general form behind the windmill petal sums and the
+unicyclic two-block construction alike. -/
+theorem exists_labeling_blockSum_eq {Block : Type w} [Fintype Block] (block : Block → Finset Vertex)
+    (hdisjoint : ∀ b c, b ≠ c → Disjoint (block b) (block c)) (target : Block → ZMod 3)
+    (hfit : ∀ b, (target b - ((block b).card : ZMod 3)).val ≤ (block b).card) :
+    ∃ labeling : VertexLabeling Vertex,
+      ∀ b, (∑ v ∈ block b, (labeling v : ZMod 3)) = target b := by
+  choose F hFsubset hFcard using fun b => Finset.exists_subset_card_eq (hfit b)
+  refine ⟨flipLabeling (Finset.univ.biUnion F), fun b => ?_⟩
+  have hinter : block b ∩ Finset.univ.biUnion F = F b := by
+    ext v
+    simp only [Finset.mem_inter, Finset.mem_biUnion, Finset.mem_univ, true_and]
+    refine ⟨fun ⟨hv, c, hc⟩ => ?_, fun hv => ⟨hFsubset b hv, b, hv⟩⟩
+    by_cases hbc : c = b
+    · exact hbc ▸ hc
+    · exact absurd hv (Finset.disjoint_left.mp (hdisjoint c b hbc) (hFsubset c hc))
+  rw [sum_flipLabeling, hinter, hFcard, ZMod.natCast_zmod_val]
+  ring
+
+omit [Fintype Vertex] in
 /-- **Prescribing petal sums.** If the petals avoid the hub, are pairwise disjoint, and each has at
 least two vertices, then every assignment of target petal sums is realized by some labeling, which
 moreover gives the hub the label `1`.
