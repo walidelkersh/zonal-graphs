@@ -605,6 +605,48 @@ theorem isZonal_of_theta_outsideBlock (P : PlaneGraph Vertex Face) {R₁ R₂ R�
       · simpa using val_neg_le_of_ne_one hU)
     (by decide) (by decide) (by decide)
 
+/-- **Theorem 3.6 (Bowling–Zhang, 2023).** A cycle-rank-two plane graph properly containing a minimal
+zonal type (3) graph, and not equal to `F ⋆ K₂`, is zonal.
+
+Stated at the same level as Theorems 3.2.1, 3.2.3 and 3.3 in this file: the shape of the chosen embedding
+is a hypothesis, since `PlaneGraph` supplies face data rather than deriving it.  The published proof picks
+one of two embeddings according to how the vertices outside `F` sit, and each is already settled here, so
+the theorem is the disjunction of those two cases.
+
+Left branch: the outside vertices form one block on a single region's boundary, and they number other than
+one, which is the condition `|U₀ ∪ Uᵢ| ≥ 2`.  Right branch: each region carries one outside vertex of its
+own. -/
+theorem isZonal_cycleRankTwo_typeThree_proper (P : PlaneGraph Vertex Face) {R₁ R₂ R₃ : Face}
+    (hfaces : ∀ R : Face, R = R₁ ∨ R = R₂ ∨ R = R₃)
+    (hshape :
+      (∃ T Q₁ Q₂ Q₃ U : Finset Vertex,
+        P.boundary R₁ = T ∪ Q₁ ∪ Q₂ ∧ P.boundary R₂ = T ∪ Q₂ ∪ Q₃ ∧
+          P.boundary R₃ = T ∪ Q₁ ∪ Q₃ ∪ U ∧
+          (∀ i j : Fin 5, i ≠ j →
+            Disjoint (![T, Q₁, Q₂, Q₃, U] i) (![T, Q₁, Q₂, Q₃, U] j)) ∧
+          T.card = 2 ∧ 1 ≤ Q₁.card ∧ 1 ≤ Q₂.card ∧ 1 ≤ Q₃.card ∧ U.card ≠ 1) ∨
+      (∃ T Q₁ Q₂ Q₃ W₁ W₂ W₃ : Finset Vertex,
+        P.boundary R₁ = T ∪ Q₁ ∪ Q₂ ∪ W₁ ∧ P.boundary R₂ = T ∪ Q₂ ∪ Q₃ ∪ W₂ ∧
+          P.boundary R₃ = T ∪ Q₁ ∪ Q₃ ∪ W₃ ∧
+          (∀ i j : Fin 7, i ≠ j →
+            Disjoint (![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] i) (![T, Q₁, Q₂, Q₃, W₁, W₂, W₃] j)) ∧
+          T.card = 2 ∧ 1 ≤ Q₁.card ∧ 1 ≤ Q₂.card ∧ 1 ≤ Q₃.card ∧
+          W₁.card = 1 ∧ W₂.card = 1 ∧ W₃.card = 1)) : P.IsZonal := by
+  rcases hshape with ⟨T, Q₁, Q₂, Q₃, U, h₁, h₂, h₃, hdisj, hT, hq₁, hq₂, hq₃, hU⟩ |
+    ⟨T, Q₁, Q₂, Q₃, W₁, W₂, W₃, h₁, h₂, h₃, hdisj, hT, hq₁, hq₂, hq₃, hw₁, hw₂, hw₃⟩
+  · exact isZonal_of_theta_outsideBlock P h₁ h₂ h₃ hfaces hdisj hT hq₁ hq₂ hq₃ hU
+  · refine isZonal_of_theta_threeBlocks P h₁ h₂ h₃ hfaces hdisj ![2, 1, 1, 1, 2, 2, 2] ?_
+      (by decide) (by decide) (by decide)
+    intro i
+    fin_cases i
+    · simpa using val_sub_le_of_ne_zero 2 (by decide) T.card (by omega)
+    · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₁.card hq₁
+    · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₂.card hq₂
+    · simpa using val_sub_le_of_ne_zero 1 (by decide) Q₃.card hq₃
+    · simpa using val_sub_le_of_ne_zero 2 (by decide) W₁.card (by omega)
+    · simpa using val_sub_le_of_ne_zero 2 (by decide) W₂.card (by omega)
+    · simpa using val_sub_le_of_ne_zero 2 (by decide) W₃.card (by omega)
+
 end PlaneGraph
 
 end ZonalGraphs
