@@ -1,3 +1,4 @@
+import ZonalGraphs.BoundaryDifference
 import ZonalGraphs.DutchWindmill
 
 namespace ZonalGraphs
@@ -228,6 +229,22 @@ theorem isZonal_iff_card_ne_one_cycleRankTwo_typeTwo (P : PlaneGraph Vertex Face
     · rw [zoneValue, h₂]; exact hc₂
     · rw [zoneValue, h₃, sum_univ_eq_of_cover hd₁₂ hd₁W hd₂W hcover, hc₁, hc₂, hcW]
       decide
+
+/-- **The non-zonal case of Theorem 3.3 (Bowling–Zhang, 2023).** A minimal plane graph of cycle rank two
+and type (3) with `(n₁, n₂) = (2, 3)` is not zonal.
+
+Type (3) consists of three internally disjoint `u`–`v` paths `P₁, P₂, P₃`, and the three regions are
+bounded by the three pairs of paths.  With `n₁ = 2` the first path is the edge `uv` alone, so it has no
+interior vertex and the region bounded by `P₁` and `P₃` has boundary `{u, v} ∪ Q₃`.  With `n₂ = 3` the
+middle path has exactly one interior vertex `w`, so the region bounded by `P₂` and `P₃` has boundary that
+same set with `w` adjoined.
+
+Two regions differing by one vertex cannot both vanish, so the whole case is one application of
+`not_isZonal_of_boundary_insert`. -/
+theorem not_isZonal_of_cycleRankTwo_typeThree_minimal (P : PlaneGraph Vertex Face) {R₂ R₃ : Face}
+    {T Q₃ : Finset Vertex} {w : Vertex} (h₂ : P.boundary R₂ = insert w (T ∪ Q₃))
+    (h₃ : P.boundary R₃ = T ∪ Q₃) (hw : w ∉ T ∪ Q₃) : ¬P.IsZonal :=
+  P.not_isZonal_of_boundary_insert h₃ h₂ hw
 
 end PlaneGraph
 
