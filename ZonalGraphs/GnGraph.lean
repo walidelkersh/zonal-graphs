@@ -475,6 +475,47 @@ theorem gnGraph_induce_gap_reachable_some_hub (hnohub : ∀ k : Fin n, c ≠ cor
     · exact ⟨⟨g.val + 1, h1⟩,
         gnGraph_induce_gap_via_core aU (by decide) hx (by simpa using h) _⟩
 
+/-- **Range-restricted hub chaining.** A hub reaches a lower hub provided every hub at or above the lower
+index survives. Chaining all the way to block `0` is not always possible, since a deleted hub blocks the way,
+so the range is a hypothesis. -/
+theorem gnGraph_induce_hub_down (lo : ℕ) (hsurv : ∀ k : Fin n, lo ≤ k.val → c ≠ core 4 k) :
+    ∀ (d : ℕ) (i i' : Fin n) (hi : i.val = lo + d) (hi' : i'.val = lo),
+      ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable
+        ⟨core 4 i, by simpa using (hsurv i (by omega)).symm⟩
+        ⟨core 4 i', by simpa using (hsurv i' (by omega)).symm⟩ := by
+  intro d
+  induction d with
+  | zero =>
+    intro i i' hi hi'
+    have : i = i' := Fin.ext (by omega)
+    subst this
+    exact SimpleGraph.Reachable.refl _
+  | succ d ih =>
+    intro i i' hi hi'
+    have hlt : lo + d < n - 1 := by omega
+    have hm : lo + d < n := by omega
+    exact (gnGraph_induce_reachable_hubs ⟨lo + d, hlt⟩ i ⟨lo + d, hm⟩ hi rfl _ _).trans
+      (ih ⟨lo + d, hm⟩ i' rfl hi')
+
+
+/-- **The deleted vertex is not a hub.** Then every hub survives, so every core vertex reaches its own hub,
+every connector reaches some hub, and the hubs chain to block `0`. -/
+theorem gnGraph_induce_connected_of_nohub (hn : 0 < n) (hnohub : ∀ k : Fin n, c ≠ core 4 k) :
+    ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Connected := by
+  have manchor : core 4 (⟨0, hn⟩ : Fin n) ∈ ({c}ᶜ : Set (GnVertex n)) := by
+    simpa using (hnohub ⟨0, hn⟩).symm
+  have hall : ∀ z : {x : GnVertex n // x ∈ ({c}ᶜ : Set (GnVertex n))},
+      ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable z
+        ⟨core 4 ⟨0, hn⟩, manchor⟩ := by
+    rintro ⟨(⟨j, i⟩ | ⟨k, g⟩), hz⟩
+    · exact (gnGraph_induce_reachable_hub j i hz (by simpa using (hnohub i).symm)).trans
+        (gnGraph_induce_reachable_hub_zero hn hnohub i.val i rfl)
+    · obtain ⟨i, hreach⟩ := gnGraph_induce_gap_reachable_some_hub hnohub k g hz
+      exact hreach.trans (gnGraph_induce_reachable_hub_zero hn hnohub i.val i rfl)
+  rw [SimpleGraph.connected_iff]
+  exact ⟨fun x y => (hall x).trans (hall y).symm, ⟨⟨core 4 ⟨0, hn⟩, manchor⟩⟩⟩
+
+
 end Deletion
 
 end ZonalGraphs
