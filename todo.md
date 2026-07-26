@@ -177,23 +177,24 @@ needed, so the logical dependency is visible in the statement of every result th
   path has to be built there. Nine vertex families and the two irregular ends give a wide case split. This
   is the largest single remaining proof in the Gn group.
 
-  **A failed attempt, and a correction to how it was first recorded.** The gap-redundancy lemma was
-  written and did not build. The first note here claimed it elaborated clean under `lean-lsp` while
-  exceeding 570 seconds under `lake build`, and offered that as a discrepancy between the two tools. That
-  reading was wrong. Bisecting the file down to a single helper lemma produced a real type error: a
-  misapplied `Sum.noConfusion`, whose expected type is a `noConfusionType` rather than `False`. The long
-  builds were failing elaboration retrying against unsolved metavariables, not honest proof cost. This is
-  the same mistake as the earlier false performance claim in this project, drawn from timing a failure.
+  **The gap redundancy is now proved: `gnGraph_induce_reachable_hubs`.** If the hubs of two consecutive
+  blocks both survive the deletion of one vertex they stay connected, along whichever of the two
+  vertex-disjoint routes `v-r-y-w-s-v` and `v-u-z-x-t-v` the deleted vertex misses. The two routes are
+  separate lemmas, `gnGraph_route_rw` and `gnGraph_route_ux`, so the case analysis is four one-line
+  branches, and four discrimination lemmas support them.
 
-  What is established: the module builds in about ten seconds without the attempt, the attempt does not
-  build, and `lean-lsp` reported the file clean when it contained a type error, so a clean LSP diagnostic
-  did not reflect the file's real state here. What is *not* established is any claim about proof cost. After
-  the type error was corrected the module still did not build inside the time allowed, but given the
-  measurement history that number should not be trusted until the file compiles at all.
+  Worth keeping the history, because the diagnosis was wrong twice. This lemma was first recorded here as a
+  performance problem, on the strength of builds that ran past 570 seconds. It was never a performance
+  problem. A single misapplied `Sum.noConfusion`, whose expected type is a `noConfusionType` rather than
+  `False`, was the entire cause; the long builds were failing elaboration retrying against unsolved
+  metavariables. With the discrimination lemmas proved by `simp` the module builds in about forty seconds
+  with no warnings. Two lessons, both already paid for once before in this project: never infer cost from a
+  run that did not succeed, and check a file with a build rather than with LSP diagnostics, which reported
+  this file clean while it held a type error.
 
-  The attempt is parked at `GnGraph_deletion_attempt.lean` in the session scratchpad, and it contains the
-  bad `Sum.noConfusion` proofs. Anyone resuming should get it compiling first, by ordinary means and checked
-  with a build rather than with LSP diagnostics, before drawing any conclusion about performance.
+  What remains for Theorem 2.5.1 is the wrapper: every surviving vertex must reach a surviving hub, which
+  needs the case where the deleted vertex is a hub itself, and the ends `n = 1` where a block keeps both of
+  its undivided edges and there may be no surviving hub to aim at.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
