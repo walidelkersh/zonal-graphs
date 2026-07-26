@@ -95,6 +95,38 @@ theorem two_dvd_card_dart [DecidableEq Dart] : 2 ∣ Fintype.card Dart := by
   have hdvd := Equiv.Perm.two_dvd_card_support hsq
   rwa [hsupport, Finset.card_univ] at hdvd
 
+/-- The number of edges of an embedding: half the darts, well defined by `two_dvd_card_dart`. -/
+def edgeCount [DecidableEq Dart] (_E : RotationSystem Vertex Dart) : ℕ := Fintype.card Dart / 2
+
+include E in
+/-- Twice the edge count is the dart count. -/
+theorem two_mul_edgeCount [DecidableEq Dart] : 2 * E.edgeCount = Fintype.card Dart := by
+  rw [edgeCount, Nat.mul_div_cancel' E.two_dvd_card_dart]
+
+/-- The Euler characteristic of an embedding, given the number of its faces: vertices minus edges plus
+faces.
+
+This is where the Euler identity has to be confronted honestly. Genus is *defined* by
+`χ = 2 - 2g`, so declaring an embedding planar when `g = 0` makes `χ = 2` a definition rather than a
+theorem, and Theorem 1.1.1 of the dissertation is then unprovable as stated. Getting it as a theorem
+requires planarity fixed independently of `χ`, either topologically in the plane, which wants the Jordan
+curve theorem, or combinatorially by excluded minors, which wants Kuratowski. Neither exists in mathlib.
+
+What is recorded here is the arithmetic: the counts and the fact that the edge count is genuinely half the
+darts. The classification that would turn `χ` into a statement about planarity is not. -/
+def eulerChar [DecidableEq Dart] (E : RotationSystem Vertex Dart) (faceCount : ℕ) : ℤ :=
+  (Fintype.card Vertex : ℤ) - (E.edgeCount : ℤ) + (faceCount : ℤ)
+
+include E in
+/-- The characteristic in terms of darts rather than edges, clearing the division. -/
+theorem two_mul_eulerChar [DecidableEq Dart] (faceCount : ℕ) :
+    2 * E.eulerChar faceCount
+      = 2 * (Fintype.card Vertex : ℤ) - (Fintype.card Dart : ℤ) + 2 * (faceCount : ℤ) := by
+  have h := E.two_mul_edgeCount
+  simp only [eulerChar]
+  push_cast [← h]
+  ring
+
 section Balance
 
 variable {D : Type w}
