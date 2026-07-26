@@ -15,4 +15,5 @@ import ZonalGraphs.ThreeConnected
 import ZonalGraphs.CubicPlanar
 import ZonalGraphs.DutchWindmill
 import ZonalGraphs.WindmillGraph
+import ZonalGraphs.StandardWindmill
 import ZonalGraphs.Wheels
