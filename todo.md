@@ -77,6 +77,14 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+* **Proposition 1.3 and the other dual halves** — blocked on plane duality, not on the cozonal notion.
+  `IsGroupCozonal` now exists, and unwinding the definitions shows that `G` being zonal is literally `G*`
+  being cozonal: a cozonal labeling of `G` labels regions so that each vertex sums to zero, which is a
+  zonal labeling of the dual. Stating that needs the dual as a `PlaneGraph`, and the dual of a plane graph
+  is in general a *multigraph*, whereas `PlaneGraph` carries a `SimpleGraph`. Expressing plane duality
+  therefore needs the whole development moved to multigraphs. This is the real obstruction behind every
+  entry pairing a zonal claim with its cozonal dual, and it is separate from the planarity issue below.
+
 * **Theorem 1.1.1** (the Euler identity) — a finding, not an excuse. In the rotation-system model a map's
   Euler characteristic is `V - E + F` with `V`, `E`, `F` the orbit counts of `rotate`, `dartRev` and
   `faceMap`, and genus is *defined* by `V - E + F = 2 - 2g`. Planarity is genus zero, so `V - E + F = 2`

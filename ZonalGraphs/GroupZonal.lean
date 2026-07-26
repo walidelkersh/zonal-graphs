@@ -66,6 +66,18 @@ theorem isGroupZonal_map {Γ' : Type*} [AddCommGroup Γ'] (φ : Γ →+ Γ')
   simp only [groupZoneValue] at hzonal ⊢
   rw [← map_sum, hzonal R, map_zero]
 
+/-- **Observation 2.1 (Bowling, 2025).** Zonality passes to a larger group along any injective
+homomorphism, so in particular a subgroup inclusion.
+
+The images of nonzero labels stay nonzero because the map is injective, and the region sums transport by
+`isGroupZonal_map`. -/
+theorem isGroupZonal_of_injective {Γ' : Type*} [AddCommGroup Γ'] (φ : Γ →+ Γ')
+    (hinj : Function.Injective φ) (P : PlaneGraph Vertex Face) (h : P.IsGroupZonal Γ) :
+    P.IsGroupZonal Γ' := by
+  obtain ⟨labeling, hlabeling⟩ := h
+  exact isGroupZonal_map φ P labeling
+    (fun v hz => (labeling v).2 (hinj (by rw [hz, map_zero]))) hlabeling
+
 /-- **The generalization is faithful.** At `Γ = ZMod 3` the group-valued notion *is* the original one, on
 the nose rather than up to translation.
 
