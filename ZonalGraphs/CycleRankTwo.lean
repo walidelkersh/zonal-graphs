@@ -400,6 +400,29 @@ theorem isZonal_of_contains_minimal_nonZonal (P : PlaneGraph Vertex Face) {R₁ 
     decide
   · rw [zoneValue, h₃, Finset.sum_union hdTQ, hT, hQ]; decide
 
+/-- **Zonality from a block decomposition.**
+
+Suppose the vertices carry a family of pairwise disjoint blocks, every region boundary is the union of the
+blocks assigned to it, and each block is given a target label sum whose flips fit inside it.  If the
+targets sum to zero over each region's blocks, the graph is zonal.
+
+This is the engine behind every zonality argument in this file and in `Unicyclic`.  The instances there
+were written by hand over `Fin 3` and `Fin 4` before the general statement was extracted; they are special
+cases of this. It belongs alongside `exists_labeling_blockSum_eq` and should migrate there. -/
+theorem isZonal_of_blockDecomposition {Block : Type w} [Fintype Block]
+    (P : PlaneGraph Vertex Face) (block : Block → Finset Vertex)
+    (hdisjoint : ∀ b c, b ≠ c → Disjoint (block b) (block c))
+    (regionBlocks : Face → Finset Block)
+    (hboundary : ∀ R : Face, P.boundary R = (regionBlocks R).biUnion block)
+    (target : Block → ZMod 3)
+    (hfit : ∀ b, (target b - ((block b).card : ZMod 3)).val ≤ (block b).card)
+    (hregions : ∀ R : Face, ∑ b ∈ regionBlocks R, target b = 0) : P.IsZonal := by
+  obtain ⟨labeling, hsum⟩ := exists_labeling_blockSum_eq block hdisjoint target hfit
+  refine ⟨labeling, fun R => ?_⟩
+  rw [zoneValue, hboundary R, Finset.sum_biUnion fun b _ c _ hbc => hdisjoint b c hbc,
+    Finset.sum_congr rfl fun b _ => hsum b]
+  exact hregions R
+
 end PlaneGraph
 
 end ZonalGraphs
