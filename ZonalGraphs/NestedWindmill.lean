@@ -1,4 +1,5 @@
 import ZonalGraphs.StandardWindmill
+import ZonalGraphs.ThreeConnected
 
 namespace ZonalGraphs
 
@@ -358,6 +359,23 @@ total length over the nesting set, `y` the total off it, `x + y = T` the total o
 totals sum to `T + 1 - a`, which is the total over all blades but `outer`.
 
 The first case identifies the nesting sets, the second is the swap case excluded by parity. -/
+theorem eq_or_add_eq_of_sq_add_sq_nat {L T x₁ y₁ x₂ y₂ : ℕ} (h₁ : x₁ + y₁ = T) (h₂ : x₂ + y₂ = T)
+    (hsq : (L + x₁ + 1) ^ 2 + (y₁ + 1) ^ 2 = (L + x₂ + 1) ^ 2 + (y₂ + 1) ^ 2) :
+    x₁ = x₂ ∨ x₁ + x₂ + L = T := by
+  have h₁' : (x₁ : ℤ) + y₁ = T := by exact_mod_cast h₁
+  have h₂' : (x₂ : ℤ) + y₂ = T := by exact_mod_cast h₂
+  have hsq' : ((L : ℤ) + x₁ + 1) ^ 2 + ((y₁ : ℤ) + 1) ^ 2
+      = ((L : ℤ) + x₂ + 1) ^ 2 + ((y₂ : ℤ) + 1) ^ 2 := by exact_mod_cast hsq
+  have hy₁ : (y₁ : ℤ) = (T : ℤ) - x₁ := by linarith
+  have hy₂ : (y₂ : ℤ) = (T : ℤ) - x₂ := by linarith
+  rw [hy₁, hy₂] at hsq'
+  have hdouble : (2 : ℤ) * (((x₁ : ℤ) - x₂) * ((x₁ : ℤ) + x₂ + L - T)) = 0 := by
+    linear_combination hsq'
+  have hfac : ((x₁ : ℤ) - x₂) * ((x₁ : ℤ) + x₂ + L - T) = 0 := by linarith
+  rcases mul_eq_zero.mp hfac with hzero | hzero
+  · left; omega
+  · right; omega
+
 theorem eq_or_add_eq_of_sq_add_sq {a T x₁ y₁ x₂ y₂ : ℤ} (h₁ : x₁ + y₁ = T) (h₂ : x₂ + y₂ = T)
     (hsq : (a + x₁) ^ 2 + (y₁ + 1) ^ 2 = (a + x₂) ^ 2 + (y₂ + 1) ^ 2) :
     x₁ = x₂ ∨ x₁ + x₂ = T + 1 - a := by
@@ -370,6 +388,49 @@ theorem eq_or_add_eq_of_sq_add_sq {a T x₁ y₁ x₂ y₂ : ℤ} (h₁ : x₁ +
   rcases mul_eq_zero.mp hfac with hzero | hzero
   · left; linarith
   · right; linarith
+
+/-- **Distinct nesting sets give non-isomorphic embeddings.**
+
+Take `k` even, the irregular blade lengths, and two nesting sets of equal size avoiding `outer`.  An
+isomorphism would equate the sums of squares of region boundary sizes; the fixed part cancels, and the
+factoring lemma leaves either equal nesting-set totals — which identifies the sets, the totals being
+injective at fixed size — or the swap case, which parity forbids for even `k`.
+
+Since the admissible nesting sets of a given size are numerous, this is Theorem 2.3.2: an irregular
+Dutch windmill with arbitrarily many pairwise non-isomorphic zonal embeddings. -/
+theorem nestingSet_eq_of_iso {k : ℕ} (hk : Even k) (outer : Fin k)
+    {N₁ N₂ : Finset (Fin k)} (hout₁ : outer ∉ N₁) (hout₂ : outer ∉ N₂)
+    (hcard : N₁.card = N₂.card)
+    (faceEdges₁ faceEdges₂ : Fin k ⊕ Unit → Finset (Sym2 (WindmillVertex (irregularLen k))))
+    (e : (nestedWindmill (irregularLen k) outer N₁ faceEdges₁).Iso
+      (nestedWindmill (irregularLen k) outer N₂ faceEdges₂)) : N₁ = N₂ := by
+  -- The two sums of squares agree, and the part fixed by the blade lengths cancels.
+  have hsq := e.sum_boundary_card_sq
+  rw [sum_boundary_card_sq_nestedWindmill (irregularLen k) outer N₁ faceEdges₁ hout₁,
+    sum_boundary_card_sq_nestedWindmill (irregularLen k) outer N₂ faceEdges₂ hout₂] at hsq
+  -- Totals of the nesting sets and of their complements.
+  have htotal : ∀ N : Finset (Fin k),
+      (∑ b ∈ N, irregularLen k b) + ∑ b ∈ Finset.univ \ N, irregularLen k b
+        = ∑ b : Fin k, irregularLen k b := by
+    intro N
+    rw [add_comm, Finset.sum_sdiff (Finset.subset_univ N)]
+  -- Cancel the fixed part and factor over the naturals.
+  rcases eq_or_add_eq_of_sq_add_sq_nat (L := irregularLen k outer)
+      (T := ∑ b : Fin k, irregularLen k b) (htotal N₁) (htotal N₂) (by omega) with hEq | hSwap
+  · -- Equal totals identify the nesting sets.
+    have hdouble : ∑ b ∈ N₁, (2 * 2 ^ (b : ℕ) + 1) = ∑ b ∈ N₂, (2 * 2 ^ (b : ℕ) + 1) := by
+      simpa [irregularLen, pow_succ, mul_comm] using hEq
+    rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.mul_sum,
+      Finset.sum_const, Finset.sum_const, smul_eq_mul, smul_eq_mul, mul_one, mul_one,
+      hcard] at hdouble
+    have hpow : ∑ b ∈ N₁, 2 ^ (b : ℕ) = ∑ b ∈ N₂, 2 ^ (b : ℕ) := by omega
+    exact sum_two_pow_val_injective hpow
+  · -- The swap case is impossible for even `k`.
+    refine absurd ?_ (not_sum_add_sum_eq_of_even hk outer hcard)
+    have hsplit : irregularLen k outer + ∑ b ∈ Finset.univ.erase outer, irregularLen k b
+        = ∑ b : Fin k, irregularLen k b :=
+      Finset.add_sum_erase _ _ (Finset.mem_univ outer)
+    omega
 
 end PlaneGraph
 
