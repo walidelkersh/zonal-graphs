@@ -9,4 +9,5 @@ import ZonalGraphs.FourColor
 import ZonalGraphs.Subdivisions
 import ZonalGraphs.BipartiteZonal
 import ZonalGraphs.ThreeConnected
+import ZonalGraphs.CubicPlanar
 import ZonalGraphs.Wheels
