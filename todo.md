@@ -48,6 +48,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 3.4 (small cycle rank) | `PlaneGraph.isZonal_of_contains_minimal_nonZonal` |
 | Thm 3.5 (small cycle rank) | `PlaneGraph.isZonal_thetaPendant_of_nonempty` and `isZonal_thetaPendant_of_empty` |
 | Thm 3.6 (small cycle rank) | `PlaneGraph.isZonal_cycleRankTwo_typeThree_proper` |
+| Cor 3.7, Thm 3.8 (small cycle rank) | collections of the six theorems above: 3.2.1 and 3.2.3 for types (1) and (2), Thm 3.3 for minimal type (3), Thms 3.4, 3.5 and 3.6 for the non-minimal cases |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -198,8 +199,8 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Theorem 3.5.**: If F is a minimal zonal graph of cycle rank 2 and type (3), then F ⋆ K2 is zonal.
 - [x] **Theorem 3.6.**: Let F be a minimal zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph and G ̸= F ⋆ K2, then G is zonal.
 - [ ] [ARTIFACT: an excerpt from the proof of Theorem 3.6, not a statement]
-- [ ] **Corollary 3.7.**: Let G be a graph of a cycle rank2 and type (3) containing three internally disjoint paths of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and only if G is not mini...
-- [ ] **Theorem 3.8.**: Let G be a graph of a cycle rank 2. (1) If G is of type (1), then G is zonal if and only if G is not minimal. (2) If G is of type (2), then G is zonal if and only if either every vertex of G belong...
+- [x] **Corollary 3.7.**: Let G be a graph of a cycle rank2 and type (3) containing three internally disjoint paths of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and only if G is not mini...
+- [x] **Theorem 3.8.**: Let G be a graph of a cycle rank 2. (1) If G is of type (1), then G is zonal if and only if G is not minimal. (2) If G is of type (2), then G is zonal if and only if either every vertex of G belong...
 - [ ] **Theorem 3.9.**: Let F be a minimal graph of cycle rank 2. (1) If F is of type (1), then every planar embedding of F ⋆ K2 is zonal. (2) If F is of type (2) such that at least one vertex of F belongs to no cycle in ...
 - [x] **Proposition 4.1.**: Every 2-connected bipartite plane graph is zonal. We now present some observations on 2-connected graphs of cycle rank 3.
 - [ ] **Proposition 4.2.**: There are infinitely many 2-connected zonal graphs of cycle rank 3.
