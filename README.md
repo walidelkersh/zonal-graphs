@@ -149,6 +149,6 @@ lake build
 * Bowling, A., & Zhang, P. (2022). *Absolutely and Conditionally Zonal Graphs*. Electron. J. Math. 4, 1–11.
 * Bowling, A., & Zhang, P. (2023). *Zonal Graphs of Small Cycle Rank*. Electron. J. Graph Theory Appl.
 * Bowling, A., & Zhang, P. (2023). *Zonal and Inner Zonal Graphs of Maximum Degree 3*. Discrete Math. Lett. 12, 130–137.
-* Bowling, A. (2025). *Zonal and Cozonal Labelings over Abelian Groups*. [VERIFY: journal and volume not confirmed from the source PDF]
+* Bowling, A. (2025). *Zonal and cozonal labelings using arbitrary abelian groups*. Utilitas Math. 124, 83–100. DOI 10.61091/um124-05.
 * Barrientos, C., & Minion, S. (2024). *Zonal Labeling of Graphs*. Indones. J. Combin.
 * Chartrand, G., Egan, C., & Zhang, P. (2023). *Zonal Graphs Revisited*. Bull. Inst. Combin. Appl. 99.

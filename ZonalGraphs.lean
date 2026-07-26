@@ -15,6 +15,7 @@ import ZonalGraphs.Embedding
 import ZonalGraphs.FacialBalance
 import ZonalGraphs.ThreeConnected
 import ZonalGraphs.CubicPlanar
+import ZonalGraphs.BoundaryDifference
 import ZonalGraphs.CycleRankTwo
 import ZonalGraphs.DutchWindmill
 import ZonalGraphs.WindmillGraph
