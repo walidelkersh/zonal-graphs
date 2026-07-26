@@ -9,6 +9,7 @@ import ZonalGraphs.RegionBoundary
 import ZonalGraphs.TreesAndCycles
 import ZonalGraphs.Unicyclic
 import ZonalGraphs.GroupZonal
+import ZonalGraphs.Duality
 import ZonalGraphs.FourColor
 import ZonalGraphs.Subdivisions
 import ZonalGraphs.BipartiteZonal

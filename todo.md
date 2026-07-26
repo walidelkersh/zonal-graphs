@@ -54,6 +54,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Prop 3.2 (zonal labeling) | `PlaneGraph.isZonal_edgeAmalgamation` |
 | Lem 2.3 (abelian groups) | `exists_three_nonzero_add_eq_zero` |
 | Prop 2.4 (abelian groups) | `PlaneGraph.isGroupZonal_ofCycle` |
+| Prop 1.3 (abelian groups) | `Incidence.isZonal_iff_dual_isCozonal` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -77,13 +78,11 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
-* **Proposition 1.3 and the other dual halves** — blocked on plane duality, not on the cozonal notion.
-  `IsGroupCozonal` now exists, and unwinding the definitions shows that `G` being zonal is literally `G*`
-  being cozonal: a cozonal labeling of `G` labels regions so that each vertex sums to zero, which is a
-  zonal labeling of the dual. Stating that needs the dual as a `PlaneGraph`, and the dual of a plane graph
-  is in general a *multigraph*, whereas `PlaneGraph` carries a `SimpleGraph`. Expressing plane duality
-  therefore needs the whole development moved to multigraphs. This is the real obstruction behind every
-  entry pairing a zonal claim with its cozonal dual, and it is separate from the planarity issue below.
+* **The remaining dual halves** — the cozonal side is now available. Duality needed no multigraphs after
+  all: zonality and cozonality never consult the underlying graph, only which vertices bound which
+  regions, so abstracting that incidence data makes the dual a transposition and Proposition 1.3 a matter
+  of unfolding. What is still missing for entries such as Theorem 1.4 and Proposition 2.8 is not duality
+  but tricolorings and Eulerian plane graphs, which are separate notions.
 
 * **Theorem 1.1.1** (the Euler identity) — a finding, not an excuse. In the rotation-system model a map's
   Euler characteristic is `V - E + F` with `V`, `E`, `F` the orbit counts of `rotate`, `dartRev` and
@@ -266,7 +265,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 1.1.**: Let M be a cubic map. Then M has a proper edge 3-coloring if and only if M admits a zonal labeling. In 1880, Peter Tait proved that a cubic map has a proper edge 3-coloring if and only if it has a ...
 - [ ] **Theorem 1.2.**: Let M be a cubic map. Then M has a proper region 4-coloring if and only if M admits a zonal labeling. In 1976 it was proven that every plane graph admits a proper region 4-coloring, resulting in th...
 - [ ] **Theorem would**: constitute a new proof of the Four Color Theorem. In order to gain a new perspective on zonal labelings, cozonal labelings were introduced in [2]. Based on the denition of cozonal labelings, there...
-- [ ] **Proposition 1.3.**: A connected plane graph G is zonal if and only if its plane dual G∗ is cozonal. Therefore, there is a nice dualization of Theorem 1.1. A plane triangulation is a plane graph where the boundary of e...
+- [x] **Proposition 1.3.**: A connected plane graph G is zonal if and only if its plane dual G∗ is cozonal. Therefore, there is a nice dualization of Theorem 1.1. A plane triangulation is a plane graph where the boundary of e...
 - [ ] **Theorem 1.4.**: Let T be a plane triangualtion. Then T has a tricoloring if and only if T admits a cozonal labeling. While the choice of the group Z3 for our labels is deeply connected with the study of the Four C...
 - [x] **Lemma 2.3.**: Let Γ ̸≃ Z2 be an abelian group. Then Γ contains three nonzero elements g1, g2, g3 (not necessarily distinct) such that g1 + g2 + g3 = 0.
 - [x] **Proposition 2.4.**: Let Cn be a cycle with n ≥ 3, and let Γ be an abelian group. Then Cn has a Γ-zonal labeling in all cases except when Γ ≃ Z2 and n is odd.
