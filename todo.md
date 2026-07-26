@@ -40,6 +40,8 @@ The count of genuinely distinct statements is therefore well below the number of
 | Theorem 3.1.3 | `PlaneGraph.isZonal_of_boundary_eq_union` |
 | Theorem 3.2.1 | `PlaneGraph.isZonal_iff_not_minimal_cycleRankTwo_typeOne` |
 | Corollary 3.2.2 | the two halves above, per embedding |
+| Theorem 3.2.3 | `PlaneGraph.isZonal_iff_card_ne_one_cycleRankTwo_typeTwo` |
+| Corollary 3.2.4 | the theorem above, per embedding |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -110,8 +112,8 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Theorem 3.1.3**: Every zonal unicyclic graph is absolutely zonal.
 - [x] **Theorem 3.2.1**: Let G be a plane graph of cycle rank 2 and type (1). Then G is zonal if and only if G is not minimal.
 - [x] **Corollary 3.2.2**: Let G be a graph of cycle rank 2 and type (1). If G is minimal, then G is not zonal. Otherwise, G is absolutely zonal. 53
-- [ ] **Theorem 3.2.3**: Let G be a plane graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
-- [ ] **Corollary 3.2.4**: Let G be a graph of cycle rank 2 and type (2). If G has exactly one vertex that does not lie on a cycle, then G is not zonal. Otherwise, G is absolutely zonal.
+- [x] **Theorem 3.2.3**: Let G be a plane graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
+- [x] **Corollary 3.2.4**: Let G be a graph of cycle rank 2 and type (2). If G has exactly one vertex that does not lie on a cycle, then G is not zonal. Otherwise, G is absolutely zonal.
 - [ ] **Theorem 3.2.5**: Let F be a minimal plane graph of cycle rank 2 and type (3), and let G be a plane graph of cycle rank 2 and type (3) containing F as a subgraph. Then, G is zonal if and only if there is no region R...
 - [ ] **Corollary 3.2.6**: Let F be a minimal graph of cycle rank 2 and type (3), and let G be a graph of cycle rank 2 and type (3) containing F as a subgraph. If G is minimal and contains a triangle, then G is not zonal. Ot...
 - [ ] **Proposition 3.3.1**: There are infinitely many 2-connected zonal graphs of cycle rank 3.
@@ -148,7 +150,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Theorem 2.3.**: A unicyclic graph G is zonal if and only if G ̸= C ⋆ K2 for any cycle C.
 - [x] **Proposition 2.4.**: Every planar embedding of a zonal graph of cycle rank 1 is zonal.
 - [x] **Theorem 3.1.**: Let G be a graph of cycle rank 2 and type (1). Then G is zonal if and only if G is not minimal.
-- [ ] **Theorem 3.2.**: Let G be a graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
+- [x] **Theorem 3.2.**: Let G be a graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
 - [ ] **Theorem 3.3.**: Let G be a minimal graph of cycle rank2 and type (3) consisting of three internally disjoint u − v paths Pi of order ni for i = 1, 2, 3 where 2 ≤ n1 ≤ n2 ≤ n3 and n2 ≥ 3. Then G is zonal if and onl...
 - [ ] **Theorem 3.4.**: Let F be a minimal non-zonal graph of cycle rank 2 and type (3) and let G be a graph of cycle rank 2. If G contains F as a proper subgraph, then G is zonal. 7 www.ejgta.org Zonal graphs of small cy...
 - [ ] **Theorem 3.5.**: If F is a minimal zonal graph of cycle rank 2 and type (3), then F ⋆ K2 is zonal.
