@@ -177,6 +177,18 @@ needed, so the logical dependency is visible in the statement of every result th
   path has to be built there. Nine vertex families and the two irregular ends give a wide case split. This
   is the largest single remaining proof in the Gn group.
 
+  **A failed attempt, recorded because the failure mode is new.** The gap-redundancy lemma was written and
+  it elaborates clean under `lean-lsp`, reporting no errors and no warnings, but `lake build` on that one
+  module exceeded 570 seconds twice and was killed, against about 25 seconds for the module without it. So
+  a clean LSP diagnostic is not evidence a file is buildable; only the build establishes that. The attempt
+  is parked at `GnGraph_deletion_attempt.lean` in the session scratchpad rather than committed.
+
+  The cause is not established. Candidates, in the order worth testing: the `first` combinator backtracking
+  across sixteen membership subgoals, the deeply nested `Or.inr` witnesses forcing repeated unfolding of
+  `gnAdj`'s match, and the subtype coercions that `induce` introduces into every `Adj` term. The next step
+  is `lean_profile_proof` on the lemma to find the hotspot rather than guessing again; two rounds of
+  guessing, first blaming `simp` and then replacing it with cheap discrimination lemmas, changed nothing.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
