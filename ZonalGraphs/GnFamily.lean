@@ -1,4 +1,5 @@
 import ZonalGraphs.Definitions
+import ZonalGraphs.TriangleForcing
 import Mathlib.Tactic
 
 namespace ZonalGraphs
@@ -174,6 +175,83 @@ theorem isZonal_of_forall_isGnRegion (P : PlaneGraph (GnVertex n) Face) (a : Fin
   · rw [hR]; exact sum_pentagon 0 4 3 (by decide) i 3 2 (by decide) (by decide) g
   · rw [hR]; exact sum_pentagon 1 2 4 (by decide) i 0 1 (by decide) (by decide) g
   · rw [hR, sum_blocks]; exact hsum
+
+/-- **Theorem 2.5.11 (Bowling, 2023).** The embedding `Gn,k` has no zonal labeling for `1 <= k <= n-2`.
+
+The forcing chain of the source, with its normalization removed. Two triangles on the last block force
+its five core vertices onto a common value `d`. The pentagon on `y, z` then forces `y` and `z` to cancel,
+after which the eight-vertex region forces `w + x = -d`, since four copies of `d` is one copy in
+`ZMod 3`. Two triangles on the previous block force its core onto a common value, and the pentagon on
+`w, x` there sums to three copies of that value plus `w + x`, which is `-d`. A zonal labeling would make
+that zero, forcing `d = 0`, and no label is zero.
+
+The source normalizes the hub label to `1` and argues numerically from there. Carrying `d` symbolically
+removes the need for that step, so `exists_isZonalLabeling_apply_eq_one` is not required here. -/
+theorem not_isZonal_of_gn_forcing (P : PlaneGraph (GnVertex n) Face) (i j : Fin n) (g : Fin (n - 1))
+    (Rv Ru Rw Rl Rv' Ru' Rp : Face)
+    (hRv : P.boundary Rv = {core 4 i, core 1 i, core 0 i})
+    (hRu : P.boundary Ru = {core 4 i, core 3 i, core 2 i})
+    (hRw : P.boundary Rw = {gap 2 g, gap 3 g, core 3 i, core 4 i, core 0 i})
+    (hRl : P.boundary Rl
+      = {core 0 i, core 1 i, core 2 i, core 3 i, gap 3 g, gap 1 g, gap 0 g, gap 2 g})
+    (hRv' : P.boundary Rv' = {core 4 j, core 1 j, core 0 j})
+    (hRu' : P.boundary Ru' = {core 4 j, core 3 j, core 2 j})
+    (hRp : P.boundary Rp = {core 4 j, core 1 j, gap 0 g, gap 1 g, core 3 j}) : ¬ P.IsZonal := by
+  rintro ⟨l, hl⟩
+  -- the two triangles on a block force its five core vertices onto one value
+  have hforce : ∀ (R : Face) (k : Fin n) (b c : Fin 5),
+      P.boundary R = {core 4 k, core b k, core c k} → b ≠ c → (4 : Fin 5) ≠ b → (4 : Fin 5) ≠ c →
+      (l (core 4 k) : ZMod 3) = (l (core b k) : ZMod 3)
+        ∧ (l (core 4 k) : ZMod 3) = (l (core c k) : ZMod 3) := by
+    intro R k b c hR hbc h4b h4c
+    have hc : (P.boundary R).card = 3 := by
+      rw [hR, Finset.card_insert_of_notMem (by simp [core, h4b, h4c]),
+        Finset.card_insert_of_notMem (by simp [core, hbc]), Finset.card_singleton]
+    have hmem : ∀ d : Fin 5, (d = 4 ∨ d = b ∨ d = c) → core d k ∈ P.boundary R := by
+      rintro d (rfl | rfl | rfl) <;> rw [hR] <;> simp
+    exact ⟨congrArg _ (P.eq_of_zoneValue_eq_zero_of_card_boundary_eq_three (hl R) hc
+        (hmem 4 (Or.inl rfl)) (hmem b (Or.inr (Or.inl rfl)))),
+      congrArg _ (P.eq_of_zoneValue_eq_zero_of_card_boundary_eq_three (hl R) hc
+        (hmem 4 (Or.inl rfl)) (hmem c (Or.inr (Or.inr rfl))))⟩
+  obtain ⟨h1, h0⟩ := hforce Rv i 1 0 hRv (by decide) (by decide) (by decide)
+  obtain ⟨h3, h2⟩ := hforce Ru i 3 2 hRu (by decide) (by decide) (by decide)
+  obtain ⟨h1', h0'⟩ := hforce Rv' j 1 0 hRv' (by decide) (by decide) (by decide)
+  obtain ⟨h3', h2'⟩ := hforce Ru' j 3 2 hRu' (by decide) (by decide) (by decide)
+  set d : ZMod 3 := (l (core 4 i) : ZMod 3) with hd
+  set c : ZMod 3 := (l (core 4 j) : ZMod 3) with hc
+  set w : ZMod 3 := (l (gap 0 g) : ZMod 3) with hw
+  set x : ZMod 3 := (l (gap 1 g) : ZMod 3) with hx
+  set y : ZMod 3 := (l (gap 2 g) : ZMod 3) with hy
+  set z : ZMod 3 := (l (gap 3 g) : ZMod 3) with hz
+  -- the pentagon on y and z makes them cancel
+  have hyz : y + z = 0 := by
+    have := hl Rw
+    rw [zoneValue, hRw, Finset.sum_insert (by simp [core, gap]),
+      Finset.sum_insert (by simp [core, gap]), Finset.sum_insert (by simp [core]),
+      Finset.sum_insert (by simp [core]), Finset.sum_singleton, ← h3, ← h0] at this
+    have hring : y + (z + (d + (d + d))) = y + z + d * 3 := by ring
+    rw [hring, show (3 : ZMod 3) = 0 from by decide, mul_zero, add_zero] at this
+    exact this
+  -- the eight-vertex region then pins w + x
+  have hwx : w + x = -d := by
+    have := hl Rl
+    rw [zoneValue, hRl, Finset.sum_insert (by simp [core, gap]),
+      Finset.sum_insert (by simp [core, gap]), Finset.sum_insert (by simp [core, gap]),
+      Finset.sum_insert (by simp [core, gap]), Finset.sum_insert (by simp [gap]),
+      Finset.sum_insert (by simp [gap]), Finset.sum_insert (by simp [gap]),
+      Finset.sum_singleton, ← h1, ← h2, ← h3, ← h0] at this
+    have hring : d + (d + (d + (d + (z + (x + (w + y)))))) = d * 3 + d + (w + x) + (y + z) := by
+      ring
+    rw [hring, show (3 : ZMod 3) = 0 from by decide, mul_zero, zero_add, hyz, add_zero] at this
+    linear_combination this
+  -- the pentagon on w and x in the previous block then cannot vanish
+  have hfinal := hl Rp
+  rw [zoneValue, hRp, Finset.sum_insert (by simp [core, gap]),
+    Finset.sum_insert (by simp [core, gap]), Finset.sum_insert (by simp [core, gap]),
+    Finset.sum_insert (by simp [core, gap]), Finset.sum_singleton, ← h1', ← h3'] at hfinal
+  have hring : c + (c + (w + (x + c))) = c * 3 + (w + x) := by ring
+  rw [hring, show (3 : ZMod 3) = 0 from by decide, mul_zero, zero_add, hwx, neg_eq_zero] at hfinal
+  exact (l (core 4 i)).2 hfinal
 
 end PlaneGraph
 
