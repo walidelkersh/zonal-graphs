@@ -329,6 +329,26 @@ theorem not_sum_add_sum_eq_of_even {k : ℕ} (hk : Even k) (outer : Fin k)
     omega
   exact hright (hcontra ▸ hleft)
 
+/-- The sum of squares of the region boundary sizes of a nested embedding splits into a part fixed by
+the blade lengths and the two varying terms.
+
+The `Blade ⊕ Unit` face type sums as a sum over the blades plus the single exterior term, and the
+blade summand at `outer` is the region inside `outer`, which is the first varying term. -/
+theorem sum_boundary_card_sq_nestedWindmill (houter : outer ∉ N) :
+    ∑ R : Blade ⊕ Unit, (((nestedWindmill len outer N faceEdges).boundary R).card) ^ 2
+      = (∑ b ∈ Finset.univ.erase outer, (len b + 1) ^ 2)
+        + (len outer + (∑ b ∈ N, len b) + 1) ^ 2
+        + ((∑ b ∈ Finset.univ \ N, len b) + 1) ^ 2 := by
+  rw [Fintype.sum_sum_type]
+  congr 1
+  · rw [← Finset.add_sum_erase _ _ (Finset.mem_univ outer),
+      card_boundary_inl_self len outer N faceEdges houter,
+      Finset.sum_congr rfl fun b hb =>
+        congrArg (· ^ 2) (card_boundary_inl_of_ne len outer N faceEdges
+          (Finset.ne_of_mem_erase hb))]
+    ring
+  · simp [card_boundary_inr len outer N faceEdges]
+
 /-- **The sum-of-squares invariant factors into exactly two cases.**
 
 For two nested embeddings, the varying region boundary sizes are `a + x` and `y + 1`, where `x` is the
