@@ -516,6 +516,35 @@ theorem gnGraph_induce_connected_of_nohub (hn : 0 < n) (hnohub : ∀ k : Fin n, 
   exact ⟨fun x y => (hall x).trans (hall y).symm, ⟨⟨core 4 ⟨0, hn⟩, manchor⟩⟩⟩
 
 
+/-- **Two-sided hub chaining.** A hub reaches a lower hub provided every hub between the two indices survives.
+The one-sided form is not enough once a hub above the range is deleted, which is exactly the situation when the
+deleted vertex is itself a hub.
+
+Memberships are taken as arguments rather than derived in the statement, which keeps the arithmetic side
+conditions out of the type. -/
+theorem gnGraph_induce_hub_down_range (lo top : ℕ)
+    (hsurv : ∀ k : Fin n, lo ≤ k.val → k.val ≤ top → c ≠ core 4 k) :
+    ∀ (d : ℕ) (i i' : Fin n) (_ : i.val = lo + d) (_ : i.val ≤ top) (_ : i'.val = lo)
+      (mi : core 4 i ∈ ({c}ᶜ : Set (GnVertex n)))
+      (mi' : core 4 i' ∈ ({c}ᶜ : Set (GnVertex n))),
+      ((gnGraph n).induce ({c}ᶜ : Set (GnVertex n))).Reachable ⟨core 4 i, mi⟩ ⟨core 4 i', mi'⟩ := by
+  intro d
+  induction d with
+  | zero =>
+    intro i i' hi hle hi' mi mi'
+    have hii : i = i' := Fin.ext (by omega)
+    subst hii
+    exact SimpleGraph.Reachable.refl _
+  | succ d ih =>
+    intro i i' hi hle hi' mi mi'
+    have hlt : lo + d < n - 1 := by omega
+    have hm : lo + d < n := by omega
+    have mmid : core 4 (⟨lo + d, hm⟩ : Fin n) ∈ ({c}ᶜ : Set (GnVertex n)) := by
+      simpa using (hsurv ⟨lo + d, hm⟩ (by show lo ≤ lo + d; omega)
+        (by show lo + d ≤ top; omega)).symm
+    exact (gnGraph_induce_reachable_hubs ⟨lo + d, hlt⟩ i ⟨lo + d, hm⟩ hi rfl mi mmid).trans
+      (ih ⟨lo + d, hm⟩ i' rfl (by show lo + d ≤ top; omega) hi' mmid mi')
+
 end Deletion
 
 end ZonalGraphs
