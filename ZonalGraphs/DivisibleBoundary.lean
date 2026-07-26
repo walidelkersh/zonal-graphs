@@ -45,6 +45,26 @@ theorem isZonal_of_card_boundary_eq_three (P : PlaneGraph Vertex Face)
     (htri : ∀ R : Face, (P.boundary R).card = 3) : P.IsZonal :=
   P.isZonal_of_three_dvd_card_boundary fun R => (htri R) ▸ dvd_rfl
 
+/-- **The inner analogue.** If every *interior* region boundary has size divisible by three, the constant
+labeling `1` is inner zonal, with the exterior region as the exceptional one.
+
+The exterior is left unconstrained, which is exactly what inner zonality allows. -/
+theorem isInnerZonal_of_three_dvd_card_boundary_interior (P : PlaneGraph Vertex Face)
+    (hdvd : ∀ R : Face, R ≠ P.exterior → 3 ∣ (P.boundary R).card) : P.IsInnerZonal := by
+  have h3 : (3 : ZMod 3) = 0 := by decide
+  refine ⟨fun _ => ⟨1, by decide⟩, P.exterior, fun R hR => ?_⟩
+  obtain ⟨c, hc⟩ := hdvd R hR
+  show ∑ _v ∈ P.boundary R, (1 : ZMod 3) = 0
+  rw [Finset.sum_const, nsmul_eq_mul, mul_one, hc]
+  push_cast
+  linear_combination (c : ZMod 3) * h3
+
+/-- A plane graph all of whose interior regions are bounded by triangles is inner zonal.  This is the
+near-triangulation case. -/
+theorem isInnerZonal_of_card_boundary_interior_eq_three (P : PlaneGraph Vertex Face)
+    (htri : ∀ R : Face, R ≠ P.exterior → (P.boundary R).card = 3) : P.IsInnerZonal :=
+  P.isInnerZonal_of_three_dvd_card_boundary_interior fun R hR => (htri R hR) ▸ dvd_rfl
+
 end PlaneGraph
 
 end ZonalGraphs
