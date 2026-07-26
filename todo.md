@@ -51,6 +51,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Cor 3.7, Thm 3.8 (small cycle rank) | collections of the six theorems above: 3.2.1 and 3.2.3 for types (1) and (2), Thm 3.3 for minimal type (3), Thms 3.4, 3.5 and 3.6 for the non-minimal cases |
 | Thm 3.2.5, Cor 3.2.6 (dissertation) | the same type (3) characterization as Thms 3.6 and 3.8 above, in the dissertation's numbering: `isZonal_iff_cycleRankTwo_typeThree`, `isZonal_of_contains_minimal_nonZonal`, `isZonal_thetaPendant_of_nonempty`, `isZonal_cycleRankTwo_typeThree_proper` |
 | Lemma 4.3.3 | `PlaneGraph.exists_isZonalLabeling_constant_on_blocks`, on `exists_labeling_constant_on_blocks` |
+| Prop 3.3.2, Prop 4.3 | `PlaneGraph.isZonal_of_subdivide_all_edges`, on `isZonal_of_uniform_subdivision` |
 | Prop 1.1, 1.2 (zonal labeling) | Theorems 2.0.1 and 2.0.2 above |
 | Lem 2.1, Prop 2.2 (zonal labeling) | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one`, the off-cycle count being `n - g` |
 | Prop 2.4 (zonal labeling) | Proposition 2.0.5 above, even counts being at least two |
@@ -163,7 +164,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [x] **Corollary 3.2.6**: Let F be a minimal graph of cycle rank 2 and type (3), and let G be a graph of cycle rank 2 and type (3) containing F as a subgraph. If G is minimal and contains a triangle, then G is not zonal. Ot...
 - [ ] **Proposition 3.3.1**: There are infinitely many 2-connected zonal graphs of cycle rank 3.
 - [ ] **Lemma 2.0.4.**: Hence, there are infinitely many 2-connected zonal bipartite or non-bipartite graphs of cycle rank 3. Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a numb...
-- [ ] **Proposition 3.3.2**: Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a number of times of the same parity, then the resulting graph is zonal.
+- [x] **Proposition 3.3.2**: Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a number of times of the same parity, then the resulting graph is zonal.
 - [ ] **Proposition 3.3.3**: There are infinitely many 2-connected non-zonal graphs of cy- cle rank 3.
 - [ ] **Theorem 4.1.1**: A connected cubic plane graph G is zonal if and only if G is bridgeless.
 - [ ] **Theorem 4.1.2**: There exists a 4-coloring of the regions of a cubic map M if and only if M has a zonal labeling. Since it is known that there exists a 4-coloring of the regions of every plane graph (the Four Color...
@@ -206,7 +207,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Theorem 3.9.**: Let F be a minimal graph of cycle rank 2. (1) If F is of type (1), then every planar embedding of F ⋆ K2 is zonal. (2) If F is of type (2) such that at least one vertex of F belongs to no cycle in ...
 - [x] **Proposition 4.1.**: Every 2-connected bipartite plane graph is zonal. We now present some observations on 2-connected graphs of cycle rank 3.
 - [ ] **Proposition 4.2.**: There are infinitely many 2-connected zonal graphs of cycle rank 3.
-- [ ] **Proposition 4.3.**: Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a number of times of the same parity, then the resulting graph is zonal.
+- [x] **Proposition 4.3.**: Let H be a 2-connected bipartite graph of cycle rank 3. If all edges of H are subdivided a number of times of the same parity, then the resulting graph is zonal.
 - [ ] **Proposition 4.4.**: There are infinitely many 2-connected non-zonal graphs of cycle rank 3.
 
 ## 03_Bowling_Zhang_2023_Zonal_Inner_Zonal_MaxDeg3.pdf
