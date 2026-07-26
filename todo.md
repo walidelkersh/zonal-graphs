@@ -51,6 +51,7 @@ The count of genuinely distinct statements is therefore well below the number of
 | Thm 3.3 (max degree 3) | `PlaneGraph.zonal_of_isSubdivision` and `innerZonal_of_isSubdivision` |
 | Prop 3.2 (zonal labeling) | `PlaneGraph.isZonal_edgeAmalgamation` |
 | Lem 2.3 (abelian groups) | `exists_three_nonzero_add_eq_zero` |
+| Prop 2.4 (abelian groups) | `PlaneGraph.isGroupZonal_ofCycle` |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
@@ -246,7 +247,7 @@ needed, so the logical dependency is visible in the statement of every result th
 - [ ] **Proposition 1.3.**: A connected plane graph G is zonal if and only if its plane dual G∗ is cozonal. Therefore, there is a nice dualization of Theorem 1.1. A plane triangulation is a plane graph where the boundary of e...
 - [ ] **Theorem 1.4.**: Let T be a plane triangualtion. Then T has a tricoloring if and only if T admits a cozonal labeling. While the choice of the group Z3 for our labels is deeply connected with the study of the Four C...
 - [x] **Lemma 2.3.**: Let Γ ̸≃ Z2 be an abelian group. Then Γ contains three nonzero elements g1, g2, g3 (not necessarily distinct) such that g1 + g2 + g3 = 0.
-- [ ] **Proposition 2.4.**: Let Cn be a cycle with n ≥ 3, and let Γ be an abelian group. Then Cn has a Γ-zonal labeling in all cases except when Γ ≃ Z2 and n is odd.
+- [x] **Proposition 2.4.**: Let Cn be a cycle with n ≥ 3, and let Γ be an abelian group. Then Cn has a Γ-zonal labeling in all cases except when Γ ≃ Z2 and n is odd.
 - [ ] **Proposition 2.5.**: Let Γ ̸≃ Z2 be an abelian group, and let n ≥ 4 be even. Then Wn has a Γ-zonal labeling if and only if Γ has an element g of order k ≥ 2 such that k divides n/2. zonal labelings with abelian groups ...
 - [ ] **Proposition 2.6.**: Let Γ ̸≃ Z2 be an abelian group, and let n ≥ 3 be odd. Then Wn has a Γ-zonal labeling if and only if Γ has an element g of order k ≥ 3 such that k divides n.
 - [ ] **Proposition 2.7.**: Let Γ be an abelian group. If G is a 2-connected bipartite plane graph, then G is Γ-zonal. Dually, if G is a 2-connected Eulerian plane graph, then G is Γ-cozonal. 88 a. bowling
