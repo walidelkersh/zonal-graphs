@@ -81,6 +81,15 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+* **Corollary 3.7 and Theorem 3.8** — blocked on Theorems 3.5 and 3.6 specifically, and worth stating
+  precisely because both look closer than they are. Theorem 3.8 collects the cycle-rank-two
+  characterization in three parts: parts (1) and (2) are `isZonal_iff_not_minimal_cycleRankTwo_typeOne`
+  and `isZonal_iff_card_ne_one_cycleRankTwo_typeTwo`, both proved. Part (3) and Corollary 3.7 assert that
+  a non-minimal type (3) graph is zonal, and the proved case
+  `isZonal_of_contains_minimal_nonZonal` covers only supergraphs of a minimal *non-zonal* graph. The
+  remaining case, supergraphs of a minimal *zonal* type (3) graph, is Theorems 3.5 and 3.6, which are not
+  proved. Both entries are conjunctions and stay unchecked until those land.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
