@@ -277,6 +277,25 @@ needed, so the logical dependency is visible in the statement of every result th
   repeats an edge. Two different entries, one underlying cause, which suggests boundaries as cyclic walks would be
   the single most valuable structural change to this development.
 
+* **The region cycles of Gn,k, and how they determine the rotation.** The cyclic orders do not need re-extracting
+  after all; the source already writes the regions as cycles and the earlier pass recorded only their vertex sets.
+  As cycles they are:
+  - `(ri, si, vi, ri)` and `(vi, ti, ui, vi)`, the two triangles of block i
+  - `(wg, yg, zg, xg, wg)`, the quadrilateral of gap g
+  - `(ri, vi, ui, z(i-1), y(i-1), ri)`, the pentagon using the previous gap
+  - `(si, wi, xi, ti, vi, si)`, the pentagon using its own gap
+  - the two long regions, whose cyclic order the text gives only as a vertex union and which therefore still needs
+    reading off the figure or reconstructing from the others
+
+  Each cycle fixes `rotate` on the darts along it, since `faceMap` is reverse-then-rotate. Worked through at `r` of
+  an interior block, whose neighbours are `s`, `v` and `y` of the previous gap:
+  - from the triangle, the walk `v to r to s` gives `faceMap (v,r) = (r,s)`, hence `rotate (r,v) = (r,s)`
+  - from the pentagon, the walk `y to r to v` gives `rotate (r,y) = (r,v)`
+  - the third face at `r` is a long region, forcing `rotate (r,s) = (r,y)`
+  So the rotation cycles `r`'s neighbours in the order `v, s, y`. The same reading at the other eight families gives
+  the whole permutation, and the third bullet is where the long regions are needed, which is why their cyclic order
+  is the one genuinely missing piece rather than the rotation being free to choose.
+
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
   without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
