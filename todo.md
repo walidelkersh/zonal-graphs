@@ -299,8 +299,19 @@ needed, so the logical dependency is visible in the statement of every result th
 * **The long-region cyclic order, and a discrepancy that shows how to check these.** The last missing input for
   the rotation is present after all, on page 39 rather than 43. Each block contributes to the exterior boundary in
   clockwise order `(ri, si, [wi, xi,] ti, ui, [z(i-1), y(i-1),] ri)`, the first bracket omitted for the last block and
-  the second for the first, with the blocks joined by the edges `wi-yi` and `xi-zi`. That, with the five short cycles
-  above, determines `rotate` at every vertex, so nothing about the rotation is left to choose.
+  the second for the first, with the blocks joined by the edges `wi-yi` and `xi-zi`.
+
+  **That is not yet enough, and a first attempt to use it fails.** The order quoted is the exterior boundary of each
+  block *on its own*, before the joining edges are added. Adding `wi-yi` and `xi-zi` cuts the quadrilaterals out of
+  that outer face, so the global exterior of `Gn,0` is not the concatenation of the per-block cycles. Trying to read
+  `rotate` at `w` directly from the quoted order contradicts the region list: `w` has degree three, so exactly three
+  faces meet it, and they must be the quadrilateral, the pentagon `(s, w, x, t, v)` and the long region. The
+  quadrilateral uses the edges `w-y` and `w-x`, the pentagon uses `w-s` and `w-x`, and the quoted order would have the
+  long region use `w-s` and `w-x` as well, putting the edge `w-x` on three faces. An edge lies on exactly two.
+
+  So the global exterior order of `Gn,0` is genuinely not given in the text and has to be reconstructed, either from
+  the figure or from the constraint that every edge lies on exactly two faces and every dart on exactly one. Until it
+  is, `rotate` is determined at the vertices that no long region touches and undetermined at the rest.
 
   The discrepancy is worth keeping. Page 39 renders the gap quadrilateral as `(wk, xk, yk, zk, wk)` while pages 43 and
   44 render it `(wi, yi, zi, xi, wi)`. As vertex sets these agree, as cycles they do not, and only the second is a walk
