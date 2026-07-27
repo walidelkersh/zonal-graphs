@@ -256,6 +256,27 @@ needed, so the logical dependency is visible in the statement of every result th
   `RotationSystem` through `toPlaneGraphOfOrbits`, so that the faces are forced to be the orbits of an actual
   embedding rather than posited.
 
+* **What Step 2 of the Gn,k rotation actually requires, and why the region records here are not enough.**
+  Every vertex of `Gn` now has its neighbours named, thirteen lemmas covering each family in each position. That
+  says what the cycle at each vertex contains. It says nothing about the cyclic *order*, and the order is the
+  embedding.
+
+  The order is not free. A rotation whose orbits are not the regions of the source is a different embedding, and
+  possibly not a planar one at all. So the orders have to be recovered from the regions, which is an inverse
+  problem with a clean solution: each region is a `faceMap` orbit, and `faceMap` is reverse-then-rotate, so a
+  region traversed as a cycle fixes `rotate` on the darts along it. From the triangle `r, s, v` for instance, the
+  face walk `r to s to v to r` forces `rotate` to send the dart `(s, r)` to the dart `(s, v)`. Each dart lies on
+  exactly one face, so collecting over all regions determines `rotate` completely.
+
+  The obstruction is that the region records in this file are `Finset`s, written that way because zonality only
+  ever needs the *set* of boundary vertices. The source gives the regions as cycles, `(ri, si, vi, ri)` and so on,
+  and that cyclic notation is exactly what was dropped. Step 2 therefore begins by re-extracting the regions as
+  cycles rather than sets, from pages 43 and 44, and only then reads off `rotate` per dart family.
+
+  Worth noting the same limitation is what blocks Theorem 4.4.3: a `Finset` boundary cannot express a walk that
+  repeats an edge. Two different entries, one underlying cause, which suggests boundaries as cyclic walks would be
+  the single most valuable structural change to this development.
+
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
   without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
