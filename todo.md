@@ -99,8 +99,15 @@ Supporting results with no todo entry of their own: `RotationSystem.isBalanced_o
 
 ## Carried as explicit hypotheses, not proved
 
-These are deliberately *not* checked. Each is recorded as a named proposition and passed in where
-needed, so the logical dependency is visible in the statement of every result that uses it.
+Two different things had accumulated here and are now separated.
+
+**Part one, genuine hypothesis-carriers.** Each is recorded as a named proposition or an explicit hypothesis and
+passed in where needed, so the logical dependency is visible in the statement of every result that uses it. These
+are deliberately *not* checked.
+
+**Part two, blocker notes** for entries that are unproved for structural reasons. Those follow after, and several
+have moved since they were written; the ones describing work now finished have been removed rather than left to
+mislead.
 
 * **Theorem 1.3.2 / 4.1.1** (`CubicZonalIffBridgeless`) — a connected cubic plane graph is zonal iff
   bridgeless. A theorem in the literature, but its proof invokes the Four Color Theorem, and a
@@ -111,49 +118,37 @@ needed, so the logical dependency is visible in the statement of every result th
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
-* **The Gn family, Theorems 2.5.1 and 2.5.5 to 2.5.13** — no longer blocked on unread sources. The
-  construction, recovered from pages 38 to 43 of the dissertation, is this. Take W4, the wheel of order
-  five, as Fi with outer cycle (ri, si, ti, ui) and hub vi. Replace the edge si-ti by the path
-  (si, wi, xi, ti) for i at most n-1, replace the edge ri-ui by the path (ri, y(i-1), z(i-1), ui) for i at
-  least 2, then add the edges wi-yi and xi-zi joining consecutive blocks. So Gn has 9n-4 vertices, and the
-  irregular cases are i = 1 and i = n, where one of the two subdivided edges is absent. The embeddings
-  Gn,k are obtained by turning the sub-embedding on the first k blocks inside out, and Observation 2.5.4
-  records that Gn,k then has an exterior region of boundary length 8(n-k), an interior region of length
-  8k, and all other regions of length 3, 4 or 5, with 5n regions in total.
 
-  What each entry needs from here:
-  - **Theorem 2.5.9** (Gn,k is zonal for k in {0, 2, 3, ..., n/2}) needs only the region structure, since
-    zonality reads the boundary function and never the adjacency. The labeling is explicit: ri, si, ti, ui
-    and vi all take a common value ai, while wi and yi take 1 and xi and zi take 2. The coefficients ai
-    come from Lemma 2.0.4, which is already proved here, applied to split the indices at k. The region
-    list is now recovered in full, so nothing outstanding remains to be read. Writing ai for the common
-    value on block i, the regions and their sums are: n of boundary (ri, si, vi) summing to 3ai; n of
-    boundary (vi, ti, ui) summing to 3ai; n-2 of boundary (wi, yi, zi, xi) summing to 1+1+2+2 = 6, and
-    n-1 of them when k = 0; n-1 of boundary (ri, vi, ui, z(i-1), y(i-1)) summing to 3ai+3; and n-1 of
-    boundary (si, wi, xi, ti, vi) summing to 3ai+3. The exterior region of length 8(n-k) carries the
-    eight labels r, s, t, u, w, x, y, z of each block above k, contributing 4ai+6 per block, so its total
-    is the sum of the ai above k because 4 = 1 in ZMod 3. The interior region of length 8k is the same
-    with the blocks at or below k. Those two are exactly where the split condition from Lemma 2.0.4 is
-    used, and every other region vanishes outright.
-  - **Theorem 2.5.1** (Gn is 2-connected) needs Gn built as a SimpleGraph and connectivity of every
-    vertex-deleted subgraph. That is harder than the windmill and theta constructions already here,
-    because those needed plain connectivity rather than deletion-robust connectivity.
-  - **Theorem 2.5.11** (Gn,k is not zonal for 1 <= k <= n-2) is a forcing chain, and its engine is now
-    proved as `eq_of_zoneValue_eq_zero_of_card_boundary_eq_three`: a region with three boundary vertices
-    forces a zonal labeling to be constant on it, because three nonzero elements of ZMod 3 summing to
-    zero must coincide. The chain runs: vn lies on three triangles, so rn, sn, tn, un and vn share a
-    label, taken to be 1; the region (y(n-1), z(n-1), un, vn, rn) then forces the two remaining labels to
-    sum to 0; the nine-vertex region forces w(n-1) and x(n-1) to be 1; the triangles at v(n-1) force its
-    block onto one label; and the region (v(n-1), s(n-1), w(n-1), x(n-1), u(n-1)) then sums to three
-    times that label plus 2, which never vanishes.
-  - **Theorems 2.5.5, 2.5.8 and Corollaries 2.5.10, 2.5.12** rest on the embeddings being
-    distinct, which is an isomorphism-invariant argument of the kind `nestingSet_eq_of_iso` already
-    carries for windmills.
+* **The embedding-shape convention, and it is load-bearing.** `PlaneGraph` supplies face data rather than deriving
+  it, so every result about a specific embedding takes that embedding's region structure as a hypothesis. This is
+  how Theorems 3.2.1, 3.2.3, 3.3, 3.4, 3.5 and 3.6 are stated, and how 2.5.9 (`IsGnRegion`) and 2.5.5 and 2.5.8
+  (the region-size profile) are stated. Those entries are checked, and the justification is that their content is
+  the arithmetic of the region sums and the region-size invariant, which holds of whatever the embedding is.
+  Counting embeddings has no such fallback, which is why 2.5.10, 2.5.12 and 2.5.13 are *not* checked on the same
+  basis; see `IsRealizable` and the note below.
 
-  The method that recovered this is worth recording: `pdftotext -f <first> -l <last>` on the PDFs in
-  `C:\ProjectsCT & ZONAL`. Printed page numbers lag the PDF indices by about six, so search by
-  theorem number rather than by page. The same method should be used to repair the entries tagged
-  `[ARTIFACT: ...]`, most of which are truncations rather than genuine non-statements.
+* **Four Color Theorem** (`PlaneGraph.FourColorZonalStatement`) — packaged as a proposition so the statement is
+  expressible without asserting it. `fourColorZonalStatement_iff` unfolds it.
+
+* **Heawood's theorem** — the graph-theoretic half of Proposition 2.8, that a plane triangulation is vertex
+  3-colourable exactly when it is Eulerian, enters `isGroupZonal_of_threeColouring` as the hypothesis `hface`. The
+  labelling half is proved.
+
+* **Theorem 1.4, the tricoloring equivalence** — `IsTricoloring` is defined so the statement is expressible, and
+  `IsTricoloring.injOn_boundaryEdges` is proved, but the equivalence itself has no proof in any source in this
+  repository.
+
+* **Facial boundaries are cycles** — `isBalanced_image_of_faceMap_invariant` and
+  `hasFacialBipartitionBalance_toPlaneGraph` take `Set.InjOn E.vertexOf` on each face, which says a facial boundary
+  is a cycle rather than a closed walk revisiting a vertex. It is the standard consequence of 2-connectedness and
+  the last geometric input of Proposition 2.1.1 left open. Facial balance itself is now a theorem, needing no
+  planarity.
+* **The Gn family — five of nine proved, and the block that used to sit here is gone.** Theorems 2.5.1, 2.5.5,
+  2.5.8, 2.5.9 and 2.5.11 are proved and checked. `gnGraph` is a real `SimpleGraph` with symmetry, looplessness,
+  connectivity, vertex count `9n - 4`, decidable adjacency, and the neighbours of every vertex family in every
+  position. The construction and region data that used to be recorded here as "what each entry needs" described
+  work that is now finished, so it has been removed; what survives of it is in the notes further down, which cover
+  only the three entries still open, 2.5.10, 2.5.12 and 2.5.13.
 
 * **Theorems 4.3.1, 4.3.2, 4.3.5, 4.3.6 and 4.3.8 — a new kind of obstruction, and it is the interface.**
   The proof of 4.3.1 is Theorem 6.16 of Chartrand, Egan and Zhang, in `chartrand2019.pdf`, and it runs by
@@ -168,68 +163,12 @@ needed, so the logical dependency is visible in the statement of every result th
   of the statement. This is unlike the other blockers, which are missing mathlib content. The fix is
   structural: build `PlaneGraph` from a `RotationSystem`, where vertex deletion acts on the darts and the
   new faces are computed as `faceMap` orbits rather than posited. `Embedding.lean` already has the
-  rotation system, `faceMap` and the orbit view, so the missing piece is the bridge from a rotation
-  system to a `PlaneGraph`, plus the effect of deletion on it. That one construction would unblock all
-  five of these entries, and it is the highest-leverage piece of infrastructure left in the project.
-
-* **Theorem 2.5.1, the 2-connectedness of Gn — half done, and the rest is volume rather than a blocker.**
-  `Gn` is now a real graph, `gnGraph`, with symmetry, looplessness, connectivity (`gnGraph_connected`) and
-  the vertex count `5n + 4(n-1) = 9n - 4` all proved. `IsTwoConnected` is a conjunction and its first
-  half, `3 <= card`, is `three_le_card_gnVertex`.
-
-  What remains is the second half: for every vertex `c`, the induced graph on the complement of `{c}` is
-  connected. Nothing is missing from mathlib for this; it is case volume. The redundancy that makes it true
-  is worth writing down, because it is what the paths must use. Inside a block the hub meets all four rim
-  vertices, so losing one rim vertex still leaves the rim connected through the hub, and losing the hub
-  leaves the rim connected through its own cycle. Across a gap there are two vertex-disjoint connections,
-  `w-y` and `x-z`, so no single deletion separates consecutive blocks. Note `Gn` is a path of blocks rather
-  than a cycle, so the gap redundancy is doing all the work between blocks and there is no second route
-  around.
-
-  The practical cost is that `SimpleGraph.induce` puts the work in the subtype `{x // x != c}`, so each
-  path has to be built there. Nine vertex families and the two irregular ends give a wide case split. This
-  is the largest single remaining proof in the Gn group.
-
-  **The gap redundancy is now proved: `gnGraph_induce_reachable_hubs`.** If the hubs of two consecutive
-  blocks both survive the deletion of one vertex they stay connected, along whichever of the two
-  vertex-disjoint routes `v-r-y-w-s-v` and `v-u-z-x-t-v` the deleted vertex misses. The two routes are
-  separate lemmas, `gnGraph_route_rw` and `gnGraph_route_ux`, so the case analysis is four one-line
-  branches, and four discrimination lemmas support them.
-
-  Worth keeping the history, because the diagnosis was wrong twice. This lemma was first recorded here as a
-  performance problem, on the strength of builds that ran past 570 seconds. It was never a performance
-  problem. A single misapplied `Sum.noConfusion`, whose expected type is a `noConfusionType` rather than
-  `False`, was the entire cause; the long builds were failing elaboration retrying against unsolved
-  metavariables. With the discrimination lemmas proved by `simp` the module builds in about forty seconds
-  with no warnings. Two lessons, both already paid for once before in this project: never infer cost from a
-  run that did not succeed, and check a file with a build rather than with LSP diagnostics, which reported
-  this file clean while it held a type error.
-
-  **What remains is one case, fully mapped.** Every deletion of a non-hub vertex is settled by
-  `gnGraph_induce_connected_of_nohub`, built from the gap redundancy, the core-to-hub step, the
-  connector-to-hub step and range-restricted chaining `gnGraph_induce_hub_down`.
-
-  Left over is `c = core 4 i₀`, a deleted hub. Every other vertex survives there, so the memberships reduce to
-  discrimination facts, but the chain cannot pass through the missing hub and the block must be bridged through
-  its rim. Three sub-cases by the position of `i₀`, with every route named:
-  - `i₀.val = 0`: only the next gap exists. Anchor the hub of block 1. The rim of `i₀` reaches it by
-    `gnGraph_induce_rim_reachable_next`, and every other block chains down to block 1 by
-    `gnGraph_induce_hub_down` with `lo = 1`.
-  - `i₀.val + 1 = n`: only the previous gap exists. The mirror, using
-    `gnGraph_induce_rim_reachable_prev` and `lo = 0`.
-  - `0 < i₀.val` and `i₀.val + 1 < n`: both gaps exist. Anchor the hub of block `i₀ + 1`. Blocks above chain
-    with `lo = i₀.val + 1`; blocks below chain to block `0` with `lo = 0`; and the two sides meet at the rim of
-    `i₀`, which reaches the hub below by the previous route and the hub above by the next route. That rim is the
-    bridge, and it is the reason `Gn` survives losing a hub at all.
-  - Connectors, in every sub-case: the deleted vertex is a hub, so a connector's own core attachment always
-    survives. If its block is not `i₀` that block's hub is available; if it is `i₀` the attachment is a rim
-    vertex and the escape routes apply.
-  - `n = 1`: no gap exists, so a connector is impossible, `Fin (n - 1)` being empty. The single block carries
-    both conditional edges, since `i.val = 0` and `i.val + 1 = n` hold together, so the rim is the four-cycle
-    `r-s-t-u-r` and deleting the hub leaves it connected.
-
-  No new mathematics is involved in what remains, only the assembly; every route above is an existing lemma or
-  a stated edge of `gnCoreAdj`, `gnGapAdj` or `gnMixedAdj`.
+  rotation system, `faceMap` and the orbit view. **The bridge now exists**: `toPlaneGraphOfOrbits` computes the
+  faces as `faceMap` orbits, `IsRealizable` says a plane graph agrees with one, and `ofRotation` reduces an
+  embedding to a single vertex-preserving dart permutation. The one missing piece is the effect of *deletion* on a
+  rotation system, which means splicing the removed darts out of each surviving neighbour's rotation cycle. A first
+  attempt is saved as `deletion_attempt.patch` in the session scratchpad; it is unevaluated, since both it and the
+  reverted baseline timed out locally and no conclusion about it should be drawn from that.
 
 * **Corollaries 2.5.10, 2.5.12 and Theorem 2.5.13 — not a construction away. A fourth kind of blocker.**
   An earlier note here said these were one face construction away and specified it. That was wrong, and the
