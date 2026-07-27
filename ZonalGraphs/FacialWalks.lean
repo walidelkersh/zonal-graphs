@@ -71,6 +71,22 @@ theorem zoneValue_eq_sum_walk (labeling : VertexLabeling Vertex) (R : Face)
     P.zoneValue labeling R = ((W.walk R).map fun v => ((labeling v : ZonalLabel) : ZMod 3)).sum := by
   rw [PlaneGraph.zoneValue, ← W.boundary_eq R, List.sum_toFinset _ h]
 
+/-- The edges a walk traverses, as an ordered list of consecutive pairs. -/
+def edgeSteps (l : List Vertex) : List (Sym2 Vertex) :=
+  l.zipWith (fun a b => s(a, b)) l.tail
+
+/-- A region **traverses an edge twice** when that edge occurs at least twice among its walk's steps.
+
+This is the configuration a `Finset` boundary cannot see and the one a bridge creates: the region on either side of
+a bridge is the same region, so its boundary walk runs along that edge once in each direction. -/
+def TraversesTwice (W : FacialWalks P) (R : Face) (e : Sym2 Vertex) : Prop :=
+  2 ≤ (edgeSteps (W.walk R)).count e
+
+/-- A plane graph **has a bridge witnessed by its walks** when some region traverses some edge twice. -/
+def HasRepeatedEdge (W : FacialWalks P) : Prop :=
+  ∃ (R : Face) (e : Sym2 Vertex), W.TraversesTwice R e
+
 end FacialWalks
+
 
 end ZonalGraphs

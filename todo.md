@@ -279,6 +279,23 @@ mislead.
   views provably agree wherever both are available. That lemma is the compatibility guarantee the rest rests on, and
   writing it first means the additive discipline is enforced by a theorem rather than by intention.
 
+* **Walks make a bridge expressible, and that turns out not to be the same as unblocking Theorem 4.4.3.**
+  `FacialWalks` now carries a walk per region with `boundary_eq` forcing agreement with the existing `Finset`
+  boundary, and `edgeSteps`, `TraversesTwice` and `HasRepeatedEdge` say that a region runs along one edge twice,
+  which is the configuration a bridge creates and the one a `Finset` boundary cannot see. That was the stated aim,
+  and it is done additively: `PlaneGraph` is unchanged and the checked entries are untouched.
+
+  **The earlier claim that this unblocks 4.4.3 was too quick.** Expressibility is not provability, and 4.4.3 has no
+  proof in any source in this repository; the dissertation states it and cites earlier work. Two counting routes were
+  tried and neither closes it. Counting distinct regions per vertex gives a bridge's endpoints two regions rather
+  than three, contributing twice the sum of their two labels, which vanishes whenever those labels differ. Counting
+  with multiplicity instead, which is what walks now allow, gives every vertex three incidences again, so the total
+  is three times the label sum and vanishes identically. Neither yields a contradiction.
+
+  So the position on 4.4.3 is now sharper than before rather than better: the statement is sayable, the obstruction
+  is no longer the interface, and what is missing is the mathematical argument itself, which has to be found in the
+  literature it is cited from rather than reconstructed from the two counts available here.
+
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
   without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
