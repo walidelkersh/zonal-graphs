@@ -29,6 +29,7 @@ import ZonalGraphs.GnGraph
 import ZonalGraphs.HamiltonianChords
 import ZonalGraphs.InnerZonal
 import ZonalGraphs.DartRotation
+import ZonalGraphs.FacialWalks
 import ZonalGraphs.Realizability
 import ZonalGraphs.RotationToPlane
 import ZonalGraphs.TriangleForcing
