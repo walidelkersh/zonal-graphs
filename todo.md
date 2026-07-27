@@ -324,6 +324,22 @@ needed, so the logical dependency is visible in the statement of every result th
   multiplicity error lacked, where a face count was posited rather than checked against the source, and it is cheap
   here because adjacency in `Gn` is now decidable.
 
+* **Decision: cyclic-walk boundaries are the next construction, and they must be added rather than substituted.**
+  Of the three remaining levers this one has the widest reach. It unblocks Theorem 4.4.3 and Lemma 4.4.4 outright,
+  since a bridge is one region walking the same edge twice and a `Finset` boundary cannot express that, and it supplies
+  the cyclic vocabulary the `Gn,k` rotation needs, so it subsumes part of that work too.
+
+  The constraint on how, which matters more than the choice: **do not change the type of `PlaneGraph.boundary`.** Sixty
+  checked entries are stated against it, and every one of them only ever needs the *set* of boundary vertices, which is
+  why the interface was built that way and why it has held. Replacing the field would put all sixty at risk to gain two
+  entries. The additive shape is a separate structure, or an extra field, carrying facial walks, together with a
+  projection to the existing `Finset` boundary; then each current theorem keeps its statement and its proof verbatim,
+  and the walk-valued results are stated only where they are needed.
+
+  First step, small and checkable: define a facial walk and prove its vertex set is the existing boundary, so the two
+  views provably agree wherever both are available. That lemma is the compatibility guarantee the rest rests on, and
+  writing it first means the additive discipline is enforced by a theorem rather than by intention.
+
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
   without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
