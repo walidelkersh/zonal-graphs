@@ -285,16 +285,30 @@ mislead.
   which is the configuration a bridge creates and the one a `Finset` boundary cannot see. That was the stated aim,
   and it is done additively: `PlaneGraph` is unchanged and the checked entries are untouched.
 
-  **The earlier claim that this unblocks 4.4.3 was too quick.** Expressibility is not provability, and 4.4.3 has no
-  proof in any source in this repository; the dissertation states it and cites earlier work. Two counting routes were
+  **Correction, twice over.** The claim that walks unblock 4.4.3 was too quick, and the follow-up claim that 4.4.3
+  has no proof in any source here was simply wrong. It does: **Theorem 6.13 of `chartrand2019.pdf`**, with a full
+  proof, which a proper search would have found earlier. The dissertation states it and cites that work. Two counting routes were
   tried and neither closes it. Counting distinct regions per vertex gives a bridge's endpoints two regions rather
   than three, contributing twice the sum of their two labels, which vanishes whenever those labels differ. Counting
   with multiplicity instead, which is what walks now allow, gives every vertex three incidences again, so the total
   is three times the label sum and vanishes identically. Neither yields a contradiction.
 
-  So the position on 4.4.3 is now sharper than before rather than better: the statement is sayable, the obstruction
-  is no longer the interface, and what is missing is the mathematical argument itself, which has to be found in the
-  literature it is cited from rather than reconstructed from the two counts available here.
+  The located proof does not go through either count. It converts a zonal labeling into a proper 3-edge-colouring
+  and then contradicts a counting theorem about *overfull* graphs. Its parts, and their status here:
+
+  1. **Overfull graphs have no proper `Δ`-edge-colouring** (their Theorem 6.12, `[9, p. 258]`). A graph of odd order
+     `n` and size `m` is overfull when `m > Δ(n-1)/2`. This is the tractable piece and a good first step: in a proper
+     `Δ`-edge-colouring each colour class is a matching, so of size at most `(n-1)/2` for odd `n`, giving
+     `m ≤ Δ(n-1)/2`. Worth checking mathlib for it before writing it.
+  2. **Zonal labeling to proper 3-edge-colouring.** The argument assigns colours `1, 2, 3` to the three edges at a
+     vertex so that the vertex's *type* is its label, then shows the colour of the bridge together with the labeling
+     determines the colouring on an end-block uniquely. This is the Tait-style correspondence, and it is the part
+     that needs the rotation at each vertex, so the walk and rotation layers here are relevant after all.
+  3. **End-block structure.** A bridge yields an end-block `B` of order at least five whose bridge endpoint carries
+     two edges of `B`; the contradiction is that `B` is then overfull.
+
+  So 4.4.3 is not blocked. It is a located multi-part proof with one easy piece, one that needs the rotation layer,
+  and one that needs block structure. Lemma 4.4.4 follows from it, as the dissertation's own argument shows.
 
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
