@@ -28,6 +28,11 @@ duplicate of the dissertation section, has been removed: the former section `00`
 
 The count of genuinely distinct statements is therefore well below the number of lines here.
 
+* **Reading the sources.** `pdftotext -f <first> -l <last>` on the PDFs in `C:\ProjectsCT & ZONAL`. Printed page
+  numbers lag the PDF indices by about six, so search by theorem number rather than by page. Searching *all* the PDFs
+  rather than the dissertation alone matters: the proof of Theorem 4.4.3 sat in `chartrand2019.pdf` while this list
+  recorded it as unproved anywhere.
+
 ## Quality gate, verified
 
 Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
@@ -143,224 +148,90 @@ mislead.
   is a cycle rather than a closed walk revisiting a vertex. It is the standard consequence of 2-connectedness and
   the last geometric input of Proposition 2.1.1 left open. Facial balance itself is now a theorem, needing no
   planarity.
-* **The Gn family — five of nine proved, and the block that used to sit here is gone.** Theorems 2.5.1, 2.5.5,
-  2.5.8, 2.5.9 and 2.5.11 are proved and checked. `gnGraph` is a real `SimpleGraph` with symmetry, looplessness,
-  connectivity, vertex count `9n - 4`, decidable adjacency, and the neighbours of every vertex family in every
-  position. The construction and region data that used to be recorded here as "what each entry needs" described
-  work that is now finished, so it has been removed; what survives of it is in the notes further down, which cover
-  only the three entries still open, 2.5.10, 2.5.12 and 2.5.13.
+## Open work, by blocker
 
-* **Theorems 4.3.1, 4.3.2, 4.3.5, 4.3.6 and 4.3.8 — a new kind of obstruction, and it is the interface.**
-  The proof of 4.3.1 is Theorem 6.16 of Chartrand, Egan and Zhang, in `chartrand2019.pdf`, and it runs by
-  induction on the number of chords: the step deletes the interior vertices of one region to reach a
-  smaller bicubic map with one fewer chord. Its base case is proved here as
-  `exists_labeling_pair_eq_of_two_boundaries` and `isInnerZonal_of_one_chord`, so the entry is not
-  checked off, since only the base case is done.
+The notes below give **current state only**. Several were originally written as successive corrections as each step was
+attempted; those have been collapsed, keeping the conclusions and the lessons that change how the next attempt should
+go, and dropping the narrative of how they were reached.
 
-  The step cannot be stated faithfully on `PlaneGraph`. Face data is carried as given, so "deleting the
-  interior vertices of this region leaves a bicubic map whose exterior boundary is a Hamiltonian cycle
-  with one fewer chord" is not derivable; it would have to be assumed, and that assumption concedes most
-  of the statement. This is unlike the other blockers, which are missing mathlib content. The fix is
-  structural: build `PlaneGraph` from a `RotationSystem`, where vertex deletion acts on the darts and the
-  new faces are computed as `faceMap` orbits rather than posited. `Embedding.lean` already has the
-  rotation system, `faceMap` and the orbit view. **The bridge now exists**: `toPlaneGraphOfOrbits` computes the
-  faces as `faceMap` orbits, `IsRealizable` says a plane graph agrees with one, and `ofRotation` reduces an
-  embedding to a single vertex-preserving dart permutation. The one missing piece is the effect of *deletion* on a
-  rotation system, which means splicing the removed darts out of each surviving neighbour's rotation cycle. A first
-  attempt is saved as `deletion_attempt.patch` in the session scratchpad; it is unevaluated, since both it and the
-  reverted baseline timed out locally and no conclusion about it should be drawn from that.
+* **The Gn family — five of nine proved.** Theorems 2.5.1, 2.5.5, 2.5.8, 2.5.9 and 2.5.11 are checked. `gnGraph` is a
+  real `SimpleGraph` with symmetry, looplessness, connectivity, order `9n - 4`, decidable adjacency, and the neighbours
+  of all nine vertex families named in every position, thirteen lemmas.
 
-* **Corollaries 2.5.10, 2.5.12 and Theorem 2.5.13 — not a construction away. A fourth kind of blocker.**
-  An earlier note here said these were one face construction away and specified it. That was wrong, and the
-  correction matters more than the specification did.
+* **Corollaries 2.5.10, 2.5.12 and Theorem 2.5.13 — need one construction, and it is not merely face data.** The chain
+  is `DecidableRel Adj` (done), `Fintype Dart` (mathlib), a rotation per `k` (**open**), `ofRotation` (done),
+  `toPlaneGraphOfOrbits` (done), `IsRealizable` (done), the count (done).
 
-  The region shapes are now confirmed against pages 43 and 44: two triangles per block, a quadrilateral and two
-  pentagons per gap, an interior region on the blocks at or below k which is absent when k is zero, and an
-  exterior region on the blocks above k. The sums check out, the interior one giving 6k plus four times the sum
-  of its block values, which vanishes exactly by the splitting from Lemma 2.0.4. So the construction is writable.
+  Writing face data directly would not do. `PlaneGraph` validates nothing, so a family of arbitrary face assignments
+  satisfies a counting claim vacuously; `IsRealizable` exists to rule that out, which is why the rotation is needed.
 
-  Writing it would not establish the statements. `PlaneGraph` carries no planarity condition, so any face
-  assignment whatever is a `PlaneGraph` on `Gn`. A family built this way would satisfy `IsGnRegion`, hence be
-  zonal, and satisfy the profile, hence be pairwise non-isomorphic, and the counting predicate would follow. But
-  nothing would connect it to the planar embeddings of `Gn`: the theorem would read as saying some face
-  assignments exist with those properties, which is not the claim that `Gn` has that many genuine planar
-  embeddings. Note also that including all n-1 quadrilaterals is already off, since the flip destroys one for k at
-  least two, and the family would still typecheck and still satisfy both hypotheses.
+  The rotation is determined rather than chosen, since each region is a `faceMap` orbit and `faceMap` is
+  reverse-then-rotate, so a region traversed as a cycle fixes `rotate` on its darts. Region cycles from the source:
+  `(ri, si, vi)` and `(vi, ti, ui)` per block; `(wg, yg, zg, xg)` per gap; `(ri, vi, ui, z(i-1), y(i-1))` and
+  `(si, wi, xi, ti, vi)`. Per block the exterior order is `(ri, si, [wi, xi,] ti, ui, [z(i-1), y(i-1),] ri)`, the first
+  bracket dropped at the last block and the second at the first.
 
-  So the blocker is that *counting planar embeddings is not faithfully expressible without a planarity predicate*.
-  This is distinct from the other three kinds. Conditional results on region structure, like Theorems 2.5.9 and
-  2.5.5, stay meaningful because their content is the arithmetic of the sums and the region-size invariant, which
-  hold of whatever the embedding is. A count has no such content to fall back on. Reaching these three wants a
-  planarity predicate on `PlaneGraph`, most plausibly by defining it only for graphs arising from a
-  `RotationSystem` through `toPlaneGraphOfOrbits`, so that the faces are forced to be the orbits of an actual
-  embedding rather than posited.
+  **The one genuinely missing input** is the cyclic order of the two *long* regions. The per-block order above is each
+  block's boundary before the joining edges `wi-yi` and `xi-zi` are added, and adding them cuts the quadrilaterals out
+  of the outer face, so the global exterior is not the concatenation of per-block cycles. Using it directly puts the
+  edge `w-x` on three faces, and an edge lies on exactly two. That order has to be reconstructed, from the figure or
+  from the constraints that each edge lies on two faces and each dart on one.
 
-* **What Step 2 of the Gn,k rotation actually requires, and why the region records here are not enough.**
-  Every vertex of `Gn` now has its neighbours named, thirteen lemmas covering each family in each position. That
-  says what the cycle at each vertex contains. It says nothing about the cyclic *order*, and the order is the
-  embedding.
+  **Check any claimed cycle is a walk before using it**, which `gnCoreAdj`, `gnGapAdj` and `gnMixedAdj` decide. This
+  caught a real discrepancy: page 39 renders the gap quadrilateral `(w, x, y, z)` but `x-y` is not an edge, while pages
+  43 and 44 render `(w, y, z, x)`, which is a walk.
 
-  The order is not free. A rotation whose orbits are not the regions of the source is a different embedding, and
-  possibly not a planar one at all. So the orders have to be recovered from the regions, which is an inverse
-  problem with a clean solution: each region is a `faceMap` orbit, and `faceMap` is reverse-then-rotate, so a
-  region traversed as a cycle fixes `rotate` on the darts along it. From the triangle `r, s, v` for instance, the
-  face walk `r to s to v to r` forces `rotate` to send the dart `(s, r)` to the dart `(s, v)`. Each dart lies on
-  exactly one face, so collecting over all regions determines `rotate` completely.
+* **Theorem 4.4.3 and Lemma 4.4.4 — proof located, three of four ingredients proved.** It is **Theorem 6.13 of
+  `chartrand2019.pdf`**, with a full proof. The dissertation only states it and cites that work. Two earlier readings of
+  this entry, first as blocked by the `Finset` boundary and then as having no proof in any source here, were both wrong.
 
-  The obstruction is that the region records in this file are `Finset`s, written that way because zonality only
-  ever needs the *set* of boundary vertices. The source gives the regions as cycles, `(ri, si, vi, ri)` and so on,
-  and that cyclic notation is exactly what was dropped. Step 2 therefore begins by re-extracting the regions as
-  cycles rather than sets, from pages 43 and 44, and only then reads off `rotate` per dart family.
+  The proof converts a zonal labeling into a proper 3-edge-colouring and contradicts a counting theorem about *overfull*
+  graphs, those of odd order `n` and size above `Δ(n-1)/2`. Neither incidence count available here substitutes:
+  counting distinct regions leaves a bridge's endpoints on two regions, contributing twice the sum of their labels,
+  which vanishes when those differ; counting with multiplicity restores three per vertex, so the total is three times
+  the label sum and vanishes identically.
 
-  Worth noting the same limitation is what blocks Theorem 4.4.3: a `Finset` boundary cannot express a walk that
-  repeats an edge. Two different entries, one underlying cause, which suggests boundaries as cyclic walks would be
-  the single most valuable structural change to this development.
+  Its four ingredients:
+  1. **Overfull bound — proved.** `two_mul_card_le_of_pairwise_disjoint_pairs` and
+     `card_le_of_pairwise_disjoint_pairs_odd`, stated about pairwise disjoint two-element sets rather than graphs, since
+     mathlib has no `Overfull`, no edge-colouring API and no bare matching predicate.
+  2. **Observation 6.9 — proved.** `isZonalLabeling_of_boundary_eq` and `isZonalLabeling_restrict`. Near-trivial here,
+     because `zoneValue` already computes the boundary sum.
+  3. **Corollary 6.1, arithmetic core — proved.** `colourStep_ne` and `colourWalk_closes`. Colours advance by the
+     label, so the colouring is proper exactly because labels are nonzero and closes up exactly when they sum to zero.
+     The two clauses defining a zonal labeling are properness and closure of the induced edge colouring.
+  4. **End-block 2-connectedness and the enclosure case split — open, unsupported.** A search confirms mathlib has no
+     block decomposition, no end-block, and no cut-vertex notion beyond single-vertex deletion lemmas.
 
-* **The region cycles of Gn,k, and how they determine the rotation.** The cyclic orders do not need re-extracting
-  after all; the source already writes the regions as cycles and the earlier pass recorded only their vertex sets.
-  As cycles they are:
-  - `(ri, si, vi, ri)` and `(vi, ti, ui, vi)`, the two triangles of block i
-  - `(wg, yg, zg, xg, wg)`, the quadrilateral of gap g
-  - `(ri, vi, ui, z(i-1), y(i-1), ri)`, the pentagon using the previous gap
-  - `(si, wi, xi, ti, vi, si)`, the pentagon using its own gap
-  - the two long regions, whose cyclic order the text gives only as a vertex union and which therefore still needs
-    reading off the figure or reconstructing from the others
+  Worth keeping: **Theorem 4.4.5 here does not depend on 4.4.3.** The source reaches it through Lemma 4.4.4 by doubling
+  the graph along a bridge; the proof here is one incidence count, shorter and independent.
 
-  Each cycle fixes `rotate` on the darts along it, since `faceMap` is reverse-then-rotate. Worked through at `r` of
-  an interior block, whose neighbours are `s`, `v` and `y` of the previous gap:
-  - from the triangle, the walk `v to r to s` gives `faceMap (v,r) = (r,s)`, hence `rotate (r,v) = (r,s)`
-  - from the pentagon, the walk `y to r to v` gives `rotate (r,y) = (r,v)`
-  - the third face at `r` is a long region, forcing `rotate (r,s) = (r,y)`
-  So the rotation cycles `r`'s neighbours in the order `v, s, y`. The same reading at the other eight families gives
-  the whole permutation, and the third bullet is where the long regions are needed, which is why their cyclic order
-  is the one genuinely missing piece rather than the rotation being free to choose.
+* **Boundaries as walks — added, not substituted.** `FacialWalks` carries a walk per region plus `boundary_eq`, forcing
+  its vertex set to equal the existing `Finset` boundary, so the two views cannot drift. `card_boundary_le_length` and
+  `card_boundary_eq_length` make the gap explicit, `zoneValue_eq_sum_walk` closes the loop back to existing results, and
+  `edgeSteps`, `TraversesTwice` and `HasRepeatedEdge` say that a region runs along one edge twice.
 
-* **The long-region cyclic order, and a discrepancy that shows how to check these.** The last missing input for
-  the rotation is present after all, on page 39 rather than 43. Each block contributes to the exterior boundary in
-  clockwise order `(ri, si, [wi, xi,] ti, ui, [z(i-1), y(i-1),] ri)`, the first bracket omitted for the last block and
-  the second for the first, with the blocks joined by the edges `wi-yi` and `xi-zi`.
+  **`PlaneGraph.boundary` must keep its type.** All sixty checked entries are stated against it and every one needs only
+  the vertex set. Replacing the field would risk sixty entries to gain two.
 
-  **That is not yet enough, and a first attempt to use it fails.** The order quoted is the exterior boundary of each
-  block *on its own*, before the joining edges are added. Adding `wi-yi` and `xi-zi` cuts the quadrilaterals out of
-  that outer face, so the global exterior of `Gn,0` is not the concatenation of the per-block cycles. Trying to read
-  `rotate` at `w` directly from the quoted order contradicts the region list: `w` has degree three, so exactly three
-  faces meet it, and they must be the quadrilateral, the pentagon `(s, w, x, t, v)` and the long region. The
-  quadrilateral uses the edges `w-y` and `w-x`, the pentagon uses `w-s` and `w-x`, and the quoted order would have the
-  long region use `w-s` and `w-x` as well, putting the edge `w-x` on three faces. An edge lies on exactly two.
+* **Section 4.3, Theorems 4.3.1, 4.3.2, 4.3.5, 4.3.6 and 4.3.8 — need dart-level deletion.** The proof of 4.3.1 is
+  Theorem 6.16 of `chartrand2019.pdf` and inducts on chord count, the step deleting a region's interior vertices. Its
+  base case is proved, as `exists_labeling_pair_eq_of_two_boundaries` and `isInnerZonal_of_one_chord`.
 
-  So the global exterior order of `Gn,0` is genuinely not given in the text and has to be reconstructed, either from
-  the figure or from the constraint that every edge lies on exactly two faces and every dart on exactly one. Until it
-  is, `rotate` is determined at the vertices that no long region touches and undetermined at the rest.
+  The bridge to rotation systems now exists: `toPlaneGraphOfOrbits` computes faces as `faceMap` orbits, `IsRealizable`
+  says a plane graph agrees with one, and `ofRotation` reduces an embedding to a single vertex-preserving dart
+  permutation. Missing is deletion's effect on a rotation system, which means splicing the removed darts out of each
+  surviving neighbour's rotation cycle. A first attempt is at `deletion_attempt.patch` in the session scratchpad; it is
+  **unevaluated**, since both it and the reverted baseline timed out locally, and nothing about its cost follows.
 
-  The discrepancy is worth keeping. Page 39 renders the gap quadrilateral as `(wk, xk, yk, zk, wk)` while pages 43 and
-  44 render it `(wi, yi, zi, xi, wi)`. As vertex sets these agree, as cycles they do not, and only the second is a walk
-  in the graph: the edges at a gap are `w-x`, `y-z`, `w-y` and `x-z`, so `x-y` is not an edge and `(w, x, y, z)` is not
-  a cycle. The first rendering is therefore a vertex list in canonical order rather than a traversal, or an artefact of
-  extraction.
-
-  That gives the check every claimed cycle must pass before it is used: it has to be a walk, which `gnCoreAdj`,
-  `gnGapAdj` and `gnMixedAdj` decide. Applying it caught this one. It is the same discipline that the earlier
-  multiplicity error lacked, where a face count was posited rather than checked against the source, and it is cheap
-  here because adjacency in `Gn` is now decidable.
-
-* **Decision: cyclic-walk boundaries are the next construction, and they must be added rather than substituted.**
-  Of the three remaining levers this one has the widest reach. It unblocks Theorem 4.4.3 and Lemma 4.4.4 outright,
-  since a bridge is one region walking the same edge twice and a `Finset` boundary cannot express that, and it supplies
-  the cyclic vocabulary the `Gn,k` rotation needs, so it subsumes part of that work too.
-
-  The constraint on how, which matters more than the choice: **do not change the type of `PlaneGraph.boundary`.** Sixty
-  checked entries are stated against it, and every one of them only ever needs the *set* of boundary vertices, which is
-  why the interface was built that way and why it has held. Replacing the field would put all sixty at risk to gain two
-  entries. The additive shape is a separate structure, or an extra field, carrying facial walks, together with a
-  projection to the existing `Finset` boundary; then each current theorem keeps its statement and its proof verbatim,
-  and the walk-valued results are stated only where they are needed.
-
-  First step, small and checkable: define a facial walk and prove its vertex set is the existing boundary, so the two
-  views provably agree wherever both are available. That lemma is the compatibility guarantee the rest rests on, and
-  writing it first means the additive discipline is enforced by a theorem rather than by intention.
-
-* **Walks make a bridge expressible, and that turns out not to be the same as unblocking Theorem 4.4.3.**
-  `FacialWalks` now carries a walk per region with `boundary_eq` forcing agreement with the existing `Finset`
-  boundary, and `edgeSteps`, `TraversesTwice` and `HasRepeatedEdge` say that a region runs along one edge twice,
-  which is the configuration a bridge creates and the one a `Finset` boundary cannot see. That was the stated aim,
-  and it is done additively: `PlaneGraph` is unchanged and the checked entries are untouched.
-
-  **Correction, twice over.** The claim that walks unblock 4.4.3 was too quick, and the follow-up claim that 4.4.3
-  has no proof in any source here was simply wrong. It does: **Theorem 6.13 of `chartrand2019.pdf`**, with a full
-  proof, which a proper search would have found earlier. The dissertation states it and cites that work. Two counting routes were
-  tried and neither closes it. Counting distinct regions per vertex gives a bridge's endpoints two regions rather
-  than three, contributing twice the sum of their two labels, which vanishes whenever those labels differ. Counting
-  with multiplicity instead, which is what walks now allow, gives every vertex three incidences again, so the total
-  is three times the label sum and vanishes identically. Neither yields a contradiction.
-
-  The located proof does not go through either count. It converts a zonal labeling into a proper 3-edge-colouring
-  and then contradicts a counting theorem about *overfull* graphs. Its parts, and their status here:
-
-  1. **Overfull graphs have no proper `Δ`-edge-colouring** (their Theorem 6.12, `[9, p. 258]`). A graph of odd order
-     `n` and size `m` is overfull when `m > Δ(n-1)/2`. This is the tractable piece and a good first step: in a proper
-     `Δ`-edge-colouring each colour class is a matching, so of size at most `(n-1)/2` for odd `n`, giving
-     `m ≤ Δ(n-1)/2`. Worth checking mathlib for it before writing it.
-  2. **Zonal labeling to proper 3-edge-colouring.** The argument assigns colours `1, 2, 3` to the three edges at a
-     vertex so that the vertex's *type* is its label, then shows the colour of the bridge together with the labeling
-     determines the colouring on an end-block uniquely. This is the Tait-style correspondence, and it is the part
-     that needs the rotation at each vertex, so the walk and rotation layers here are relevant after all.
-  3. **End-block structure.** A bridge yields an end-block `B` of order at least five whose bridge endpoint carries
-     two edges of `B`; the contradiction is that `B` is then overfull.
-
-  Part 1 is now proved, as `two_mul_card_le_of_pairwise_disjoint_pairs` and
-  `card_le_of_pairwise_disjoint_pairs_odd`. Mathlib has no `Overfull`, no edge-colouring API and no bare matching
-  predicate, so the core is stated about pairwise disjoint two-element sets instead of graphs, which is all the bound
-  needs and keeps it reusable.
-
-  Reading further into the source proof, parts 2 and 3 are deeper than the three-line summary above suggested. The
-  argument shows the colouring is *uniquely* determined on an end-block, and to do so it uses: their Observation 6.9,
-  that a zonal labeling restricted to the vertices of a zone's boundary cycle is a zonal labeling of that cycle; their
-  Corollary 6.1, that the colour of one edge of a cycle together with the labeling determines the colours of all its
-  edges; 2-connectedness of an end-block, to get a cycle through any two chosen vertices; and a case split on whether
-  that cycle bounds a zone or encloses others.
-
-  Of those, Observation 6.9 should be near-trivial here, since a region's boundary sum is already the object
-  `zoneValue` computes. Corollary 6.1 is a self-contained statement about cycles and looks reachable. The
-  2-connectedness of end-blocks needs block decomposition, which mathlib does not appear to have, and the enclosure
-  case split needs the plane structure. So the honest ordering is: Observation 6.9, then Corollary 6.1, then reassess,
-  rather than treating 4.4.3 as three steps from done. Lemma 4.4.4 follows from 4.4.3 once it lands.
-
-* **Mathlib has edge connectivity, which this development had not noticed.** A semantic search for block
-  decomposition turned up `SimpleGraph.IsEdgeConnected` and, more to the point,
-  `SimpleGraph.isEdgeConnected_two`: a graph is 2-edge-connected exactly when it is preconnected and no edge is a
-  bridge. Also `SimpleGraph.isBridge_iff_adj_and_not_isEdgeConnected_two`, and
-  `SimpleGraph.Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial`.
-
-  `PlaneGraph.IsBridgeless` here was written directly as "no edge is a bridge", and since a `PlaneGraph` is connected
-  by construction it is precisely mathlib's `IsEdgeConnected 2`. So a cubic map, the connected bridgeless cubic plane
-  graph, is a 2-edge-connected cubic plane graph in mathlib's vocabulary, and whatever API accrues to
-  `IsEdgeConnected` applies to it.
-
-  The identification was *not* committed. Five attempts at the two-line bridging lemma failed on the shape of the
-  unfolding, `IsEdgeConnected 2` presenting as a statement about `deleteEdges` rather than as the conjunction the
-  named lemma provides, and it has no downstream consumer yet, so it was dropped rather than forced. Worth redoing
-  when something actually needs it, starting from the `deleteEdges` form rather than from `isEdgeConnected_two`.
-
-  What the search did *not* find, confirming the earlier reading: no block decomposition, no end-block, no notion of a
-  cut vertex beyond single-vertex deletion lemmas. That part of Theorem 4.4.3 stands unsupported.
-
-* **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
-  Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
-  without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
-  then uses 4.4.3, so both stand or fall together.
-
-  The obstruction is not missing mathlib content and not face data being given. It is that `boundary` is a
-  `Finset` of vertices, so a boundary *walk* that repeats a vertex or an edge is indistinguishable from one that
-  does not. A bridge is exactly the configuration where a single region walks along the same edge twice, and that
-  is what the argument turns on. The incidence count cannot substitute: a bridge leaves both its endpoints on two
-  regions rather than three, contributing twice the sum of their two labels, which vanishes whenever the labels
-  differ, so the lemma `not_isZonal_of_unique_regionsAt_not_three_dvd` is blind to it. Reaching 4.4.3 wants boundaries as
-  walks or as multisets of darts, which the rotation system in `RotationToPlane` already has and `PlaneGraph`
-  discards.
-
-  Worth recording alongside: **Theorem 4.4.5 here does not depend on 4.4.3.** The source proves it through Lemma
-  4.4.4 and hence through 4.4.3, by doubling the graph along a bridge. The proof here is a single incidence count,
-  so it is both shorter and independent of the blocked result.
+* **Mathlib has edge connectivity, which this development had not noticed.** `SimpleGraph.IsEdgeConnected`,
+  `isEdgeConnected_two` (2-edge-connected iff preconnected and bridgeless),
+  `isBridge_iff_adj_and_not_isEdgeConnected_two`, and
+  `Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial`. Since a `PlaneGraph` is connected by
+  construction, `IsBridgeless` here *is* `IsEdgeConnected 2`, so a cubic map is a 2-edge-connected cubic plane graph in
+  mathlib's vocabulary. The two-line bridging lemma was attempted five times and dropped unforced, having no consumer
+  yet; `IsEdgeConnected 2` presents as a statement about `deleteEdges` rather than the conjunction the named lemma
+  gives, so restart from that form.
 
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
