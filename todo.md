@@ -239,6 +239,24 @@ needed, so the logical dependency is visible in the statement of every result th
     Observation 2.5.4 rather than guessed. That is the reason this was not attempted in haste: a wrong face
     assignment would still let the three entries be marked complete, which is worse than leaving them open.
 
+* **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
+  Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
+  without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
+  then uses 4.4.3, so both stand or fall together.
+
+  The obstruction is not missing mathlib content and not face data being given. It is that `boundary` is a
+  `Finset` of vertices, so a boundary *walk* that repeats a vertex or an edge is indistinguishable from one that
+  does not. A bridge is exactly the configuration where a single region walks along the same edge twice, and that
+  is what the argument turns on. The incidence count cannot substitute: a bridge leaves both its endpoints on two
+  regions rather than three, contributing twice the sum of their two labels, which vanishes whenever the labels
+  differ, so  is blind to it. Reaching 4.4.3 wants boundaries as
+  walks or as multisets of darts, which the rotation system in `RotationToPlane` already has and `PlaneGraph`
+  discards.
+
+  Worth recording alongside: **Theorem 4.4.5 here does not depend on 4.4.3.** The source proves it through Lemma
+  4.4.4 and hence through 4.4.3, by doubling the graph along a bridge. The proof here is a single incidence count,
+  so it is both shorter and independent of the blocked result.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
