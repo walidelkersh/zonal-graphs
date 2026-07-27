@@ -28,6 +28,18 @@ duplicate of the dissertation section, has been removed: the former section `00`
 
 The count of genuinely distinct statements is therefore well below the number of lines here.
 
+## Quality gate, verified
+
+Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
+of the 36 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
+`gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 210.
+
+Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
+establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
+And name clashes across modules are invisible per-file, appearing only where two modules meet in the root, so the
+root build has to run before every push.
+
 ## Proved in Lean
 
 | Statement | Declaration |
