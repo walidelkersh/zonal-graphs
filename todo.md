@@ -33,6 +33,11 @@ The count of genuinely distinct statements is therefore well below the number of
   rather than the dissertation alone matters: the proof of Theorem 4.4.3 sat in `chartrand2019.pdf` while this list
   recorded it as unproved anywhere.
 
+* **83 of the 191 entries have truncated statements**, ending in a literal `...` where the extraction cut them off.
+  They name the right result but do not fully record it, so an entry alone is not always enough to formalize from; the
+  source has to be consulted. Repairing them is mechanical with the extraction recipe above and has not been done.
+  Journal running heads, page numbers and one footnote that had leaked into entry text are now stripped.
+
 ## Quality gate, verified
 
 Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
@@ -258,7 +263,7 @@ go, and dropping the narrative of how they were reached.
 
 ## 01_Bowling_2023_Zonality_in_Graphs_Dissertation.pdf
 
-- [ ] **Theorem 1.1.1**: (The Euler Identity) If G is a connected plane graph of order n, size m, and having r regions, then n − m + r = 2. 2
+- [ ] **Theorem 1.1.1**: (The Euler Identity) If G is a connected plane graph of order n, size m, and having r regions, then n − m + r = 2.
 - [ ] **Theorem 1.1.2**: If G is a planar graph of order n ≥ 3 and size m, then m ≤ 3n − 6.
 - [ ] **Theorem 1.1.3**: Every planar graph contains a vertex of degree 5 or less. A graph H is a subdivision of a graph G if either H ∼= G or H can be obtained from G by inserting vertices of degree 2 into edges of G. Con...
 - [ ] **Theorem 1.1.4**: A graph G is planar if and only if G contains no subgraph that is a subdivision of K5 or K3,3. A planar graph G is maximal planar if the addition to G of any edge joining two nonadjacent vertices o...
@@ -298,12 +303,12 @@ go, and dropping the narrative of how they were reached.
 - [ ] **Corollary 2.5.10**: The plane graph Gn has at least ⌊n/2⌋ zonal embeddings.
 - [x] **Theorem 2.5.11**: If 1 ≤ k ≤ n − 2, then G∗ n,k does not have a zonal labeling.
 - [ ] **Corollary 2.5.12**: The plane graph Gn has at least n − 1 non-zonal embeddings.
-- [ ] **Theorem 2.5.13**: The plane graph Gn is a 2-connected graph having at least ⌊n/2⌋ distinct zonal planar embeddings and at least n − 1 distinct non-zonal planar em- beddings. 47 Chapter 3 Graphs of Small Cycle Rank I...
+- [ ] **Theorem 2.5.13**: The plane graph Gn is a 2-connected graph having at least ⌊n/2⌋ distinct zonal planar embeddings and at least n − 1 distinct non-zonal planar em- beddings.
 - [x] **Theorem 3.1.1**: A unicyclic graph G is zonal if and only if G ̸= C ⋆ K2 for any cycle C.
-- [x] **Corollary 3.1.2**: For each cycle C and each integer i ∈ {0, 1, 2}, there is a label- ing ℓ : V (C) → {1, 2} of C such that P(ℓ, C) = i in Z3. We are now prepared to verify the following result. 49
+- [x] **Corollary 3.1.2**: For each cycle C and each integer i ∈ {0, 1, 2}, there is a label- ing ℓ : V (C) → {1, 2} of C such that P(ℓ, C) = i in Z3. We are now prepared to verify the following result.
 - [x] **Theorem 3.1.3**: Every zonal unicyclic graph is absolutely zonal.
 - [x] **Theorem 3.2.1**: Let G be a plane graph of cycle rank 2 and type (1). Then G is zonal if and only if G is not minimal.
-- [x] **Corollary 3.2.2**: Let G be a graph of cycle rank 2 and type (1). If G is minimal, then G is not zonal. Otherwise, G is absolutely zonal. 53
+- [x] **Corollary 3.2.2**: Let G be a graph of cycle rank 2 and type (1). If G is minimal, then G is not zonal. Otherwise, G is absolutely zonal.
 - [x] **Theorem 3.2.3**: Let G be a plane graph of cycle rank 2 and type (2). Then G is zonal if and only if either every vertex of G belongs to a cycle of G or at least two vertices of G belong to no cycle of G.
 - [x] **Corollary 3.2.4**: Let G be a graph of cycle rank 2 and type (2). If G has exactly one vertex that does not lie on a cycle, then G is not zonal. Otherwise, G is absolutely zonal.
 - [x] **Theorem 3.2.5**: Let F be a minimal plane graph of cycle rank 2 and type (3), and let G be a plane graph of cycle rank 2 and type (3) containing F as a subgraph. Then, G is zonal if and only if there is no region R...
@@ -367,7 +372,7 @@ go, and dropping the narrative of how they were reached.
 - [ ] **Theorem 2.2.**: The following six statements are equivalent. 1. The Four Color Theorem: The regions of every plane graph can be colored with four or fewer colors so that every two regions with a common boundary ar...
 - [ ] **Theorem 3.1.**: Every plane graph G with maximum degree ∆(G)≤ 3 where the boundary cycle of the exterior zone is a Hamiltonian cycle of G is inner zonal. There are nonzonal plane graphs that satisfy the conditions...
 - [ ] [ARTIFACT: an excerpt from the proof following Theorem 3.1, not a statement]
-- [ ] **Proposition 3.1.**: No nearly cubic plane graph is zonal. 133 A. Bowling and P. Zhang/ Discrete Math. Lett. 12 (2023) 130–137 134
+- [ ] **Proposition 3.1.**: No nearly cubic plane graph is zonal.
 - [ ] **Theorem 3.2.**: Every 2-connected nearly cubic plane graph is inner zonal.
 - [x] **Theorem 3.3.**: Let H be a plane graph, letZ be a nonempty set of edges ofH and let G be the graph obtained by subdividing each edge inZ at least twice. Then (1) G is zonal if H is zonal and (2) G is inner zonal i...
 - [ ] **Theorem 3.4.**: If G is a connected cubic plane graph with bridges, thenG is not zonal. By Theorem 3.4, no connected cubic plane graph with bridges is zonal. We also saw that the nearly cubic plane graph of Figure...
@@ -379,17 +384,17 @@ go, and dropping the narrative of how they were reached.
 
 ## 04_Bowling_Zhang_2022_Absolutely_Conditionally_Zonal_Graphs.pdf
 
-- [ ] **Theorem 1.1.**: A connected cubic plane graph G is zonal if and only if G is bridgeless. ∗Corresponding author (ping.zhang@wmich.edu).  A. Bowling and P. Zhang/ Electron. J. Math. 4 (2022) 1–11 2 Consequently, by ...
+- [ ] **Theorem 1.1.**: A connected cubic plane graph G is zonal if and only if G is bridgeless.
 - [ ] **Theorem 1.2.**: If every cubic map is zonal, then the chromatic number of every planar graph is at most 4. Thus, if it could be shown that every cubic map is zonal without using the Four Color Theorem, then the Fo...
 - [ ] **Theorem would**: follow. This shows that studying zonal labelings of planar graphs are of interest, especially cubic planar graphs, and cubic maps in particular. 2. Absolutely zonal graphs The following result was ...
 - [ ] **Proposition 2.1.**: Every nontrivial tree and every cycle is zonal. Since there is only one planar embedding of a nontrivial tree or a cycle, it follows that every nontrivial tree and every cycle is absolutely zonal. ...
 - [x] **Proposition 2.2.**: Every 2-connected bipartite planar graph is absolutely zonal.
 - [ ] **Theorem 2.1.**: (Whitney’s Theorem) Every 3-connected planar graph is uniquely embeddable in the plane. As a consequence of Theorem 2.1, every 3-connected planar graph is either absolutely zonal or non-zonal. Ever...
 - [ ] **Theorem 2.2.**: For an integer n≥ 3, the wheel Wn =Cn∨K1 is zonal if and only if n≡ 0 (mod 3) .
-- [ ] **Theorem 2.3.**: For every positive integerk, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings. 2 A. Bowling and P. Zhang/ Electron. J. Math. 4 (2022) 1–11...
+- [ ] **Theorem 2.3.**: For every positive integerk, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings.
 - [x] **Proposition 3.1.**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
 - [ ] **Lemma 3.1.**: LetX be a nonempty set of vertices of a graph. (1) For eachi = 1, 2, there is a labeling ℓi :X→{ 1, 2}⊆ Z3 ofX such that∑(ℓi,X ) =i in Z3. (2) If|X|≥ 2, then there is a labeling ℓ0 :X→{ 1, 2}⊆ Z3 o...
-- [x] **Theorem 3.1.**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal. 4 A. Bowling and P. Zhang/ Electron. J. Math. 4 (2022) 1–11 5
+- [x] **Theorem 3.1.**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal.
 - [ ] **Lemma 4.1.**: LetS be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4∏ i=1 (ik− 1 k− 1 ) = (4k− 1 k− 1 )(3k− 1 k− 1 )(2k− 1 k− 1 ) . (1) 7 A. Bo...
 - [x] **Theorem 4.1.**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
 - [ ] **Proposition 5.1.**: For a positive integer k, the plane graph Fk is zonal.
