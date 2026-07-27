@@ -780,4 +780,103 @@ theorem gnAdj_gap_zero_iff {n : ℕ} (g : Fin (n - 1)) (h0 : g.val < n) (x : GnV
     · exact ⟨rfl, Or.inl ⟨rfl, rfl⟩⟩
     · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))⟩
 
+/-- `x` meets `t` of its own block, together with `w` and `z` of its gap. -/
+theorem gnAdj_gap_one_iff {n : ℕ} (g : Fin (n - 1)) (h0 : g.val < n) (x : GnVertex n) :
+    gnAdj n (gap 1 g) x ↔ x = core 2 ⟨g.val, h0⟩ ∨ x = gap 0 g ∨ x = gap 3 g := by
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i) =>
+      rcases hadj with ⟨_, hk, _⟩ | ⟨hj, hk, hg⟩ | ⟨_, hk, _⟩ | ⟨_, hk, _⟩
+      · exact absurd hk (by decide)
+      · subst hj
+        refine Or.inl ?_
+        have : i = (⟨g.val, h0⟩ : Fin n) := Fin.ext hg.symm
+        subst this
+        rfl
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+    | Sum.inr (k, g') =>
+      obtain ⟨hg, hgap⟩ := hadj
+      subst hg
+      rcases hgap with ⟨hk, _⟩ | ⟨_, hk⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨_, hk⟩ | ⟨hk, _⟩
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inl (by subst hk; rfl))
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inr (by subst hk; rfl))
+      · exact absurd hk (by decide)
+  · rintro (rfl | rfl | rfl)
+    · exact Or.inr (Or.inl ⟨rfl, rfl, rfl⟩)
+    · exact ⟨rfl, Or.inr (Or.inl ⟨rfl, rfl⟩)⟩
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))))⟩
+
+/-- `y` meets `r` of the next block, together with `z` and `w` of its gap. -/
+theorem gnAdj_gap_two_iff {n : ℕ} (g : Fin (n - 1)) (h1 : g.val + 1 < n) (x : GnVertex n) :
+    gnAdj n (gap 2 g) x ↔ x = core 0 ⟨g.val + 1, h1⟩ ∨ x = gap 3 g ∨ x = gap 0 g := by
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i) =>
+      rcases hadj with ⟨_, hk, _⟩ | ⟨_, hk, _⟩ | ⟨hj, hk, hg⟩ | ⟨_, hk, _⟩
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · subst hj
+        refine Or.inl ?_
+        have : i = (⟨g.val + 1, h1⟩ : Fin n) := Fin.ext hg.symm
+        subst this
+        rfl
+      · exact absurd hk (by decide)
+    | Sum.inr (k, g') =>
+      obtain ⟨hg, hgap⟩ := hadj
+      subst hg
+      rcases hgap with ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨_, hk⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨_, hk⟩ | ⟨hk, _⟩ | ⟨hk, _⟩
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inl (by subst hk; rfl))
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inr (by subst hk; rfl))
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+  · rintro (rfl | rfl | rfl)
+    · exact Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))⟩
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))))⟩
+
+/-- `z` meets `u` of the next block, together with `y` and `x` of its gap. -/
+theorem gnAdj_gap_three_iff {n : ℕ} (g : Fin (n - 1)) (h1 : g.val + 1 < n) (x : GnVertex n) :
+    gnAdj n (gap 3 g) x ↔ x = core 3 ⟨g.val + 1, h1⟩ ∨ x = gap 2 g ∨ x = gap 1 g := by
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i) =>
+      rcases hadj with ⟨_, hk, _⟩ | ⟨_, hk, _⟩ | ⟨_, hk, _⟩ | ⟨hj, hk, hg⟩
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · subst hj
+        refine Or.inl ?_
+        have : i = (⟨g.val + 1, h1⟩ : Fin n) := Fin.ext hg.symm
+        subst this
+        rfl
+    | Sum.inr (k, g') =>
+      obtain ⟨hg, hgap⟩ := hadj
+      subst hg
+      rcases hgap with ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨_, hk⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨_, hk⟩
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inl (by subst hk; rfl))
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inr (by subst hk; rfl))
+  · rintro (rfl | rfl | rfl)
+    · exact Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩))
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))⟩
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨rfl, rfl⟩))))))⟩
+
 end ZonalGraphs
