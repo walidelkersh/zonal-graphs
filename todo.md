@@ -231,25 +231,30 @@ needed, so the logical dependency is visible in the statement of every result th
   No new mathematics is involved in what remains, only the assembly; every route above is an existing lemma or
   a stated edge of `gnCoreAdj`, `gnGapAdj` or `gnMixedAdj`.
 
-* **Corollaries 2.5.10, 2.5.12 and Theorem 2.5.13 — one construction away, and it is specified.**
-  The counting predicates now exist as `SimpleGraph.HasAtLeastZonalEmbeddings` and its non-zonal twin, both
-  monotone in the count. Zonality of each `Gn,k` is `isZonal_of_forall_isGnRegion`, non-isomorphism for
-  different `k` is `not_nonempty_iso_of_gn_profile`, and 2-connectedness of `Gn` is `gnGraph_isTwoConnected`.
-  Every ingredient is proved. What is missing is that both region lemmas take the region structure as a
-  hypothesis, so nothing yet exhibits the face data, and a count needs the family exhibited.
+* **Corollaries 2.5.10, 2.5.12 and Theorem 2.5.13 — not a construction away. A fourth kind of blocker.**
+  An earlier note here said these were one face construction away and specified it. That was wrong, and the
+  correction matters more than the specification did.
 
-  The construction to write, from the region list recorded above:
-  - Face type indexed by shape, for instance `Fin 2 ⊕ (Fin 2 × Fin n) ⊕ (Fin 3 × Fin (n - 1))`, with the two
-    singletons the long regions, the `Fin 2 × Fin n` part the two triangles per block, and the
-    `Fin 3 × Fin (n - 1)` part the quadrilateral and the two pentagons per gap.
-  - `boundary` sending each index to the Finset already used in `IsGnRegion`: `{r, s, v}` and `{v, t, u}` per
-    block, `{w, y, z, x}` per gap, `{r, v, u, z, y}` and `{s, w, x, t, v}` per gap, and `blocks B G` for the
-    two long ones with `B` the blocks at or below `k` and above `k` respectively.
-  - The multiplicities in the source differ slightly by `k`, `n - 2` quadrilaterals rather than `n - 1` once
-    `k` is at least two, because the flip destroys one. Getting that wrong would make the family a different
-    plane graph while still typechecking, since `PlaneGraph` validates nothing, so it must be checked against
-    Observation 2.5.4 rather than guessed. That is the reason this was not attempted in haste: a wrong face
-    assignment would still let the three entries be marked complete, which is worse than leaving them open.
+  The region shapes are now confirmed against pages 43 and 44: two triangles per block, a quadrilateral and two
+  pentagons per gap, an interior region on the blocks at or below k which is absent when k is zero, and an
+  exterior region on the blocks above k. The sums check out, the interior one giving 6k plus four times the sum
+  of its block values, which vanishes exactly by the splitting from Lemma 2.0.4. So the construction is writable.
+
+  Writing it would not establish the statements. `PlaneGraph` carries no planarity condition, so any face
+  assignment whatever is a `PlaneGraph` on `Gn`. A family built this way would satisfy `IsGnRegion`, hence be
+  zonal, and satisfy the profile, hence be pairwise non-isomorphic, and the counting predicate would follow. But
+  nothing would connect it to the planar embeddings of `Gn`: the theorem would read as saying some face
+  assignments exist with those properties, which is not the claim that `Gn` has that many genuine planar
+  embeddings. Note also that including all n-1 quadrilaterals is already off, since the flip destroys one for k at
+  least two, and the family would still typecheck and still satisfy both hypotheses.
+
+  So the blocker is that *counting planar embeddings is not faithfully expressible without a planarity predicate*.
+  This is distinct from the other three kinds. Conditional results on region structure, like Theorems 2.5.9 and
+  2.5.5, stay meaningful because their content is the arithmetic of the sums and the region-size invariant, which
+  hold of whatever the embedding is. A count has no such content to fall back on. Reaching these three wants a
+  planarity predicate on `PlaneGraph`, most plausibly by defining it only for graphs arising from a
+  `RotationSystem` through `toPlaneGraphOfOrbits`, so that the faces are forced to be the orbits of an actual
+  embedding rather than posited.
 
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
