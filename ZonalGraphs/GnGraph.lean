@@ -955,4 +955,92 @@ theorem gnAdj_core_two_iff_of_lt {n : ℕ} (i : Fin n) (hi : i.val < n - 1) (x :
     · exact ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩
     · exact Or.inr (Or.inl ⟨rfl, rfl, rfl⟩)
 
+/-- `r` of a block that is not the first meets `s`, the hub, and `y` of the previous gap.
+
+The conditional edge `r-u` is absent here, since it requires the block to be the first. -/
+theorem gnAdj_core_zero_iff_of_pos {n : ℕ} (i : Fin n) (hi : 1 ≤ i.val)
+    (hg : i.val - 1 < n - 1) (x : GnVertex n) :
+    gnAdj n (core 0 i) x ↔ x = core 1 i ∨ x = core 4 i ∨ x = gap 2 ⟨i.val - 1, hg⟩ := by
+  have hfirst : i.val ≠ 0 := by omega
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i') =>
+      obtain ⟨hii, hcore⟩ := hadj
+      subst hii
+      rcases hcore with ⟨h, _⟩ | ⟨hj, _⟩ | ⟨_, hj⟩ | ⟨h, _⟩ | ⟨h, _⟩ | ⟨h, _⟩ |
+        ⟨⟨h, _⟩ | ⟨h, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨h, _⟩, hn⟩
+      · exact absurd h (by decide)
+      · exact Or.inr (Or.inl (by subst hj; rfl))
+      · exact Or.inl (by subst hj; rfl)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd hn hfirst
+      · exact absurd h (by decide)
+    | Sum.inr (k, g) =>
+      rcases hadj with ⟨h, _, _⟩ | ⟨h, _, _⟩ | ⟨_, hk, hgv⟩ | ⟨h, _, _⟩
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · refine Or.inr (Or.inr ?_)
+        subst hk
+        have hgeq : g = (⟨i.val - 1, hg⟩ : Fin (n - 1)) := by
+          refine Fin.ext ?_
+          show g.val = i.val - 1
+          omega
+        subst hgeq
+        rfl
+      · exact absurd h (by decide)
+  · rintro (rfl | rfl | rfl)
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))⟩
+    · exact ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩
+    · refine Or.inr (Or.inr (Or.inl ⟨rfl, rfl, ?_⟩))
+      show i.val - 1 + 1 = i.val
+      omega
+
+/-- `u` of a block that is not the first meets `t`, the hub, and `z` of the previous gap. -/
+theorem gnAdj_core_three_iff_of_pos {n : ℕ} (i : Fin n) (hi : 1 ≤ i.val)
+    (hg : i.val - 1 < n - 1) (x : GnVertex n) :
+    gnAdj n (core 3 i) x ↔ x = core 2 i ∨ x = core 4 i ∨ x = gap 3 ⟨i.val - 1, hg⟩ := by
+  have hfirst : i.val ≠ 0 := by omega
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i') =>
+      obtain ⟨hii, hcore⟩ := hadj
+      subst hii
+      rcases hcore with ⟨h, _⟩ | ⟨hj, _⟩ | ⟨h, _⟩ | ⟨h, _⟩ | ⟨h, _⟩ | ⟨_, hj⟩ |
+        ⟨⟨h, _⟩ | ⟨h, _⟩, _⟩ | ⟨⟨h, _⟩ | ⟨_, _⟩, hn⟩
+      · exact absurd h (by decide)
+      · exact Or.inr (Or.inl (by subst hj; rfl))
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact Or.inl (by subst hj; rfl)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd hn hfirst
+    | Sum.inr (k, g) =>
+      rcases hadj with ⟨h, _, _⟩ | ⟨h, _, _⟩ | ⟨h, _, _⟩ | ⟨_, hk, hgv⟩
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · exact absurd h (by decide)
+      · refine Or.inr (Or.inr ?_)
+        subst hk
+        have hgeq : g = (⟨i.val - 1, hg⟩ : Fin (n - 1)) := by
+          refine Fin.ext ?_
+          show g.val = i.val - 1
+          omega
+        subst hgeq
+        rfl
+  · rintro (rfl | rfl | rfl)
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩)))))⟩
+    · exact ⟨rfl, Or.inr (Or.inl ⟨rfl, by decide⟩)⟩
+    · refine Or.inr (Or.inr (Or.inr ⟨rfl, rfl, ?_⟩))
+      show i.val - 1 + 1 = i.val
+      omega
+
 end ZonalGraphs
