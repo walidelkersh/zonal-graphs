@@ -148,4 +148,32 @@ theorem isZonalLabeling_restrict {Face' : Type v} [Fintype Face'] {P : PlaneGrap
     Q.IsZonalLabeling labeling :=
   isZonalLabeling_of_boundary_eq hQ labeling (h R)
 
+/-!
+## The Tait correspondence on a cycle
+
+Corollary 6.1 of Chartrand, Egan and Zhang says a zonal labeling of a cycle, together with a colour for one edge,
+determines a unique proper 3-edge-colouring whose vertex types are the labels. The arithmetic core is worth isolating
+because it explains both halves of the definition of a zonal labeling at once.
+
+Read colours as elements of `ZMod 3` and let the colour advance across a vertex by that vertex's label. Then the
+colouring is *proper* exactly because labels are nonzero, since a step changes the colour precisely when the label is
+not zero. And the colouring *closes up* around the cycle exactly when the labels sum to zero, which is zonality. So
+the two conditions in the definition of a zonal labeling are not independent stipulations; they are properness and
+closure of the induced edge colouring.
+-/
+
+omit [DecidableEq Vertex] in
+/-- A colour step is nontrivial exactly because labels are nonzero, which is properness. -/
+theorem colourStep_ne (a : ZMod 3) (x : ZonalLabel) : a + (x : ZMod 3) ≠ a := by
+  intro heq
+  exact x.2 (add_eq_left.mp heq)
+
+omit [DecidableEq Vertex] in
+/-- Advancing the colour by every label in turn returns to the starting colour exactly when the labels sum to zero,
+which is zonality. -/
+theorem colourWalk_closes (a : ZMod 3) (L : List ZonalLabel) :
+    a + (L.map fun x => (x : ZMod 3)).sum = a ↔ (L.map fun x => (x : ZMod 3)).sum = 0 :=
+  add_eq_left
+
+
 end ZonalGraphs
