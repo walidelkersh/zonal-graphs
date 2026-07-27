@@ -249,7 +249,7 @@ needed, so the logical dependency is visible in the statement of every result th
   does not. A bridge is exactly the configuration where a single region walks along the same edge twice, and that
   is what the argument turns on. The incidence count cannot substitute: a bridge leaves both its endpoints on two
   regions rather than three, contributing twice the sum of their two labels, which vanishes whenever the labels
-  differ, so  is blind to it. Reaching 4.4.3 wants boundaries as
+  differ, so the lemma `not_isZonal_of_unique_regionsAt_not_three_dvd` is blind to it. Reaching 4.4.3 wants boundaries as
   walks or as multisets of darts, which the rotation system in `RotationToPlane` already has and `PlaneGraph`
   discards.
 
