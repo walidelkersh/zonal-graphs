@@ -307,8 +307,23 @@ mislead.
   3. **End-block structure.** A bridge yields an end-block `B` of order at least five whose bridge endpoint carries
      two edges of `B`; the contradiction is that `B` is then overfull.
 
-  So 4.4.3 is not blocked. It is a located multi-part proof with one easy piece, one that needs the rotation layer,
-  and one that needs block structure. Lemma 4.4.4 follows from it, as the dissertation's own argument shows.
+  Part 1 is now proved, as `two_mul_card_le_of_pairwise_disjoint_pairs` and
+  `card_le_of_pairwise_disjoint_pairs_odd`. Mathlib has no `Overfull`, no edge-colouring API and no bare matching
+  predicate, so the core is stated about pairwise disjoint two-element sets instead of graphs, which is all the bound
+  needs and keeps it reusable.
+
+  Reading further into the source proof, parts 2 and 3 are deeper than the three-line summary above suggested. The
+  argument shows the colouring is *uniquely* determined on an end-block, and to do so it uses: their Observation 6.9,
+  that a zonal labeling restricted to the vertices of a zone's boundary cycle is a zonal labeling of that cycle; their
+  Corollary 6.1, that the colour of one edge of a cycle together with the labeling determines the colours of all its
+  edges; 2-connectedness of an end-block, to get a cycle through any two chosen vertices; and a case split on whether
+  that cycle bounds a zone or encloses others.
+
+  Of those, Observation 6.9 should be near-trivial here, since a region's boundary sum is already the object
+  `zoneValue` computes. Corollary 6.1 is a self-contained statement about cycles and looks reachable. The
+  2-connectedness of end-blocks needs block decomposition, which mathlib does not appear to have, and the enclosure
+  case split needs the plane structure. So the honest ordering is: Observation 6.9, then Corollary 6.1, then reassess,
+  rather than treating 4.4.3 as three steps from done. Lemma 4.4.4 follows from 4.4.3 once it lands.
 
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
