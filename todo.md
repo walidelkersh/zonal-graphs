@@ -296,6 +296,23 @@ needed, so the logical dependency is visible in the statement of every result th
   the whole permutation, and the third bullet is where the long regions are needed, which is why their cyclic order
   is the one genuinely missing piece rather than the rotation being free to choose.
 
+* **The long-region cyclic order, and a discrepancy that shows how to check these.** The last missing input for
+  the rotation is present after all, on page 39 rather than 43. Each block contributes to the exterior boundary in
+  clockwise order `(ri, si, [wi, xi,] ti, ui, [z(i-1), y(i-1),] ri)`, the first bracket omitted for the last block and
+  the second for the first, with the blocks joined by the edges `wi-yi` and `xi-zi`. That, with the five short cycles
+  above, determines `rotate` at every vertex, so nothing about the rotation is left to choose.
+
+  The discrepancy is worth keeping. Page 39 renders the gap quadrilateral as `(wk, xk, yk, zk, wk)` while pages 43 and
+  44 render it `(wi, yi, zi, xi, wi)`. As vertex sets these agree, as cycles they do not, and only the second is a walk
+  in the graph: the edges at a gap are `w-x`, `y-z`, `w-y` and `x-z`, so `x-y` is not an edge and `(w, x, y, z)` is not
+  a cycle. The first rendering is therefore a vertex list in canonical order rather than a traversal, or an artefact of
+  extraction.
+
+  That gives the check every claimed cycle must pass before it is used: it has to be a walk, which `gnCoreAdj`,
+  `gnGapAdj` and `gnMixedAdj` decide. Applying it caught this one. It is the same discipline that the earlier
+  multiplicity error lacked, where a face count was posited rather than checked against the source, and it is cheap
+  here because adjacency in `Gn` is now decidable.
+
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
   without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
