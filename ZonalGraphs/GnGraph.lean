@@ -743,4 +743,41 @@ theorem gnAdj_core_four_iff (n : ℕ) (i : Fin n) (x : GnVertex n) :
   · rintro ⟨j, hj, rfl⟩
     exact ⟨rfl, Or.inl ⟨rfl, hj⟩⟩
 
+/-- **A connector meets one core vertex and two other connectors of its own gap.**
+
+Stated for `w`, the first connector; `x`, `y` and `z` are the same shape with their own indices. Connectors have
+degree three uniformly, with no end cases, unlike the rim where the conditional edges appear. -/
+theorem gnAdj_gap_zero_iff {n : ℕ} (g : Fin (n - 1)) (h0 : g.val < n) (x : GnVertex n) :
+    gnAdj n (gap 0 g) x ↔
+      x = core 1 ⟨g.val, h0⟩ ∨ x = gap 1 g ∨ x = gap 2 g := by
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i) =>
+      rcases hadj with ⟨hj, hk, hg⟩ | ⟨hj, hk, _⟩ | ⟨_, hk, _⟩ | ⟨_, hk, _⟩
+      · subst hj
+        exact Or.inl (by
+          have : i = (⟨g.val, h0⟩ : Fin n) := Fin.ext hg.symm
+          subst this
+          rfl)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+    | Sum.inr (k, g') =>
+      obtain ⟨hg, hgap⟩ := hadj
+      subst hg
+      rcases hgap with ⟨_, hk⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨_, hk⟩ | ⟨hk, _⟩ | ⟨hk, _⟩ | ⟨hk, _⟩
+      · exact Or.inr (Or.inl (by subst hk; rfl))
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact Or.inr (Or.inr (by subst hk; rfl))
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+      · exact absurd hk (by decide)
+  · rintro (rfl | rfl | rfl)
+    · exact Or.inl ⟨rfl, rfl, rfl⟩
+    · exact ⟨rfl, Or.inl ⟨rfl, rfl⟩⟩
+    · exact ⟨rfl, Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rfl, rfl⟩))))⟩
+
 end ZonalGraphs
