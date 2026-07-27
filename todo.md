@@ -219,6 +219,26 @@ needed, so the logical dependency is visible in the statement of every result th
   No new mathematics is involved in what remains, only the assembly; every route above is an existing lemma or
   a stated edge of `gnCoreAdj`, `gnGapAdj` or `gnMixedAdj`.
 
+* **Corollaries 2.5.10, 2.5.12 and Theorem 2.5.13 — one construction away, and it is specified.**
+  The counting predicates now exist as `SimpleGraph.HasAtLeastZonalEmbeddings` and its non-zonal twin, both
+  monotone in the count. Zonality of each `Gn,k` is `isZonal_of_forall_isGnRegion`, non-isomorphism for
+  different `k` is `not_nonempty_iso_of_gn_profile`, and 2-connectedness of `Gn` is `gnGraph_isTwoConnected`.
+  Every ingredient is proved. What is missing is that both region lemmas take the region structure as a
+  hypothesis, so nothing yet exhibits the face data, and a count needs the family exhibited.
+
+  The construction to write, from the region list recorded above:
+  - Face type indexed by shape, for instance `Fin 2 ⊕ (Fin 2 × Fin n) ⊕ (Fin 3 × Fin (n - 1))`, with the two
+    singletons the long regions, the `Fin 2 × Fin n` part the two triangles per block, and the
+    `Fin 3 × Fin (n - 1)` part the quadrilateral and the two pentagons per gap.
+  - `boundary` sending each index to the Finset already used in `IsGnRegion`: `{r, s, v}` and `{v, t, u}` per
+    block, `{w, y, z, x}` per gap, `{r, v, u, z, y}` and `{s, w, x, t, v}` per gap, and `blocks B G` for the
+    two long ones with `B` the blocks at or below `k` and above `k` respectively.
+  - The multiplicities in the source differ slightly by `k`, `n - 2` quadrilaterals rather than `n - 1` once
+    `k` is at least two, because the flip destroys one. Getting that wrong would make the family a different
+    plane graph while still typechecking, since `PlaneGraph` validates nothing, so it must be checked against
+    Observation 2.5.4 rather than guessed. That is the reason this was not attempted in haste: a wrong face
+    assignment would still let the three entries be marked complete, which is worse than leaving them open.
+
 * **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
   colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
   colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
