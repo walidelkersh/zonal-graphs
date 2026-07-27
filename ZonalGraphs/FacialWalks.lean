@@ -124,4 +124,28 @@ theorem card_le_of_pairwise_disjoint_pairs_odd {V ι : Type*} [Fintype V] [Decid
   obtain ⟨t, ht⟩ := hodd
   omega
 
+omit [DecidableEq Vertex] in
+/-- **Observation 6.9 of Chartrand, Egan and Zhang.** A zonal labeling, restricted to the vertices bounding one
+region, is a zonal labeling of the cycle that region bounds.
+
+Near-trivial in this development, and that is the point: `zoneValue` already computes the sum over a region's
+boundary, so "the restriction is zonal for the cycle" is the same arithmetic statement as "that region has value
+zero". The cycle is presented as any plane graph all of whose regions are bounded by exactly those vertices, which is
+what a cycle's two regions do. -/
+theorem isZonalLabeling_of_boundary_eq {Face' : Type v} [Fintype Face'] {P : PlaneGraph Vertex Face}
+    {Q : PlaneGraph Vertex Face'} {R : Face} (hQ : ∀ S : Face', Q.boundary S = P.boundary R)
+    (labeling : VertexLabeling Vertex) (h : P.zoneValue labeling R = 0) :
+    Q.IsZonalLabeling labeling := by
+  intro S
+  rw [PlaneGraph.zoneValue, hQ S]
+  exact h
+
+omit [DecidableEq Vertex] in
+/-- The same for a labeling zonal on the whole plane graph: its restriction is zonal on every region's cycle. -/
+theorem isZonalLabeling_restrict {Face' : Type v} [Fintype Face'] {P : PlaneGraph Vertex Face}
+    {Q : PlaneGraph Vertex Face'} {R : Face} (hQ : ∀ S : Face', Q.boundary S = P.boundary R)
+    {labeling : VertexLabeling Vertex} (h : P.IsZonalLabeling labeling) :
+    Q.IsZonalLabeling labeling :=
+  isZonalLabeling_of_boundary_eq hQ labeling (h R)
+
 end ZonalGraphs
