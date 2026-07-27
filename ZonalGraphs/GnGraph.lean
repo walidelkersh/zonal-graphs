@@ -692,4 +692,33 @@ theorem gnGraph_isTwoConnected (hn : 1 ≤ n) : SimpleGraph.IsTwoConnected (gnGr
   · push_neg at hhub
     exact gnGraph_induce_connected_of_nohub (by omega) hhub
 
+/-- Adjacency in `Gn` is decidable: every clause is an equality of `Fin` indices or of natural numbers.
+
+This is the prerequisite for anything dart-based, since the fintype of `SimpleGraph.Dart` needs it, and darts are
+how a rotation for each embedding `Gn,k` would be given. -/
+instance instDecidableGnCoreAdj (n : ℕ) (j₁ j₂ : Fin 5) (i : Fin n) :
+    Decidable (gnCoreAdj n j₁ j₂ i) := by
+  unfold gnCoreAdj
+  infer_instance
+
+instance instDecidableGnGapAdj (k₁ k₂ : Fin 4) : Decidable (gnGapAdj k₁ k₂) := by
+  unfold gnGapAdj
+  infer_instance
+
+instance instDecidableGnMixedAdj {n : ℕ} (j : Fin 5) (i : Fin n) (k : Fin 4) (g : Fin (n - 1)) :
+    Decidable (gnMixedAdj j i k g) := by
+  unfold gnMixedAdj
+  infer_instance
+
+instance instDecidableGnAdj (n : ℕ) : DecidableRel (gnAdj n) := by
+  intro a b
+  match a, b with
+  | Sum.inl (j₁, i₁), Sum.inl (j₂, i₂) => exact instDecidableAnd
+  | Sum.inl (j, i), Sum.inr (k, g) => exact instDecidableGnMixedAdj j i k g
+  | Sum.inr (k, g), Sum.inl (j, i) => exact instDecidableGnMixedAdj j i k g
+  | Sum.inr (k₁, g₁), Sum.inr (k₂, g₂) => exact instDecidableAnd
+
+instance instDecidableRelGnGraphAdj (n : ℕ) : DecidableRel (gnGraph n).Adj :=
+  instDecidableGnAdj n
+
 end ZonalGraphs
