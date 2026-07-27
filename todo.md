@@ -325,6 +325,25 @@ mislead.
   case split needs the plane structure. So the honest ordering is: Observation 6.9, then Corollary 6.1, then reassess,
   rather than treating 4.4.3 as three steps from done. Lemma 4.4.4 follows from 4.4.3 once it lands.
 
+* **Mathlib has edge connectivity, which this development had not noticed.** A semantic search for block
+  decomposition turned up `SimpleGraph.IsEdgeConnected` and, more to the point,
+  `SimpleGraph.isEdgeConnected_two`: a graph is 2-edge-connected exactly when it is preconnected and no edge is a
+  bridge. Also `SimpleGraph.isBridge_iff_adj_and_not_isEdgeConnected_two`, and
+  `SimpleGraph.Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial`.
+
+  `PlaneGraph.IsBridgeless` here was written directly as "no edge is a bridge", and since a `PlaneGraph` is connected
+  by construction it is precisely mathlib's `IsEdgeConnected 2`. So a cubic map, the connected bridgeless cubic plane
+  graph, is a 2-edge-connected cubic plane graph in mathlib's vocabulary, and whatever API accrues to
+  `IsEdgeConnected` applies to it.
+
+  The identification was *not* committed. Five attempts at the two-line bridging lemma failed on the shape of the
+  unfolding, `IsEdgeConnected 2` presenting as a statement about `deleteEdges` rather than as the conjunction the
+  named lemma provides, and it has no downstream consumer yet, so it was dropped rather than forced. Worth redoing
+  when something actually needs it, starting from the `deleteEdges` form rather than from `isEdgeConnected_two`.
+
+  What the search did *not* find, confirming the earlier reading: no block decomposition, no end-block, no notion of a
+  cut vertex beyond single-vertex deletion lemmas. That part of Theorem 4.4.3 stands unsupported.
+
 * **Theorem 4.4.3 and Lemma 4.4.4 — blocked by a third kind of interface limit, multiplicity.**
   Theorem 4.4.3, that a connected cubic plane graph with a bridge is not zonal, is stated in the dissertation
   without proof; it is the easy direction of Theorem 1.3.2 and is carried from an earlier source. Lemma 4.4.4
