@@ -721,4 +721,26 @@ instance instDecidableGnAdj (n : ℕ) : DecidableRel (gnAdj n) := by
 instance instDecidableRelGnGraphAdj (n : ℕ) : DecidableRel (gnGraph n).Adj :=
   instDecidableGnAdj n
 
+/-- **The hub of a block meets exactly its four rim vertices.**
+
+A rotation has to cycle the darts at each vertex, so it needs each vertex's neighbours named. The hub is the one
+vertex of `Gn` of degree four; every other vertex has degree three. -/
+theorem gnAdj_core_four_iff (n : ℕ) (i : Fin n) (x : GnVertex n) :
+    gnAdj n (core 4 i) x ↔ ∃ j : Fin 5, j ≠ 4 ∧ x = core j i := by
+  constructor
+  · intro hadj
+    match x with
+    | Sum.inl (j, i') =>
+      obtain ⟨hi, hcore⟩ := hadj
+      refine ⟨j, ?_, ?_⟩
+      · rintro rfl
+        exact gnCoreAdj_irrefl (hi ▸ hcore)
+      · subst hi
+        rfl
+    | Sum.inr (k, g) =>
+      exfalso
+      rcases hadj with ⟨h, _, _⟩ | ⟨h, _, _⟩ | ⟨h, _, _⟩ | ⟨h, _, _⟩ <;> exact absurd h (by decide)
+  · rintro ⟨j, hj, rfl⟩
+    exact ⟨rfl, Or.inl ⟨rfl, hj⟩⟩
+
 end ZonalGraphs
