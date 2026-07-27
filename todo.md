@@ -33,10 +33,20 @@ The count of genuinely distinct statements is therefore well below the number of
   rather than the dissertation alone matters: the proof of Theorem 4.4.3 sat in `chartrand2019.pdf` while this list
   recorded it as unproved anywhere.
 
-* **83 of the 191 entries have truncated statements**, ending in a literal `...` where the extraction cut them off.
-  They name the right result but do not fully record it, so an entry alone is not always enough to formalize from; the
-  source has to be consulted. Repairing them is mechanical with the extraction recipe above and has not been done.
-  Journal running heads, page numbers and one footnote that had leaked into entry text are now stripped.
+* **The trailing ellipsis on about eighty entries is harmless, and an attempt to repair it made things worse.** Those
+  entries end in a literal `...`, which looks like a lost statement but is not. In every case sampled the statement is
+  complete at the front of the entry and what was cut is the *following* prose, usually definitions or discussion from
+  the next paragraph. Theorem 1.1.3 is typical: it states that every planar graph contains a vertex of degree 5 or
+  less, then trails off into a definition of subdivisions.
+
+  A script was written to extend those entries from the PDFs, and it repaired forty-six before the output was
+  inspected. The repairs were wrong. They re-appended exactly the surrounding prose the original extraction had
+  sensibly dropped, so the result was a regression and was reverted. Anyone tempted to redo this should note that the
+  operation which would actually help is the opposite one, *cutting* each entry at the end of its statement, and that
+  it is riskier because it requires judging where a statement ends.
+
+  Journal running heads, page numbers and one corresponding-author footnote had also leaked into entry text. Those were
+  genuine debris and are stripped.
 
 ## Quality gate, verified
 
