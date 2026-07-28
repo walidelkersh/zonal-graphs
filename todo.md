@@ -50,10 +50,10 @@ The count of genuinely distinct statements is therefore well below the number of
 
 ## Quality gate, verified
 
-Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
-of the 36 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
+Checked across the library at 62 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
+of the 40 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 210.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 246.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -109,6 +109,8 @@ root build has to run before every push.
 | Lem 2.2 (small cycle rank) | `lemma_2_0_4`, the same statement |
 | Corollary 3.1.2 | `lemma_2_0_4` at a cycle, which has at least three vertices so all three targets are reachable |
 | Observation 2.1 | `PlaneGraph.exists_isZonalLabeling_apply_eq_one` |
+| Thm 3.1 (zonal graphs revisited) | `PlaneGraph.isZonalLabeling_typeLabeling` |
+| Thm 3.2 (zonal graphs revisited) | `PlaneGraph.exists_isProperCycleColouring_vertexType_eq` |
 
 Supporting results with no todo entry of their own: `RotationSystem.isBalanced_of_faceMap_invariant`
 (facial colour balance, proved rather than assumed), `windmillGraph_connected`,
@@ -471,8 +473,8 @@ go, and dropping the narrative of how they were reached.
 
 - [ ] **The Four Color Theorem (graph form)**: The chromatic number of every planar graph is at most 4. [RECOVERED: the original entry began mid-sentence at "...in terms of graphs is the following"; equivalent to 4CT and so out of reach here]
 - [ ] **Proposition 2.2.**: Every nontrivial tree and every cycle is zonal. The zonal labelings of the graphs of Figure 1 illustrate the following obser- vation. Observation 2.3. Let H be the boundary of a region R in a plane...
-- [ ] **Theorem 3.1.**: For every proper edge coloring of a cycle C with the col- ors 1, 2, 3, the resulting types of the vertices of C produce a zonal labeling of C.
-- [ ] **Theorem 3.2.**: For each zonal labeling ℓ of a cycle C, there is a proper edge coloring of C with the colors 1, 2, 3 such that the resulting type of each vertex v of C is ℓ(v).
+- [x] **Theorem 3.1.**: For every proper edge coloring of a cycle C with the col- ors 1, 2, 3, the resulting types of the vertices of C produce a zonal labeling of C.
+- [x] **Theorem 3.2.**: For each zonal labeling ℓ of a cycle C, there is a proper edge coloring of C with the colors 1, 2, 3 such that the resulting type of each vertex v of C is ℓ(v).
 - [ ] **Theorem 4.1.**: A connected cubic plane graph G is zonal if and only if G is bridgeless. By Theorem 4.1, all cubic maps are absolutely zonal. Clearly, every cubic map has even order. The cubic maps of order 6 or l...
 - [ ] **Theorem 4.2.**: For every two even integers r and n such that n≥ 10 and 2≤ r≤ n− 2, there exists a cubic map M of order n with a zonal labeling and an r-element subset Sr of V (G) such that if the labels of all ve...
 - [ ] **Lemma 4.3.**: No set of three vertices in a cubic map M lie on three different boundary cycles of M.
