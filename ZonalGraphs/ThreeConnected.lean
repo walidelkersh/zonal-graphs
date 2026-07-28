@@ -1,4 +1,5 @@
 import ZonalGraphs.BipartiteZonal
+import Mathlib.GroupTheory.Perm.Fin
 
 namespace ZonalGraphs
 
@@ -8,9 +9,9 @@ namespace ZonalGraphs
 This module isolates the formal implication behind Theorem 2.1.3 of Bowling, *Zonality in Graphs*
 (2023): every 3-connected planar zonal graph is absolutely zonal.
 
-The intended input is Whitney's unique-embedding theorem. The current `PlaneRealization` type is
-too weak to state it faithfully: its supplied face data is unconstrained for non-bipartite graphs.
-Consequently the unrestricted surrogate `WhitneyUniqueEmbedding` is false;
+The intended input is Whitney's unique-embedding theorem. The current `PlaneRealization` type
+certifies each facial boundary cycle, but does not yet say that the faces exhaust a genus-zero
+rotation system. Consequently the unrestricted surrogate `WhitneyUniqueEmbedding` is false;
 `not_whitneyUniqueEmbedding` gives a counterexample below.
 
 The reusable content remains valid. `PlaneGraph.Iso` describes agreement after relabeling vertices
@@ -144,28 +145,85 @@ theorem threeConnected_zonal_isAbsolutelyZonal (whitney : WhitneyUniqueEmbedding
 /-!
 ## Why the Whitney carrier cannot be proved against `PlaneRealization`
 
-`PlaneRealization` requires facial balance only when the graph is both two-connected and bipartite.
-For a non-bipartite graph such as `K₄`, its supplied face data is otherwise unconstrained. In fact
-even empty boundaries satisfy facial balance, so two alleged realizations can have different numbers
-of faces and cannot be isomorphic. Thus `WhitneyUniqueEmbedding` is false for the current interface,
-independently of the genuine topological Whitney theorem.
+`PlaneRealization` certifies that every face of a two-connected graph has a cyclic boundary, but it
+does not yet certify that the listed faces exhaust one planar embedding. The same triangular cycle
+of `K₄` can therefore be supplied once or twice, giving alleged realizations with different numbers
+of faces. Thus `WhitneyUniqueEmbedding` is false for the current interface, independently of the
+genuine topological Whitney theorem.
 -/
 
-/-- `K₄` with one alleged face and empty boundary data. -/
+/-- The triangular boundary used by both invalid `K₄` realizations. -/
+def invalidK4Boundary : Finset (Fin 4) := {0, 1, 2}
+
+/-- The cyclic successor `0 ↦ 1 ↦ 2 ↦ 0`, fixing vertex `3`. -/
+def invalidK4BoundaryCycle : Equiv.Perm (Fin 4) := (2 : Fin 4).cycleRange
+
+/-- The chosen successor is one cycle. -/
+theorem invalidK4BoundaryCycle_isCycle : invalidK4BoundaryCycle.IsCycle :=
+  Fin.isCycle_cycleRange (by decide)
+
+/-- Its support is exactly the supplied triangular boundary, independently of the chosen equality
+decision procedure. -/
+theorem invalidK4BoundaryCycle_support (inst : DecidableEq (Fin 4)) :
+    @Equiv.Perm.support (Fin 4) inst (Fin.fintype 4) invalidK4BoundaryCycle =
+      invalidK4Boundary := by
+  have hinst : inst = instDecidableEqFin 4 := Subsingleton.elim _ _
+  subst inst
+  decide
+
+/-- `K₄` with one alleged triangular face. -/
 def invalidK4UnitPlane : PlaneGraph (Fin 4) Unit where
   graph := ⊤
   connected := SimpleGraph.connected_top
-  boundary := fun _ => ∅
+  boundary := fun _ => invalidK4Boundary
   boundaryEdges := fun _ => ∅
   exterior := ()
 
-/-- `K₄` with two alleged faces and empty boundary data. -/
+/-- `K₄` with the same alleged triangular face listed twice. -/
 def invalidK4BoolPlane : PlaneGraph (Fin 4) Bool where
   graph := ⊤
   connected := SimpleGraph.connected_top
-  boundary := fun _ => ∅
+  boundary := fun _ => invalidK4Boundary
   boundaryEdges := fun _ => ∅
   exterior := false
+
+/-- The one-face data satisfies the structural facial-cycle contract. -/
+theorem invalidK4UnitPlane_hasFacialBoundaryCycles :
+    invalidK4UnitPlane.HasFacialBoundaryCycles := by
+  classical
+  letI : DecidableEq (Fin 4) := Classical.decEq _
+  change ∀ _ : Unit, ∃ next : Equiv.Perm (Fin 4),
+    next.IsCycle ∧ next.support = invalidK4Boundary ∧
+      ∀ v ∈ invalidK4Boundary, (⊤ : SimpleGraph (Fin 4)).Adj v (next v)
+  intro R
+  have hsupport : invalidK4BoundaryCycle.support = invalidK4Boundary :=
+    invalidK4BoundaryCycle_support (inferInstance : DecidableEq (Fin 4))
+  refine ⟨invalidK4BoundaryCycle, invalidK4BoundaryCycle_isCycle, hsupport,
+    fun v hv => ?_⟩
+  rw [SimpleGraph.top_adj]
+  have hmem : v ∈ invalidK4BoundaryCycle.support := by
+    rw [hsupport]
+    exact hv
+  exact (Equiv.Perm.mem_support.mp hmem).symm
+
+/-- The duplicated two-face data also satisfies the structural facial-cycle contract. -/
+theorem invalidK4BoolPlane_hasFacialBoundaryCycles :
+    invalidK4BoolPlane.HasFacialBoundaryCycles := by
+  classical
+  letI : DecidableEq (Fin 4) := Classical.decEq _
+  change ∀ _ : Bool, ∃ next : Equiv.Perm (Fin 4),
+    next.IsCycle ∧ next.support = invalidK4Boundary ∧
+      ∀ v ∈ invalidK4Boundary, (⊤ : SimpleGraph (Fin 4)).Adj v (next v)
+  intro R
+  have hsupport : invalidK4BoundaryCycle.support = invalidK4Boundary :=
+    invalidK4BoundaryCycle_support (inferInstance : DecidableEq (Fin 4))
+  refine ⟨invalidK4BoundaryCycle, invalidK4BoundaryCycle_isCycle, hsupport,
+    fun v hv => ?_⟩
+  rw [SimpleGraph.top_adj]
+  have hmem : v ∈ invalidK4BoundaryCycle.support := by
+    rw [hsupport]
+    exact hv
+  exact (Equiv.Perm.mem_support.mp hmem).symm
 
 /-- The one-face supplied data packaged as a `PlaneRealization`. -/
 def invalidK4UnitRealization : PlaneRealization (⊤ : SimpleGraph (Fin 4)) where
@@ -173,9 +231,9 @@ def invalidK4UnitRealization : PlaneRealization (⊤ : SimpleGraph (Fin 4)) wher
   instFintypeFace := inferInstance
   plane := invalidK4UnitPlane
   graph_eq := rfl
-  facial_balance_of_twoConnected_bipartite := by
-    intro _ _ coloring R
-    simp [SimpleGraph.IsBalanced, invalidK4UnitPlane]
+  facial_cycles_of_twoConnected := by
+    intro _
+    exact invalidK4UnitPlane_hasFacialBoundaryCycles
 
 /-- The two-face supplied data packaged as a `PlaneRealization`. -/
 def invalidK4BoolRealization : PlaneRealization (⊤ : SimpleGraph (Fin 4)) where
@@ -183,9 +241,9 @@ def invalidK4BoolRealization : PlaneRealization (⊤ : SimpleGraph (Fin 4)) wher
   instFintypeFace := inferInstance
   plane := invalidK4BoolPlane
   graph_eq := rfl
-  facial_balance_of_twoConnected_bipartite := by
-    intro _ _ coloring R
-    simp [SimpleGraph.IsBalanced, invalidK4BoolPlane]
+  facial_cycles_of_twoConnected := by
+    intro _
+    exact invalidK4BoolPlane_hasFacialBoundaryCycles
 
 /-- `K₄` satisfies this development's deletion-based definition of three-connectivity. -/
 theorem completeGraph_fin_four_isThreeConnected :

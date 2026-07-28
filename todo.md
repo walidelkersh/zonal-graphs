@@ -53,7 +53,7 @@ The count of genuinely distinct statements is therefore well below the number of
 Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
 of the 40 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 253.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 258.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -130,9 +130,10 @@ implication has been proved.
   already false for a different reason: `not_cubicZonalIffBridgeless` equips `K₄` with one fabricated
   singleton face. It is cubic and bridgeless but cannot be zonal.
 * **Theorem 2.1.2** (`WhitneyUniqueEmbedding`) — `not_whitneyUniqueEmbedding` packages the same `K₄`
-  with one fabricated face and with two fabricated faces. Both satisfy the weak
-  `PlaneRealization` contract, so they cannot be isomorphic. Thus the current proposition is false,
-  independently of the genuine Whitney theorem.
+  with one copy and with two copies of a certified triangular facial cycle. Both satisfy the current
+  `PlaneRealization` contract, but their face types have different cardinalities. The missing
+  invariant is that faces exhaust a single genus-zero rotation system, independently of the genuine
+  Whitney theorem.
 
 The conditional lemmas `bridgeless_cubic_planar_isAbsolutelyZonal` and
 `threeConnected_zonal_isAbsolutelyZonal` remain useful factorizations, but Theorems 2.1.4 and 2.1.3
@@ -169,11 +170,13 @@ orbits; its remaining gap is the genus-zero certificate.
   `IsTricoloring.injOn_boundaryEdges` is proved, but the equivalence itself has no proof in any source in this
   repository.
 
-* **Facial boundaries are cycles** — `isBalanced_image_of_faceMap_invariant` and
-  `hasFacialBipartitionBalance_toPlaneGraph` take `Set.InjOn E.vertexOf` on each face, which says a facial boundary
-  is a cycle rather than a closed walk revisiting a vertex. It is the standard consequence of 2-connectedness and
-  the last geometric input of Proposition 2.1.1 left open. Facial balance itself is now a theorem, needing no
-  planarity.
+* **Facial boundaries are cycles** — this is now the structural field
+  `PlaneGraph.HasFacialBoundaryCycles`, not an assumed color-balance conclusion.
+  `HasFacialBoundaryCycles.hasFacialBipartitionBalance` proves facial balance from its cyclic
+  successor, so `PlaneRealization` no longer stores
+  `facial_balance_of_twoConnected_bipartite`. The dart-level bridge
+  `hasFacialBipartitionBalance_toPlaneGraph` proves the same result from `Set.InjOn E.vertexOf`.
+  What remains is connecting the cycle certificate to a genus-zero rotation-system realization.
 
 ## Open work, by blocker
 

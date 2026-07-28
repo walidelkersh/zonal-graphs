@@ -7,19 +7,19 @@ namespace ZonalGraphs
 # Facial balance is a theorem, not a hypothesis
 
 `PlaneGraph.HasFacialBipartitionBalance` asserts that a proper two-colouring of a plane graph splits
-the boundary of every region into two classes of equal size.  Proposition 2.1.1 needs it, and
-`PlaneRealization` currently carries it as a field because `PlaneGraph` is an interface of
-hand-supplied face data with nothing to derive it from.
+the boundary of every region into two classes of equal size. Proposition 2.1.1 needs it.
+`PlaneRealization` no longer carries that conclusion as a field: it supplies
+`HasFacialBoundaryCycles`, and
+`HasFacialBoundaryCycles.hasFacialBipartitionBalance` derives balance from the cyclic successor.
 
-This module removes that assumption for every plane graph that comes from an actual combinatorial
-embedding.  Given a `RotationSystem` and an indexing of its faces by `faceMap`-invariant sets of
-darts, `RotationSystem.toPlaneGraph` builds the corresponding `PlaneGraph`, and
-`RotationSystem.hasFacialBipartitionBalance_toPlaneGraph` proves the balance condition outright.
+This module gives the complementary dart-level proof. Given a `RotationSystem` and an indexing of
+its faces by `faceMap`-invariant sets of darts, `RotationSystem.toPlaneGraph` builds the
+corresponding `PlaneGraph`, and `RotationSystem.hasFacialBipartitionBalance_toPlaneGraph` proves the
+balance condition outright.
 
-One hypothesis remains, and it is a different statement from the conclusion: the darts of each face
-must point out of distinct vertices, that is, each facial boundary is a cycle rather than a closed
-walk revisiting a vertex.  This is the standard consequence of 2-connectedness, and it is the only
-part of Proposition 2.1.1's geometric input still left open.
+The remaining input is structural rather than conclusion-shaped: the darts of each face must point
+out of distinct vertices, equivalently the facial boundary is a cycle rather than a closed walk
+revisiting a vertex. Connecting that certificate to a genus-zero rotation system is still open.
 -/
 
 universe u w

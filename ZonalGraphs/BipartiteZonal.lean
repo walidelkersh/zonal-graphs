@@ -1,5 +1,6 @@
-import ZonalGraphs.Definitions
+import ZonalGraphs.Embedding
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Tactic
 
 namespace ZonalGraphs
@@ -16,11 +17,10 @@ nonzero elements of `ZMod 3` — makes the label sum over any *balanced* set of 
 set carrying `n` vertices of each color has label sum `n • (1 + 2) = 0` in `ZMod 3`.
 
 For a 2-connected bipartite plane graph every facial boundary is an even cycle around which the
-two colors alternate, so every facial boundary is balanced and the labeling above is zonal.  Since
-`PlaneGraph` is an interface for embedding data rather than a topological construction, that
-geometric input is recorded by `PlaneGraph.HasFacialBipartitionBalance`, a condition every valid
-plane realization is required to supply.  This keeps arbitrary, invalid `boundary` data from being
-treated as a plane embedding.
+two colors alternate, so every facial boundary is balanced and the labeling above is zonal. Since
+`PlaneGraph` is an interface for embedding data rather than a topological construction, a valid
+realization supplies the cyclic successor around each face. Facial balance is then proved from
+that geometric certificate rather than stored as a field.
 -/
 
 universe u v
@@ -86,6 +86,18 @@ namespace PlaneGraph
 
 variable {Vertex : Type u} {Face : Type v} [Fintype Vertex] [Fintype Face]
 
+/-- Every facial boundary is the support of one cyclic permutation, and consecutive boundary
+vertices are adjacent.
+
+This packages the structural fact that a face of a 2-connected plane graph is bounded by a cycle.
+Unlike facial color balance, it makes no reference to a coloring or to the conclusion of the
+zonality argument. -/
+noncomputable def HasFacialBoundaryCycles (P : PlaneGraph Vertex Face) : Prop := by
+  classical
+  exact ∀ R : Face, ∃ next : Equiv.Perm Vertex,
+    next.IsCycle ∧ next.support = P.boundary R ∧
+      ∀ v ∈ P.boundary R, P.graph.Adj v (next v)
+
 /-- Every facial boundary of the embedding is balanced for every proper two-coloring of the
 underlying graph.
 
@@ -94,6 +106,23 @@ around which the two colors alternate. -/
 def HasFacialBipartitionBalance (P : PlaneGraph Vertex Face) : Prop :=
   ∀ (coloring : P.graph.Coloring (Fin 2)) (R : Face),
     SimpleGraph.IsBalanced coloring (P.boundary R)
+
+/-- Cyclic facial boundaries are balanced under every proper two-coloring.
+
+The cyclic successor permutes the boundary and always follows an edge, hence swaps the two colors.
+It is therefore a bijection between the two color classes on that boundary. -/
+theorem HasFacialBoundaryCycles.hasFacialBipartitionBalance
+    {P : PlaneGraph Vertex Face} (hcycles : P.HasFacialBoundaryCycles) :
+    P.HasFacialBipartitionBalance := by
+  classical
+  intro coloring R
+  obtain ⟨next, _, hsupport, hadj⟩ := hcycles R
+  refine RotationSystem.card_filter_eq_of_perm_ne next (P.boundary R) ?_ coloring ?_
+  · intro v
+    rw [← hsupport]
+    exact Equiv.Perm.apply_mem_support (f := next) (x := v)
+  · intro v hv
+    exact (coloring.valid (hadj v hv)).symm
 
 /-- A bipartite plane graph whose facial boundaries are balanced is zonal: label one color class
 by `1` and the other by `2`. -/
@@ -110,8 +139,8 @@ def SimpleGraph.IsTwoConnected {Vertex : Type u} [Fintype Vertex]
     (G : SimpleGraph Vertex) : Prop :=
   3 ≤ Fintype.card Vertex ∧ ∀ v : Vertex, (G.induce ({v}ᶜ : Set Vertex)).Connected
 
-/-- A finite plane realization of an abstract graph, carrying the facial-boundary validity
-condition needed by Proposition 2.1.1. -/
+/-- A finite plane realization of an abstract graph, carrying a structural facial-cycle
+certificate when the graph is two-connected. -/
 structure PlaneRealization {Vertex : Type u} [Fintype Vertex] (G : SimpleGraph Vertex) where
   /-- The index type of the regions of the embedding. -/
   Face : Type u
@@ -121,10 +150,9 @@ structure PlaneRealization {Vertex : Type u} [Fintype Vertex] (G : SimpleGraph V
   plane : PlaneGraph Vertex Face
   /-- The embedded graph is the given abstract graph. -/
   graph_eq : plane.graph = G
-  /-- Facial boundaries of a 2-connected bipartite embedding alternate in color, hence are
-  balanced. -/
-  facial_balance_of_twoConnected_bipartite :
-    SimpleGraph.IsTwoConnected G → G.IsBipartite → plane.HasFacialBipartitionBalance
+  /-- Every face of a 2-connected realization has a cyclic boundary. -/
+  facial_cycles_of_twoConnected :
+    SimpleGraph.IsTwoConnected G → plane.HasFacialBoundaryCycles
 
 attribute [instance] PlaneRealization.instFintypeFace
 
@@ -143,9 +171,10 @@ zonal. -/
 theorem every_twoConnected_bipartite_planar_isAbsolutelyZonal {Vertex : Type u} [Fintype Vertex]
     (G : SimpleGraph Vertex) (h2 : SimpleGraph.IsTwoConnected G) (hbip : G.IsBipartite)
     (hplanar : SimpleGraph.IsPlanar G) : SimpleGraph.IsAbsolutelyZonal G := by
+  classical
   refine ⟨hplanar, fun E => ?_⟩
   refine PlaneGraph.isZonal_of_bipartite E.plane ?_
-    (E.facial_balance_of_twoConnected_bipartite h2 hbip)
+    (E.facial_cycles_of_twoConnected h2).hasFacialBipartitionBalance
   rw [E.graph_eq]
   exact hbip
 

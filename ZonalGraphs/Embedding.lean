@@ -136,7 +136,7 @@ forces the two value classes to have equal size: the permutation itself is the b
 them. -/
 theorem card_filter_eq_of_perm_ne (φ : Equiv.Perm D) (s : Finset D)
     (hinvariant : ∀ d, φ d ∈ s ↔ d ∈ s) (colour : D → Fin 2)
-    (hne : ∀ d, colour (φ d) ≠ colour d) :
+    (hne : ∀ d ∈ s, colour (φ d) ≠ colour d) :
     {d ∈ s | colour d = 0}.card = {d ∈ s | colour d = 1}.card := by
   have hzero : ∀ c : Fin 2, c ≠ 0 ↔ c = 1 := by decide
   have hone : ∀ c : Fin 2, c ≠ 1 ↔ c = 0 := by decide
@@ -145,12 +145,13 @@ theorem card_filter_eq_of_perm_ne (φ : Equiv.Perm D) (s : Finset D)
     simp only [Finset.mem_filter] at hd ⊢
     refine ⟨(hinvariant d).mpr hd.1, (hzero _).mp ?_⟩
     rw [← hd.2]
-    exact hne d
+    exact hne d hd.1
   · intro d hd
     simp only [Finset.mem_filter] at hd ⊢
-    refine ⟨(hinvariant _).mp (by rw [Equiv.apply_symm_apply]; exact hd.1),
-      (hone _).mp fun hcontra => ?_⟩
-    have hstep := hne (φ.symm d)
+    have hmem : φ.symm d ∈ s :=
+      (hinvariant _).mp (by rw [Equiv.apply_symm_apply]; exact hd.1)
+    refine ⟨hmem, (hone _).mp fun hcontra => ?_⟩
+    have hstep := hne (φ.symm d) hmem
     rw [Equiv.apply_symm_apply, hd.2, hcontra] at hstep
     exact hstep rfl
   · intro d _
@@ -171,7 +172,7 @@ theorem isBalanced_of_faceMap_invariant (coloring : E.graph.Coloring (Fin 2))
     {d ∈ faceDarts | coloring (E.vertexOf d) = 0}.card =
       {d ∈ faceDarts | coloring (E.vertexOf d) = 1}.card :=
   card_filter_eq_of_perm_ne E.faceMap faceDarts hinvariant (fun d => coloring (E.vertexOf d))
-    (E.coloring_vertexOf_faceMap_ne coloring)
+    (fun d _ => E.coloring_vertexOf_faceMap_ne coloring d)
 
 /-- Facial colour balance for the *boundary vertices* of a face.
 
