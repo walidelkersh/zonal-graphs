@@ -50,10 +50,10 @@ The count of genuinely distinct statements is therefore well below the number of
 
 ## Quality gate, verified
 
-Checked across the library at 62 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
+Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
 of the 40 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 246.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 253.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -70,8 +70,6 @@ root build has to run before every push.
 | Lemma 2.0.4 | `lemma_2_0_4` |
 | Proposition 2.0.5 | `zonal_of_isSubdivision` |
 | Proposition 2.1.1 | `every_twoConnected_bipartite_planar_isAbsolutelyZonal` |
-| Theorem 2.1.3 | `threeConnected_zonal_isAbsolutelyZonal` |
-| Theorem 2.1.4 | `bridgeless_cubic_planar_isAbsolutelyZonal` |
 | Theorem 2.1.5 | `wheel_isZonal_iff_modEq_zero` |
 | Proposition 2.2.1 | `PlaneGraph.not_isZonal_ofTwoBladedWindmill` |
 | Theorem 2.2.2 | `PlaneGraph.conditionallyZonal_windmill` |
@@ -121,25 +119,34 @@ Supporting results with no todo entry of their own: `RotationSystem.isBalanced_o
 
 ## Carried as explicit hypotheses, not proved
 
-Two different things had accumulated here and are now separated.
+This section now distinguishes genuine open inputs from propositions that the current interfaces
+make impossible. None of the dependent source entries is checked merely because a conditional
+implication has been proved.
 
-**Part one, genuine hypothesis-carriers.** Each is recorded as a named proposition or an explicit hypothesis and
-passed in where needed, so the logical dependency is visible in the statement of every result that uses it. These
-are deliberately *not* checked.
+**Refuted formulations, not genuine hypothesis-carriers.**
 
-**Part two, blocker notes** for entries that are unproved for structural reasons. Those follow after, and several
-have moved since they were written; the ones describing work now finished have been removed rather than left to
-mislead.
+* **Theorem 1.3.2 / 4.1.1** (`CubicZonalIffBridgeless`) — the intended theorem for certified plane
+  embeddings invokes the Four Color Theorem, but the unrestricted `PlaneGraph` formulation is
+  already false for a different reason: `not_cubicZonalIffBridgeless` equips `K₄` with one fabricated
+  singleton face. It is cubic and bridgeless but cannot be zonal.
+* **Theorem 2.1.2** (`WhitneyUniqueEmbedding`) — `not_whitneyUniqueEmbedding` packages the same `K₄`
+  with one fabricated face and with two fabricated faces. Both satisfy the weak
+  `PlaneRealization` contract, so they cannot be isomorphic. Thus the current proposition is false,
+  independently of the genuine Whitney theorem.
 
-* **Theorem 1.3.2 / 4.1.1** (`CubicZonalIffBridgeless`) — a connected cubic plane graph is zonal iff
-  bridgeless. A theorem in the literature, but its proof invokes the Four Color Theorem, and a
-  4CT-free proof would itself constitute a new proof of 4CT.
-* **Theorem 2.1.2** (`WhitneyUniqueEmbedding`) — Whitney's unique-embedding theorem. Not out of reach
-  mathematically; it is not expressible while `PlaneGraph` is an interface of supplied face data.
-  `ZonalGraphs.Embedding` begins the combinatorial-embedding layer that would make it expressible.
+The conditional lemmas `bridgeless_cubic_planar_isAbsolutelyZonal` and
+`threeConnected_zonal_isAbsolutelyZonal` remain useful factorizations, but Theorems 2.1.4 and 2.1.3
+have been unchecked. Faithful versions require a type of realizations whose faces are certified by
+a genus-zero combinatorial embedding. `ZonalGraphs.Embedding` supplies rotation systems and face
+orbits; its remaining gap is the genus-zero certificate.
+
+**Deferred standalone result.**
+
 * **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
   no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
   Theorem 2.3.2 was proved without it.
+
+**Genuine open inputs and explicit assumptions.**
 
 * **The embedding-shape convention, and it is load-bearing.** `PlaneGraph` supplies face data rather than deriving
   it, so every result about a specific embedding takes that embedding's region structure as a hypothesis. This is
@@ -167,6 +174,7 @@ mislead.
   is a cycle rather than a closed walk revisiting a vertex. It is the standard consequence of 2-connectedness and
   the last geometric input of Proposition 2.1.1 left open. Facial balance itself is now a theorem, needing no
   planarity.
+
 ## Open work, by blocker
 
 The notes below give **current state only**. Several were originally written as successive corrections as each step was
@@ -252,11 +260,11 @@ go, and dropping the narrative of how they were reached.
   yet; `IsEdgeConnected 2` presents as a statement about `deleteEdges` rather than the conjunction the named lemma
   gives, so restart from that form.
 
-* **Proposition 2.8** — the labelling half is proved as `isGroupZonal_of_threeColouring`: give the three
-  colour classes a triple of nonzero elements summing to zero and a region holding one vertex of each
-  colour vanishes. What is missing is Heawood's theorem, that a plane triangulation is vertex 3-colourable
-  exactly when it is Eulerian, which enters as a hypothesis rather than being proved. The entry also pairs
-  the claim with a cozonal dual about bipartite cubic maps.
+* **Proposition 2.8** — the labelling consequence is now proved as
+  `isGroupZonal_of_threeColourable_triangulation`. Properness and triangular facial cliques prove that
+  every face uses all three colours exactly once, so the former facial-count hypothesis is gone. What
+  remains is Heawood's theorem, that a plane triangulation is vertex 3-colourable exactly when it is
+  Eulerian. The entry also pairs the claim with a cozonal dual about bipartite cubic maps.
 
 * **The remaining dual halves** — the cozonal side is now available. Duality needed no multigraphs after
   all: zonality and cozonality never consult the underlying graph, only which vertices bound which
@@ -299,8 +307,8 @@ go, and dropping the narrative of how they were reached.
 - [x] **Proposition 2.0.5**: Let G be a zonal graph and let X be a set of edges of G. If H is a graph obtained by subdividing each edge of X two or more times, then H is zonal. 2.1 Absolutely Zonal Graphs Since there is only o...
 - [x] **Proposition 2.1.1**: Every 2-connected bipartite planar graph is absolutely zonal.
 - [ ] **Theorem 2.1.2**: (Whitney’s Theorem) Every 3-connected planar graph is uniquely embeddable in the plane. As a consequence of Theorem 2.1.2, every 3-connected planar graph is either absolutely zonal or non-zonal. Th...
-- [x] **Theorem 2.1.3**: Every 3-connected planar zonal graph G is absolutely zonal. Thus, no 3-connected planar graph is conditionally zonal. By Theorem 2.1.2, every 3-connected cubic planar graph is uniquely embed- dable...
-- [x] **Theorem 2.1.4**: Every connected bridgeless cubic planar graph is absolutely zonal. 18 M2 : ..................................................................................... .......................................
+- [ ] **Theorem 2.1.3**: Every 3-connected planar zonal graph G is absolutely zonal. Thus, no 3-connected planar graph is conditionally zonal. By Theorem 2.1.2, every 3-connected cubic planar graph is uniquely embed- dable...
+- [ ] **Theorem 2.1.4**: Every connected bridgeless cubic planar graph is absolutely zonal. 18 M2 : ..................................................................................... .......................................
 - [x] **Theorem 2.1.5**: For an integer n ≥ 3, the wheel Wn = Cn ∨ K1 is zonal if and only if n ≡ 0 (mod 3) .
 - [ ] **Theorem 2.1.8**: For every positive integer k, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings.
 - [x] **Proposition 2.2.1**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.

@@ -5,19 +5,18 @@ namespace ZonalGraphs
 /-!
 # Three-connected planar graphs
 
-This module formalizes Theorem 2.1.3 of Bowling, *Zonality in Graphs* (2023): every 3-connected
-planar zonal graph is absolutely zonal, so no 3-connected planar graph is conditionally zonal.
+This module isolates the formal implication behind Theorem 2.1.3 of Bowling, *Zonality in Graphs*
+(2023): every 3-connected planar zonal graph is absolutely zonal.
 
-The mathematical input is Whitney's Theorem (2.1.2): a 3-connected planar graph is uniquely
-embeddable in the plane.  Whitney's theorem is a statement about drawings in the plane and lies
-outside the combinatorial embedding interface used here, so it is recorded as the named proposition
-`WhitneyUniqueEmbedding` and carried as an explicit hypothesis, keeping the logical dependency
-visible.
+The intended input is Whitney's unique-embedding theorem. The current `PlaneRealization` type is
+too weak to state it faithfully: its supplied face data is unconstrained for non-bipartite graphs.
+Consequently the unrestricted surrogate `WhitneyUniqueEmbedding` is false;
+`not_whitneyUniqueEmbedding` gives a counterexample below.
 
-Everything else is genuine content proved here: `PlaneGraph.Iso` says that two embeddings agree
-after relabeling vertices and regions, and `PlaneGraph.IsZonal.of_iso` shows that zonality is
-invariant under such a relabeling.  Given unique embeddability, one zonal embedding therefore
-forces every embedding to be zonal.
+The reusable content remains valid. `PlaneGraph.Iso` describes agreement after relabeling vertices
+and regions, and `PlaneGraph.IsZonal.of_iso` proves that zonality is invariant under that
+relabeling. The conditional transfer theorem records this dependency, but does not prove Theorem
+2.1.3 until realizations certify genuine planar embeddings.
 -/
 
 universe u v u' v'
@@ -124,22 +123,94 @@ theorem SimpleGraph.IsZonalGraph.isAbsolutelyZonal {G : SimpleGraph Vertex}
   obtain ⟨e⟩ := huniq E F
   exact hE.of_iso e
 
-/-- **Theorem 2.1.2 (Whitney's Theorem).** Every 3-connected planar graph is uniquely embeddable
-in the plane.
+/-- The unrestricted supplied-face surrogate for **Theorem 2.1.2 (Whitney's Theorem)**.
 
-This is a topological statement about drawings in the plane, outside the combinatorial embedding
-interface used in this development.  It is recorded here as a named proposition and carried as an
-explicit hypothesis by the results depending on it. -/
+For certified planar embeddings, the intended theorem says that every 3-connected planar graph is
+uniquely embeddable. This proposition quantifies over the weaker `PlaneRealization` interface and
+is false; see `not_whitneyUniqueEmbedding`. It is retained only to expose the conditional
+dependency. -/
 def WhitneyUniqueEmbedding : Prop :=
   ∀ (Vertex : Type u) [Fintype Vertex] (G : SimpleGraph Vertex),
     SimpleGraph.IsThreeConnected G → SimpleGraph.IsPlanar G → SimpleGraph.UniquelyEmbeddable G
 
-/-- **Theorem 2.1.3 (Bowling, 2023).** Every 3-connected planar zonal graph is absolutely zonal.
-Consequently no 3-connected planar graph is conditionally zonal. -/
+/-- The conditional transfer underlying **Theorem 2.1.3 (Bowling, 2023)**: unique embeddability
+would carry one zonal realization to every realization. -/
 theorem threeConnected_zonal_isAbsolutelyZonal (whitney : WhitneyUniqueEmbedding.{u})
     (G : SimpleGraph Vertex) (h3 : SimpleGraph.IsThreeConnected G)
     (hzonal : SimpleGraph.IsZonalGraph G) : SimpleGraph.IsAbsolutelyZonal G := by
   obtain ⟨E, hE⟩ := hzonal
   exact SimpleGraph.IsZonalGraph.isAbsolutelyZonal ⟨E, hE⟩ (whitney Vertex G h3 ⟨E⟩)
+
+/-!
+## Why the Whitney carrier cannot be proved against `PlaneRealization`
+
+`PlaneRealization` requires facial balance only when the graph is both two-connected and bipartite.
+For a non-bipartite graph such as `K₄`, its supplied face data is otherwise unconstrained. In fact
+even empty boundaries satisfy facial balance, so two alleged realizations can have different numbers
+of faces and cannot be isomorphic. Thus `WhitneyUniqueEmbedding` is false for the current interface,
+independently of the genuine topological Whitney theorem.
+-/
+
+/-- `K₄` with one alleged face and empty boundary data. -/
+def invalidK4UnitPlane : PlaneGraph (Fin 4) Unit where
+  graph := ⊤
+  connected := SimpleGraph.connected_top
+  boundary := fun _ => ∅
+  boundaryEdges := fun _ => ∅
+  exterior := ()
+
+/-- `K₄` with two alleged faces and empty boundary data. -/
+def invalidK4BoolPlane : PlaneGraph (Fin 4) Bool where
+  graph := ⊤
+  connected := SimpleGraph.connected_top
+  boundary := fun _ => ∅
+  boundaryEdges := fun _ => ∅
+  exterior := false
+
+/-- The one-face supplied data packaged as a `PlaneRealization`. -/
+def invalidK4UnitRealization : PlaneRealization (⊤ : SimpleGraph (Fin 4)) where
+  Face := Unit
+  instFintypeFace := inferInstance
+  plane := invalidK4UnitPlane
+  graph_eq := rfl
+  facial_balance_of_twoConnected_bipartite := by
+    intro _ _ coloring R
+    simp [SimpleGraph.IsBalanced, invalidK4UnitPlane]
+
+/-- The two-face supplied data packaged as a `PlaneRealization`. -/
+def invalidK4BoolRealization : PlaneRealization (⊤ : SimpleGraph (Fin 4)) where
+  Face := Bool
+  instFintypeFace := inferInstance
+  plane := invalidK4BoolPlane
+  graph_eq := rfl
+  facial_balance_of_twoConnected_bipartite := by
+    intro _ _ coloring R
+    simp [SimpleGraph.IsBalanced, invalidK4BoolPlane]
+
+/-- `K₄` satisfies this development's deletion-based definition of three-connectivity. -/
+theorem completeGraph_fin_four_isThreeConnected :
+    SimpleGraph.IsThreeConnected (⊤ : SimpleGraph (Fin 4)) := by
+  refine ⟨by decide, fun u v => ?_⟩
+  obtain ⟨w, hwu, hwv⟩ := Fin.exists_ne_and_ne_of_two_lt u v (by omega)
+  letI : Nonempty ({u, v}ᶜ : Set (Fin 4)) := ⟨⟨w, by simp [hwu, hwv]⟩⟩
+  rw [SimpleGraph.induce_top]
+  exact SimpleGraph.connected_top
+
+/-- The two supplied realizations are not isomorphic because their face types have different
+cardinalities. -/
+theorem completeGraph_fin_four_not_uniquelyEmbeddable :
+    ¬ SimpleGraph.UniquelyEmbeddable (⊤ : SimpleGraph (Fin 4)) := by
+  intro h
+  obtain ⟨e⟩ := h invalidK4UnitRealization invalidK4BoolRealization
+  have hcard := Fintype.card_congr e.faceEquiv
+  change Fintype.card Unit = Fintype.card Bool at hcard
+  norm_num at hcard
+
+/-- The unrestricted Whitney carrier is false for the supplied-face realization interface. -/
+theorem not_whitneyUniqueEmbedding : ¬ WhitneyUniqueEmbedding.{0} := by
+  intro h
+  have huniq := h (Fin 4) (⊤ : SimpleGraph (Fin 4)) completeGraph_fin_four_isThreeConnected
+    ⟨invalidK4UnitRealization⟩
+  exact completeGraph_fin_four_not_uniquelyEmbeddable huniq
 
 end ZonalGraphs
