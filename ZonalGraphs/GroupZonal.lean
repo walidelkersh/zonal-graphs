@@ -66,15 +66,37 @@ theorem isGroupZonal_map {Γ' : Type*} [AddCommGroup Γ'] (φ : Γ →+ Γ')
   simp only [groupZoneValue] at hzonal ⊢
   rw [← map_sum, hzonal R, map_zero]
 
+/-- On every triangular face, a proper three-colouring uses each colour exactly once.
+
+This is the local graph-theoretic step in Proposition 2.8. It used to be carried by that result as
+the hypothesis `hface`; it follows from the definition of a triangulation and properness of the
+colouring. -/
+theorem IsTriangulation.card_filter_coloring_eq_one [DecidableEq Vertex]
+    {P : PlaneGraph Vertex Face} (htri : P.IsTriangulation)
+    (colouring : P.graph.Coloring (Fin 3)) (R : Face) (i : Fin 3) :
+    {v ∈ P.boundary R | colouring v = i}.card = 1 := by
+  obtain ⟨hcard, hclique⟩ := htri R
+  have hsurj : Set.SurjOn colouring ↑(P.boundary R) Set.univ :=
+    SimpleGraph.Coloring.surjOn_of_card_le_isClique hclique (by simp [hcard]) colouring
+  obtain ⟨v, hv, hvi⟩ := hsurj (Set.mem_univ i)
+  rw [Finset.card_eq_one]
+  refine ⟨v, Finset.ext fun w => ?_⟩
+  simp only [Finset.mem_filter, Finset.mem_singleton]
+  constructor
+  · rintro ⟨hw, hwi⟩
+    by_contra hwv
+    exact (colouring.valid (hclique hw hv hwv)) (hwi.trans hvi.symm)
+  · rintro rfl
+    exact ⟨hv, hvi⟩
+
 /-- **Zonality from a three-colouring meeting every region once per colour.**
 
 Give the three colour classes three nonzero elements summing to zero, which exist for any abelian group
 with two distinct nonzero elements by `exists_three_nonzero_add_eq_zero`.  A region whose boundary holds
 exactly one vertex of each colour then sums to `g 0 + g 1 + g 2 = 0`.
 
-This is the labelling half of Proposition 2.8 of Bowling (2025) on Eulerian plane triangulations.  The
-graph-theoretic input, that a plane triangulation is vertex 3-colourable exactly when it is Eulerian, is
-Heawood's theorem and is not proved here; it enters as the hypothesis `hface`. -/
+This is the incidence-level engine for the labelling half of Proposition 2.8 of Bowling (2025).
+`isGroupZonal_of_threeColourable_triangulation` below derives `hface` rather than carrying it. -/
 theorem isGroupZonal_of_threeColouring [DecidableEq Vertex] (P : PlaneGraph Vertex Face)
     (colouring : Vertex → Fin 3) {g : Fin 3 → Γ} (hg : ∀ i, g i ≠ 0)
     (hsum : g 0 + g 1 + g 2 = 0)
@@ -90,6 +112,25 @@ theorem isGroupZonal_of_threeColouring [DecidableEq Vertex] (P : PlaneGraph Vert
       rw [(Finset.mem_filter.mp hv).2], Finset.sum_const, hface R i, one_smul]
   rw [Fin.sum_univ_three, hfib 0, hfib 1, hfib 2]
   exact hsum
+
+/-- **The labelling half of Proposition 2.8 (Bowling, 2025), without a facial-count
+hypothesis.**
+
+A proper three-colouring of a plane triangulation uses every colour exactly once on each face, so
+three nonzero group elements summing to zero give a group-zonal labelling. The only graph-theoretic
+input still outside this theorem is Heawood's theorem, which supplies the proper three-colouring
+from the Eulerian hypothesis. -/
+theorem isGroupZonal_of_threeColourable_triangulation [DecidableEq Vertex]
+    (P : PlaneGraph Vertex Face) (htri : P.IsTriangulation)
+    (colouring : P.graph.Coloring (Fin 3)) {g h : Γ} (hg : g ≠ 0) (hh : h ≠ 0)
+    (hne : g ≠ h) : P.IsGroupZonal Γ := by
+  obtain ⟨a, b, c, ha, hb, hc, habc⟩ := exists_three_nonzero_add_eq_zero hg hh hne
+  let values : Fin 3 → Γ := ![a, b, c]
+  refine isGroupZonal_of_threeColouring P colouring (g := values) ?_ ?_ ?_
+  · intro i
+    fin_cases i <;> simp [values, ha, hb, hc]
+  · simpa [values] using habc
+  · exact fun R i => htri.card_filter_coloring_eq_one colouring R i
 
 /-- **Observation 2.1 (Bowling, 2025).** Zonality passes to a larger group along any injective
 homomorphism, so in particular a subgroup inclusion.

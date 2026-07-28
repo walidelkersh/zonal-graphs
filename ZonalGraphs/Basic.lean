@@ -40,6 +40,15 @@ variable {Vertex : Type u} {Face : Type v} [Fintype Vertex] [Fintype Face]
 def IsInterior [DecidableEq Face] (P : PlaneGraph Vertex Face) (R : Face) : Prop :=
   R ≠ P.exterior
 
+/-- A plane graph is a triangulation when every facial boundary consists of three mutually
+adjacent vertices.
+
+For a topologically valid plane embedding, mutual adjacency follows from saying that the boundary
+is a triangle. It is included explicitly here because `PlaneGraph` is an interface of supplied face
+data, so the relation between `boundary` and `graph` must be visible to proofs that use it. -/
+def IsTriangulation (P : PlaneGraph Vertex Face) : Prop :=
+  ∀ R : Face, (P.boundary R).card = 3 ∧ P.graph.IsClique ↑(P.boundary R)
+
 end PlaneGraph
 
 end ZonalGraphs

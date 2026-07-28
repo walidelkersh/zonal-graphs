@@ -150,9 +150,11 @@ mislead.
 * **Four Color Theorem** (`PlaneGraph.FourColorZonalStatement`) — packaged as a proposition so the statement is
   expressible without asserting it. `fourColorZonalStatement_iff` unfolds it.
 
-* **Heawood's theorem** — the graph-theoretic half of Proposition 2.8, that a plane triangulation is vertex
-  3-colourable exactly when it is Eulerian, enters `isGroupZonal_of_threeColouring` as the hypothesis `hface`. The
-  labelling half is proved.
+* **Heawood's theorem** — the graph-theoretic half of Proposition 2.8, that an Eulerian plane
+  triangulation is vertex 3-colourable, remains open. The former facial-count hypothesis is gone:
+  `IsTriangulation.card_filter_coloring_eq_one` proves that a proper three-colouring uses every colour
+  exactly once on each triangular face, and `isGroupZonal_of_threeColourable_triangulation` derives the
+  group-zonal labelling directly.
 
 * **Theorem 1.4, the tricoloring equivalence** — `IsTricoloring` is defined so the statement is expressible, and
   `IsTricoloring.injOn_boundaryEdges` is proved, but the equivalence itself has no proof in any source in this
