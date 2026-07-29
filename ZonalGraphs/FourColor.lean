@@ -66,6 +66,15 @@ theorem fourColorZonalStatement_iff (P : PlaneGraph Vertex Face) :
       (P.IsBridgeless → P.IsCubic → (P.IsFourFaceColorable ↔ P.IsZonal)) :=
   Iff.rfl
 
+/-- The unrestricted universal carrier for the zonal formulation of the Four Color Theorem.
+
+This proposition deliberately quantifies over the current supplied-face `PlaneGraph` interface.
+It is false because that interface does not certify its faces; see `not_fourColorZonalTheorem` in
+`CubicPlanar`. A faithful carrier must instead quantify over genus-zero certified embeddings. -/
+def FourColorZonalTheorem : Prop :=
+  ∀ (V : Type u) (F : Type v) [Fintype V] [Fintype F] (P : PlaneGraph V F),
+    P.FourColorZonalStatement
+
 /-- A *tricoloring* of a plane graph: a colouring of the edges with three colours in which every colour
 appears on the boundary of every region.
 

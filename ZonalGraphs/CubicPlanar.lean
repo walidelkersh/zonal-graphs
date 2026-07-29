@@ -116,6 +116,23 @@ theorem invalidK4PlaneGraph_not_isZonal : ¬ invalidK4PlaneGraph.IsZonal := by
   simp [PlaneGraph.zoneValue, invalidK4PlaneGraph] at hface
   exact (labeling 0).2 hface
 
+/-- With only one alleged face and no supplied boundary edges, `invalidK4PlaneGraph` is vacuously
+four-face-colorable. -/
+theorem invalidK4PlaneGraph_isFourFaceColorable :
+    invalidK4PlaneGraph.IsFourFaceColorable := by
+  refine ⟨fun _ => 0, ?_⟩
+  intro R S hRS
+  obtain ⟨_, e, heR, _⟩ := hRS
+  simp [invalidK4PlaneGraph] at heR
+
+/-- Even the per-graph Four Color zonal statement is false for unrestricted supplied face data. -/
+theorem invalidK4PlaneGraph_not_fourColorZonalStatement :
+    ¬ invalidK4PlaneGraph.FourColorZonalStatement := by
+  intro h
+  exact invalidK4PlaneGraph_not_isZonal
+    ((h invalidK4PlaneGraph_isBridgeless invalidK4PlaneGraph_isCubic).mp
+      invalidK4PlaneGraph_isFourFaceColorable)
+
 /-- The unrestricted carrier is false for the supplied-face interface. Any faithful version must
 quantify only over face data certified to come from a planar embedding. -/
 theorem not_cubicZonalIffBridgeless : ¬ CubicZonalIffBridgeless.{0, 0} := by
@@ -124,5 +141,12 @@ theorem not_cubicZonalIffBridgeless : ¬ CubicZonalIffBridgeless.{0, 0} := by
     (h (Fin 4) Unit invalidK4PlaneGraph invalidK4PlaneGraph_isCubic).mpr
       invalidK4PlaneGraph_isBridgeless
   exact invalidK4PlaneGraph_not_isZonal hzonal
+
+/-- The unrestricted universal Four Color carrier is false. Its intended equivalence requires
+face data certified to come from a planar embedding. -/
+theorem not_fourColorZonalTheorem : ¬ PlaneGraph.FourColorZonalTheorem.{0, 0} := by
+  intro h
+  exact invalidK4PlaneGraph_not_fourColorZonalStatement
+    (h (Fin 4) Unit invalidK4PlaneGraph)
 
 end ZonalGraphs

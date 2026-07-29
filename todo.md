@@ -53,7 +53,7 @@ The count of genuinely distinct statements is therefore well below the number of
 Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
 of the 40 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 263.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 266.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -129,6 +129,11 @@ implication has been proved.
   embeddings invokes the Four Color Theorem, but the unrestricted `PlaneGraph` formulation is
   already false for a different reason: `not_cubicZonalIffBridgeless` equips `K₄` with one fabricated
   singleton face. It is cubic and bridgeless but cannot be zonal.
+* **Four Color zonal carrier** (`PlaneGraph.FourColorZonalTheorem`) —
+  `not_fourColorZonalTheorem` uses that same fabricated `K₄`. Its sole alleged face has no supplied
+  boundary edges, so it is vacuously four-face-colorable, while its singleton vertex boundary makes
+  it non-zonal. The Four Color Theorem remains an input for a certified embedding formulation, but
+  this unrestricted carrier is false rather than merely unproved.
 * **Theorem 2.1.2** (`WhitneyUniqueEmbedding`) — `not_whitneyUniqueEmbedding` packages the same `K₄`
   with one copy and with two copies of a certified triangular facial cycle. Both satisfy the current
   `PlaneRealization` contract, but their face types have different cardinalities. The missing
@@ -160,9 +165,6 @@ orbits; its remaining gap is the genus-zero certificate.
   the arithmetic of the region sums and the region-size invariant, which holds of whatever the embedding is.
   Counting embeddings has no such fallback, which is why 2.5.10, 2.5.12 and 2.5.13 are *not* checked on the same
   basis; see `IsRealizable` and the note below.
-
-* **Four Color Theorem** (`PlaneGraph.FourColorZonalStatement`) — packaged as a proposition so the statement is
-  expressible without asserting it. `fourColorZonalStatement_iff` unfolds it.
 
 * **Heawood's theorem** — the graph-theoretic half of Proposition 2.8, that an Eulerian plane
   triangulation is vertex 3-colourable, remains open. The former facial-count hypothesis is gone:
