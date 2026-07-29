@@ -1,5 +1,6 @@
 import ZonalGraphs.AbelianGroups
 import ZonalGraphs.BipartiteZonal
+import ZonalGraphs.FourColor
 import ZonalGraphs.TreesAndCycles
 
 namespace ZonalGraphs
@@ -52,6 +53,75 @@ def IsGroupCozonal [DecidableEq Vertex] (P : PlaneGraph Vertex Face) (Γ : Type*
     [AddCommGroup Γ] : Prop :=
   ∃ labeling : Face → {x : Γ // x ≠ 0},
     ∀ v : Vertex, ∑ R ∈ P.regionsAt v, (labeling R : Γ) = 0
+
+/-- The supplied-data formulation of Theorem 1.4: a plane triangulation is tricolorable exactly
+when it is `ZMod 3`-cozonal. -/
+def TricoloringCozonalStatement [DecidableEq Vertex] (P : PlaneGraph Vertex Face) : Prop :=
+  (∃ coloring : Sym2 Vertex → Fin 3, P.IsTricoloring coloring) ↔
+    P.IsGroupCozonal (ZMod 3)
+
+/-- The unrestricted universal carrier for Theorem 1.4.
+
+This proposition is useful for exposing the interface boundary, but it is false because
+`PlaneGraph.boundaryEdges` is not yet certified by `IsTriangulation`; see
+`not_tricoloringCozonalTheorem`. -/
+def TricoloringCozonalTheorem : Prop :=
+  ∀ (V : Type u) (F : Type v) [Fintype V] [Fintype F] [DecidableEq V]
+    (P : PlaneGraph V F), P.IsTriangulation → P.TricoloringCozonalStatement
+
+/-!
+## Why the unrestricted tricoloring carrier is false
+
+Give `K₃` two copies of its triangular vertex boundary but no supplied boundary edges. Label the
+two faces by `1` and `2`; every vertex then sees both labels, whose sum is zero. Thus the data is
+cozonal. A tricoloring is impossible because its definition asks each face to contain an edge of
+every color, while both alleged boundary-edge sets are empty.
+-/
+
+/-- `K₃` with two alleged triangular faces whose boundary-edge sets are empty. -/
+def invalidDoubleTriangle : PlaneGraph (Fin 3) Bool where
+  graph := ⊤
+  connected := SimpleGraph.connected_top
+  boundary := fun _ => Finset.univ
+  boundaryEdges := fun _ => ∅
+  exterior := false
+
+/-- The supplied vertex boundaries make `invalidDoubleTriangle` a triangulation under the current
+definition. -/
+theorem invalidDoubleTriangle_isTriangulation : invalidDoubleTriangle.IsTriangulation := by
+  intro R
+  constructor
+  · simp [invalidDoubleTriangle]
+  · rw [SimpleGraph.isClique_iff]
+    intro u _ v _ huv
+    simpa [invalidDoubleTriangle] using huv
+
+/-- Labeling the two faces by `1` and `2` makes every vertex sum to zero. -/
+theorem invalidDoubleTriangle_isGroupCozonal :
+    invalidDoubleTriangle.IsGroupCozonal (ZMod 3) := by
+  classical
+  refine ⟨fun R => if R then ⟨2, by decide⟩ else ⟨1, by decide⟩, fun v => ?_⟩
+  simpa [regionsAt, invalidDoubleTriangle] using
+    (show (2 : ZMod 3) + 1 = 0 from by decide)
+
+/-- Empty supplied boundary-edge sets rule out a tricoloring. -/
+theorem invalidDoubleTriangle_not_tricolorable :
+    ¬ ∃ coloring : Sym2 (Fin 3) → Fin 3, invalidDoubleTriangle.IsTricoloring coloring := by
+  rintro ⟨coloring, hcoloring⟩
+  simpa [invalidDoubleTriangle] using hcoloring false 0
+
+/-- Theorem 1.4 is false when stated against unrestricted supplied face data. -/
+theorem invalidDoubleTriangle_not_tricoloringCozonalStatement :
+    ¬ invalidDoubleTriangle.TricoloringCozonalStatement := by
+  intro h
+  exact invalidDoubleTriangle_not_tricolorable (h.mpr invalidDoubleTriangle_isGroupCozonal)
+
+/-- The unrestricted universal carrier for Theorem 1.4 is false. A faithful version must connect
+each face's `boundaryEdges` to its cyclic vertex boundary. -/
+theorem not_tricoloringCozonalTheorem : ¬ TricoloringCozonalTheorem.{0, 0} := by
+  intro h
+  exact invalidDoubleTriangle_not_tricoloringCozonalStatement
+    (h (Fin 3) Bool invalidDoubleTriangle invalidDoubleTriangle_isTriangulation)
 
 /-- **Observation 2.2 (Bowling, 2025).** A group homomorphism carries a `Γ`-zonal labeling avoiding its
 kernel to a `Γ'`-zonal labeling.

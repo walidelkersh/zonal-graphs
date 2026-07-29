@@ -53,7 +53,7 @@ The count of genuinely distinct statements is therefore well below the number of
 Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
 of the 40 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 258.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 263.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -134,6 +134,10 @@ implication has been proved.
   `PlaneRealization` contract, but their face types have different cardinalities. The missing
   invariant is that faces exhaust a single genus-zero rotation system, independently of the genuine
   Whitney theorem.
+* **Theorem 1.4** (`TricoloringCozonalTheorem`) — `not_tricoloringCozonalTheorem` gives `K₃` two
+  triangular vertex boundaries and empty boundary-edge sets. The two faces admit a cozonal labeling,
+  but no tricoloring can exist. The missing invariant is that each supplied `boundaryEdges` set is
+  the cyclic edge boundary of the corresponding face.
 
 The conditional lemmas `bridgeless_cubic_planar_isAbsolutelyZonal` and
 `threeConnected_zonal_isAbsolutelyZonal` remain useful factorizations, but Theorems 2.1.4 and 2.1.3
@@ -165,10 +169,6 @@ orbits; its remaining gap is the genus-zero certificate.
   `IsTriangulation.card_filter_coloring_eq_one` proves that a proper three-colouring uses every colour
   exactly once on each triangular face, and `isGroupZonal_of_threeColourable_triangulation` derives the
   group-zonal labelling directly.
-
-* **Theorem 1.4, the tricoloring equivalence** — `IsTricoloring` is defined so the statement is expressible, and
-  `IsTricoloring.injOn_boundaryEdges` is proved, but the equivalence itself has no proof in any source in this
-  repository.
 
 * **Facial boundaries are cycles** — this is now the structural field
   `PlaneGraph.HasFacialBoundaryCycles`, not an assumed color-balance conclusion.
@@ -272,8 +272,9 @@ go, and dropping the narrative of how they were reached.
 * **The remaining dual halves** — the cozonal side is now available. Duality needed no multigraphs after
   all: zonality and cozonality never consult the underlying graph, only which vertices bound which
   regions, so abstracting that incidence data makes the dual a transposition and Proposition 1.3 a matter
-  of unfolding. What is still missing for entries such as Theorem 1.4 and Proposition 2.8 is not duality
-  but tricolorings and Eulerian plane graphs, which are separate notions.
+  of unfolding. What remains for Theorem 1.4 is a certified correspondence between facial vertices
+  and facial edges before its tricoloring argument can be stated faithfully. Proposition 2.8 instead
+  needs Eulerian plane graphs and Heawood's theorem.
 
 * **Theorem 1.1.1** (the Euler identity) — a finding, not an excuse. In the rotation-system model a map's
   Euler characteristic is `V - E + F` with `V`, `E`, `F` the orbit counts of `rotate`, `dartRev` and

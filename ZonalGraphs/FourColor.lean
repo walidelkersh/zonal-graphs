@@ -70,9 +70,9 @@ theorem fourColorZonalStatement_iff (P : PlaneGraph Vertex Face) :
 appears on the boundary of every region.
 
 This is the notion dual to a proper edge 3-colouring of a cubic map, and it is what Theorem 1.4 of
-Bowling (2025) relates to cozonal labelings of plane triangulations.  That equivalence is *not* proved
-here; its argument lives in a reference outside this project's sources, and guessing it would risk
-building on a wrong reading. The definition is recorded so the statement is at least expressible. -/
+Bowling (2025) relates to cozonal labelings of plane triangulations. The intended theorem needs
+certified facial edges. The unrestricted supplied-data formulation is false; see
+`not_tricoloringCozonalTheorem` in `GroupZonal`. -/
 def IsTricoloring (P : PlaneGraph Vertex Face) (colouring : Sym2 Vertex → Fin 3) : Prop :=
   ∀ (R : Face) (i : Fin 3), ∃ e ∈ P.boundaryEdges R, colouring e = i
 
