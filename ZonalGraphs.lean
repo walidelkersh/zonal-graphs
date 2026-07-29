@@ -25,6 +25,7 @@ import ZonalGraphs.CycleRankTwo
 import ZonalGraphs.ThetaGraph
 import ZonalGraphs.EmbeddingCounts
 import ZonalGraphs.EmbeddingDistinctness
+import ZonalGraphs.EqualPartitions
 import ZonalGraphs.GnFamily
 import ZonalGraphs.GnGraph
 import ZonalGraphs.HamiltonianChords
