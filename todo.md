@@ -50,10 +50,10 @@ The count of genuinely distinct statements is therefore well below the number of
 
 ## Quality gate, verified
 
-Checked across the library at 60 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
-of the 40 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
+Checked across the library at 61 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
+of the 41 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 266.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 282.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -73,6 +73,7 @@ root build has to run before every push.
 | Theorem 2.1.5 | `wheel_isZonal_iff_modEq_zero` |
 | Proposition 2.2.1 | `PlaneGraph.not_isZonal_ofTwoBladedWindmill` |
 | Theorem 2.2.2 | `PlaneGraph.conditionallyZonal_windmill` |
+| Lemma 2.3.1 | `EqualFinpartition.lemma_2_3_1`, on the general recurrence `card_equalFinpartition` |
 | Theorem 2.3.2 | `PlaneGraph.exists_irregular_windmill_many_zonal_embeddings` |
 | Theorem 3.1.1 | `PlaneGraph.isZonal_iff_card_sdiff_boundary_ne_one` |
 | Theorem 3.1.3 | `PlaneGraph.isZonal_of_boundary_eq_union` |
@@ -149,12 +150,6 @@ The conditional lemmas `bridgeless_cubic_planar_isAbsolutelyZonal` and
 have been unchecked. Faithful versions require a type of realizations whose faces are certified by
 a genus-zero combinatorial embedding. `ZonalGraphs.Embedding` supplies rotation systems and face
 orbits; its remaining gap is the genus-zero certificate.
-
-**Deferred standalone result.**
-
-* **Lemma 2.3.1** — the count of partitions of a `4k`-set into four unordered `k`-subsets. Mathlib has
-  no counting theorem for unordered equal-size set partitions. Deferred rather than blocking:
-  Theorem 2.3.2 was proved without it.
 
 **Genuine open inputs and explicit assumptions.**
 
@@ -319,7 +314,7 @@ go, and dropping the narrative of how they were reached.
 - [ ] **Theorem 2.1.8**: For every positive integer k, there exists a connected bridgeless cubic planar graph having at least k distinct (zonal) planar embeddings.
 - [x] **Proposition 2.2.1**: For every multiset S of two cycles, the Dutch windmill graph D(S) is not zonal.
 - [x] **Theorem 2.2.2**: For every multiset S of three or more cycles, the Dutch windmill graph D(S) is conditionally zonal.
-- [ ] **Lemma 2.3.1**: Let S be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4Y i=1 ik − 1 k − 1  = 4k − 1 k − 1 3k − 1 k − 1 2k − 1 k − 1  . (2.1)
+- [x] **Lemma 2.3.1**: Let S be a set with 4k elements for some positive integer k. The number of partitions of S into four k-element subsets is 4Y i=1 ik − 1 k − 1  = 4k − 1 k − 1 3k − 1 k − 1 2k − 1 k − 1  . (2.1)
 - [x] **Theorem 2.3.2**: There is an irregular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
 - [x] **Proposition 2.4.1**: For a positive integer k, the plane graph Fk is zonal.
 - [ ] **Theorem 2.4.2**: There is a regular Dutch windmill graph that has an arbitrarily large number of distinct zonal planar embeddings.
