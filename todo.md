@@ -53,7 +53,7 @@ The count of genuinely distinct statements is therefore well below the number of
 Checked across the library at 61 of 181 provable entries: no `sorry`, no `admit`, no `axiom` declaration in any
 of the 41 modules, and the root module builds. Axiom hygiene spot-checked with `lean_verify` on
 `gnGraph_isTwoConnected` and `isZonal_of_forall_isGnRegion`: both reduce to `propext`, `Classical.choice` and
-`Quot.sound` only, with no warnings. Total theorem and lemma count: 282.
+`Quot.sound` only, with no warnings. Total theorem and lemma count: 286.
 
 Two checks worth keeping in the loop, both learned from failures here. A clean `lean-lsp` diagnostic does not
 establish that a file builds, since it once reported a file clean that held a type error; only `lake build` does.
@@ -135,6 +135,11 @@ implication has been proved.
   boundary edges, so it is vacuously four-face-colorable, while its singleton vertex boundary makes
   it non-zonal. The Four Color Theorem remains an input for a certified embedding formulation, but
   this unrestricted carrier is false rather than merely unproved.
+* **Heawood forward carrier** (`PlaneGraph.HeawoodThreeColorTheorem`) —
+  `not_heawoodThreeColorTheorem` equips `K₅` with one alleged triangular face. It satisfies the
+  current `IsTriangulation` predicate and every vertex has even degree four, but its five-vertex
+  clique is not three-colourable. Heawood's theorem remains the intended input for certified plane
+  triangulations; the unrestricted carrier does not express planarity.
 * **Theorem 2.1.2** (`WhitneyUniqueEmbedding`) — `not_whitneyUniqueEmbedding` packages the same `K₄`
   with one copy and with two copies of a certified triangular facial cycle. Both satisfy the current
   `PlaneRealization` contract, but their face types have different cardinalities. The missing
@@ -160,12 +165,6 @@ orbits; its remaining gap is the genus-zero certificate.
   the arithmetic of the region sums and the region-size invariant, which holds of whatever the embedding is.
   Counting embeddings has no such fallback, which is why 2.5.10, 2.5.12 and 2.5.13 are *not* checked on the same
   basis; see `IsRealizable` and the note below.
-
-* **Heawood's theorem** — the graph-theoretic half of Proposition 2.8, that an Eulerian plane
-  triangulation is vertex 3-colourable, remains open. The former facial-count hypothesis is gone:
-  `IsTriangulation.card_filter_coloring_eq_one` proves that a proper three-colouring uses every colour
-  exactly once on each triangular face, and `isGroupZonal_of_threeColourable_triangulation` derives the
-  group-zonal labelling directly.
 
 * **Facial boundaries are cycles** — this is now the structural field
   `PlaneGraph.HasFacialBoundaryCycles`, not an assumed color-balance conclusion.
@@ -263,15 +262,17 @@ go, and dropping the narrative of how they were reached.
 * **Proposition 2.8** — the labelling consequence is now proved as
   `isGroupZonal_of_threeColourable_triangulation`. Properness and triangular facial cliques prove that
   every face uses all three colours exactly once, so the former facial-count hypothesis is gone. What
-  remains is Heawood's theorem, that a plane triangulation is vertex 3-colourable exactly when it is
-  Eulerian. The entry also pairs the claim with a cozonal dual about bipartite cubic maps.
+  remains is a certified genus-zero triangulation interface and then Heawood's theorem, that a plane
+  triangulation is vertex 3-colourable exactly when it is Eulerian. The unrestricted carrier is
+  formally refuted by `not_heawoodThreeColorTheorem`. The entry also pairs the claim with a cozonal
+  dual about bipartite cubic maps.
 
 * **The remaining dual halves** — the cozonal side is now available. Duality needed no multigraphs after
   all: zonality and cozonality never consult the underlying graph, only which vertices bound which
   regions, so abstracting that incidence data makes the dual a transposition and Proposition 1.3 a matter
   of unfolding. What remains for Theorem 1.4 is a certified correspondence between facial vertices
   and facial edges before its tricoloring argument can be stated faithfully. Proposition 2.8 instead
-  needs Eulerian plane graphs and Heawood's theorem.
+  needs certified Eulerian plane triangulations and Heawood's theorem.
 
 * **Theorem 1.1.1** (the Euler identity) — a finding, not an excuse. In the rotation-system model a map's
   Euler characteristic is `V - E + F` with `V`, `E`, `F` the orbit counts of `rotate`, `dartRev` and

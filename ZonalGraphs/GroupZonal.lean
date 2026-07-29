@@ -123,6 +123,72 @@ theorem not_tricoloringCozonalTheorem : ¬ TricoloringCozonalTheorem.{0, 0} := b
   exact invalidDoubleTriangle_not_tricoloringCozonalStatement
     (h (Fin 3) Bool invalidDoubleTriangle invalidDoubleTriangle_isTriangulation)
 
+/-!
+## Why the unrestricted Heawood carrier is false
+
+For a connected plane triangulation, Heawood's theorem says that all vertex degrees are even if
+and only if the graph is three-colourable. The current `PlaneGraph` interface does not certify
+planarity: `K₅` can be paired with one supplied triangular face. It then satisfies the current
+triangulation predicate and has even degree four at every vertex, but its five-vertex clique cannot
+be coloured with three colours.
+-/
+
+/-- A connected supplied plane graph is Eulerian when every vertex has even degree. Connectedness
+is already a field of `PlaneGraph`. -/
+noncomputable def IsEulerian (P : PlaneGraph Vertex Face) : Prop := by
+  letI := Classical.decRel P.graph.Adj
+  exact ∀ v, Even (P.graph.degree v)
+
+/-- The unrestricted universal carrier for the forward direction of Heawood's theorem. A faithful
+version must quantify over certified genus-zero triangulations. -/
+def HeawoodThreeColorTheorem : Prop :=
+  ∀ (V : Type u) (F : Type v) [Fintype V] [Fintype F] (P : PlaneGraph V F),
+    P.IsTriangulation → P.IsEulerian → P.graph.Colorable 3
+
+/-- `K₅` with one alleged triangular face. This is supplied face data, not a planar embedding. -/
+def invalidK5Triangle : PlaneGraph (Fin 5) Unit where
+  graph := ⊤
+  connected := SimpleGraph.connected_top
+  boundary := fun _ => {0, 1, 2}
+  boundaryEdges := fun _ => ∅
+  exterior := ()
+
+/-- The supplied boundary makes `invalidK5Triangle` a triangulation under the current predicate. -/
+theorem invalidK5Triangle_isTriangulation : invalidK5Triangle.IsTriangulation := by
+  intro R
+  constructor
+  · simp [invalidK5Triangle]
+  · rw [SimpleGraph.isClique_iff]
+    intro u _ v _ huv
+    simpa [invalidK5Triangle] using huv
+
+/-- Every vertex of the underlying `K₅` has even degree four. -/
+theorem invalidK5Triangle_isEulerian : invalidK5Triangle.IsEulerian := by
+  classical
+  unfold IsEulerian
+  intro v
+  refine ⟨2, ?_⟩
+  simp [invalidK5Triangle, SimpleGraph.degree, SimpleGraph.neighborFinset_eq_filter]
+  fin_cases v <;> decide
+
+/-- The five-vertex clique cannot be coloured with only three colours. -/
+theorem invalidK5Triangle_not_colorable : ¬ invalidK5Triangle.graph.Colorable 3 := by
+  intro hcolor
+  have hclique : invalidK5Triangle.graph.IsClique (Finset.univ : Finset (Fin 5)) := by
+    rw [SimpleGraph.isClique_iff]
+    intro u _ v _ huv
+    simpa [invalidK5Triangle] using huv
+  have hle := hclique.card_le_of_colorable hcolor
+  simp at hle
+
+/-- The unrestricted Heawood carrier is false because supplied triangular face data does not imply
+that the underlying graph is planar. -/
+theorem not_heawoodThreeColorTheorem : ¬ HeawoodThreeColorTheorem.{0, 0} := by
+  intro h
+  exact invalidK5Triangle_not_colorable
+    (h (Fin 5) Unit invalidK5Triangle invalidK5Triangle_isTriangulation
+      invalidK5Triangle_isEulerian)
+
 /-- **Observation 2.2 (Bowling, 2025).** A group homomorphism carries a `Γ`-zonal labeling avoiding its
 kernel to a `Γ'`-zonal labeling.
 
@@ -187,9 +253,9 @@ theorem isGroupZonal_of_threeColouring [DecidableEq Vertex] (P : PlaneGraph Vert
 hypothesis.**
 
 A proper three-colouring of a plane triangulation uses every colour exactly once on each face, so
-three nonzero group elements summing to zero give a group-zonal labelling. The only graph-theoretic
-input still outside this theorem is Heawood's theorem, which supplies the proper three-colouring
-from the Eulerian hypothesis. -/
+three nonzero group elements summing to zero give a group-zonal labelling. For a certified plane
+triangulation, Heawood's theorem supplies that colouring from the Eulerian hypothesis. The current
+unrestricted carrier is false; see `not_heawoodThreeColorTheorem`. -/
 theorem isGroupZonal_of_threeColourable_triangulation [DecidableEq Vertex]
     (P : PlaneGraph Vertex Face) (htri : P.IsTriangulation)
     (colouring : P.graph.Coloring (Fin 3)) {g h : Γ} (hg : g ≠ 0) (hh : h ≠ 0)
